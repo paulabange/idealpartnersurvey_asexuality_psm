@@ -1,16 +1,471 @@
 ---
 title: "00_data_wrangling"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Library
+```{r Library}
+library(formr)
+library(dplyr)
+```
 
+## data
 ```{r}
 # load data
 fulldata_selected = read.csv(file = "data/fulldata_selected.csv")[,-1]
 ```
 
+## Inspect Data
+```{r Inspect Data}
+colnames(fulldata_selected)
+
+fulldata_selected_wrangled = fulldata_selected
+```
+
+### Sexual Orientation
+heterosexual; Lesbian/Gay/Homosexual; Bisexual/Pansexual; Queer; Asexual; Prefer not to say; Other
+```{r Sexual orientation}
+table(fulldata_selected_wrangled$sexual_orientation)
+
+# Set missing values as NA
+fulldata_selected_wrangled = fulldata_selected_wrangled %>%
+  mutate(sexual_orientation = as.character(sexual_orientation),
+         sexual_orientation = ifelse(sexual_orientation == "", NA, sexual_orientation),
+         sexual_orientation = factor(sexual_orientation))
+
+table(fulldata_selected_wrangled$sexual_orientation)
+
+table(is.na(fulldata_selected_wrangled$sexual_orientation))
+```
+
+### Country
+
+#### Problem with South Korea / Korea, South and Congo
+```{r}
+fulldata_selected_wrangled = fulldata_selected_wrangled %>%
+  mutate(country = ifelse(country == "Korea, South",
+                          "South Korea",
+                          country),
+         country = ifelse(country == "Congo, Democratic Republic of the",
+                          "Congo, Republic of the",
+                          country))
+```
+
+#### Overview Counties
+```{r Country}
+table(fulldata_selected_wrangled$country)
+table(is.na(fulldata_selected_wrangled$country))
+```
+
+### Language
+Chinese, Danish, English, French, German, Japanese, Portuguese, Russian, Spanish,
+```{r Language}
+table(fulldata_selected_wrangled$language)
+table(is.na(fulldata_selected_wrangled$country))
+```
+
+### Age
+Participants younger than 18 were able to insert age but the survey was ended for them afterwards.
+```{r Age}
+table(fulldata_selected_wrangled$age)
+```
+
+@PROBLEM: Variable age was not restricted to a reasonable number, thus numbers larger than 100 were possible. To deal with this we will set all numbers > 100 as missing. This was not mentioned in any preregistration.
+```{r Age 2}
+sum(fulldata_selected_wrangled$age > 100)
+# This means that age is set as missing for 15 people
+
+fulldata_selected_wrangled = fulldata_selected_wrangled %>%
+  mutate(age = ifelse(age > 100, NA, age))
+
+table(is.na(fulldata_selected_wrangled$age))
+
+table(fulldata_selected_wrangled$age < 18)
+# 26638 people were not allowed to participate in the survey because they were younger than 18
+```
+
+
+### Sex 
+Gender
+Categories: Woman; Genderqueer/Nonbinary; Man; None of the above; Prefer not to say; Other
+```{r Sex}
+table(fulldata_selected_wrangled$sex)
+
+# Set missing values as NA
+fulldata_selected_wrangled = fulldata_selected_wrangled %>%
+  mutate(sex = as.character(sex),
+         sex = ifelse(sex == "", NA, sex),
+         sex = factor(sex))
+
+table(fulldata_selected_wrangled$sex)
+
+table(is.na(fulldata_selected_wrangled$sex))
+```
+
+### Transgender
+```{r Transgender}
+table(fulldata_selected_wrangled$transgender)
+
+# Set missing values as NA
+fulldata_selected_wrangled = fulldata_selected_wrangled %>%
+  mutate(transgender = as.character(transgender),
+         transgender = ifelse(transgender == "", NA, transgender),
+         transgender = factor(transgender))
+
+table(fulldata_selected_wrangled$transgender)
+table(is.na(fulldata_selected_wrangled$transgender))
+```
+
+### Relationship
+```{r Relationship}
+table(fulldata_selected_wrangled$relationship) #No romantic or sexual relationships during the past 3 months
+table(fulldata_selected_wrangled$relationship1) #Other
+table(fulldata_selected_wrangled$relationship2) #Short-term (casual) sexual relationship (e.g. hookups or one-night-stands)
+table(fulldata_selected_wrangled$relationship3) #New (less than 1 month old) romantic and/or sexual relationship 
+table(fulldata_selected_wrangled$relationship4) #Ongoing (longer than 1 month) uncommitted/non-exclusive romantic and/or sexual relationship
+table(fulldata_selected_wrangled$relationship5)#Long-term committed/exclusive sexual relationship with one or more partners
+
+fulldata_selected_wrangled = fulldata_selected_wrangled %>%
+  mutate(relationship = ifelse(relationship == "True",
+                               "No romantic or sexual relationships during the past 3 months, ",
+                               ""),
+         relationship = ifelse(relationship1 == "True",
+                               paste(relationship,
+                                     "Other, "),
+                               relationship),
+         relationship = ifelse(relationship2 == "True",
+                               paste(relationship,
+                                     "Short-term (casual) sexual relationship (e.g. hookups or one-night-stands), "),
+                               relationship),
+         relationship = ifelse(relationship3 == "True",
+                               paste(relationship,
+                                     "New (less than 1 month old) romantic and/or sexual relationship, "),
+                               relationship),
+         relationship = ifelse(relationship4 == "True",
+                               paste(relationship,
+                                     "Ongoing (longer than 1 month) uncommitted/non-exclusive romantic and/or sexual relationship, "),
+                               relationship),
+         relationship = ifelse(relationship5 == "True", 
+                               paste(relationship,
+                                     "Long-term committed/exclusive sexual relationship with one or more partners, "), 
+                               relationship),
+         relationship = ifelse(relationship == "", NA, relationship))
+
+table(fulldata_selected_wrangled$relationship)
+
+# Check whether command worked correctly
+table(fulldata_selected_wrangled$relationship %contains% "No romantic or sexual relationships during the past 3 months")
+table(is.na(fulldata_selected_wrangled$relationship))
+```
+
+### Relationship Length
+```{r}
+table(fulldata_selected_wrangled$relationship_length)
+
+fulldata_selected_wrangled = fulldata_selected_wrangled %>%
+  mutate(relationship_length = ifelse(is.na(relationship_length) &
+                                        !is.na(relationship),
+                                      0,
+                                      relationship_length))
+table(fulldata_selected_wrangled$relationship_length)
+```
+
+
+### Marital Status
+```{r}
+table(fulldata_selected_wrangled$marital_status)
+
+# Set missing values as NA
+fulldata_selected_wrangled = fulldata_selected_wrangled %>%
+  mutate(marital_status = as.character(marital_status),
+         marital_status = ifelse(marital_status == "", NA, marital_status),
+         marital_status = factor(marital_status))
+
+table(fulldata_selected_wrangled$marital_status)
+table(is.na(fulldata_selected_wrangled$marital_status))
+```
+
+### Political Spectrum
+```{r}
+table(fulldata_selected_wrangled$political_spectrum)
+
+fulldata_selected_wrangled = fulldata_selected_wrangled %>%
+  mutate(political_spectrum = as.character(political_spectrum),
+         political_spectrum = ifelse(political_spectrum == "", NA, political_spectrum),
+         political_spectrum = factor(political_spectrum))
+
+table(fulldata_selected_wrangled$political_spectrum)
+table(is.na(fulldata_selected_wrangled$political_spectrum))
+```
+
+### Relationship Options
+All relationship items should range from 0 to 6
+```{r}
+fulldata_selected_wrangled %>%
+  select(starts_with("interest_")) %>%
+  lapply(table)
+```
+
+But they dont: they range from 0 to 7 - investigate why?
+```{r}
+weird_sevens = fulldata_selected_wrangled %>%
+  filter(interest_single == 7)
+table(weird_sevens$language)
+```
+
+All weird answers are danish surveys:
+```{r}
+danish = fulldata_selected_wrangled %>%
+  filter(language == "danish")
+
+danish %>%
+  select(starts_with("interest_")) %>%
+  lapply(table)
+```
+
+For the danish survey answers range from 1 to 7 --> need to be changed!
+```{r}
+fulldata_selected_wrangled = fulldata_selected_wrangled %>%
+  mutate(interest_single = ifelse(language == "danish",
+                                  interest_single - 1,
+                                  interest_single),
+         interest_nonsexrel = ifelse(language == "danish",
+                                  interest_nonsexrel - 1,
+                                  interest_nonsexrel),
+         interest_nonmonrel = ifelse(language == "danish",
+                                  interest_nonmonrel - 1,
+                                  interest_nonmonrel),
+         interest_monrel = ifelse(language == "danish",
+                                  interest_monrel - 1,
+                                  interest_monrel),
+         interest_hookups = ifelse(language == "danish",
+                                  interest_hookups - 1,
+                                  interest_hookups),
+         interst_parent = ifelse(language == "danish",
+                                  interst_parent - 1,
+                                  interst_parent),
+         interest_altrel = ifelse(language == "danish",
+                                  interest_altrel - 1,
+                                  interest_altrel))
+```
+
+All relationship items should range from 0 to 6
+```{r}
+fulldata_selected_wrangled %>%
+  select(starts_with("interest_")) %>%
+  lapply(table)
+```
+
+### Partner Preferences
+All partner preference items should range from 0 to 6
+```{r Partner preferences}
+fulldata_selected_wrangled %>%
+  select(starts_with("pref_")) %>%
+  lapply(table)
+
+# percentage of missings for each variable 
+fulldata_selected_wrangled %>%
+  select(starts_with("pref_")) %>%
+  miss_frac()
+```
+
+### Self ratings
+All self rating items should range from 0 to 6
+```{r Self ratings}
+fulldata_selected_wrangled %>%
+  select(starts_with("self_")) %>%
+  lapply(table)
+
+# percentage of missings for each variable 
+fulldata_selected_wrangled %>%
+  select(starts_with("self_")) %>%
+  miss_frac()
+```
+
+### Answer Accuracy
+I took the survey seriously; please use my information in the study.; I did not answer seriously, please disregard my information; I choose not to answer
+```{r Answer Accuracy}
+table(fulldata_selected_wrangled$answer_accuracy)
+
+# Set missing values as NA
+fulldata_selected_wrangled = fulldata_selected_wrangled %>%
+  mutate(answer_accuracy = as.character(answer_accuracy),
+         answer_accuracy = ifelse(answer_accuracy == "", NA, answer_accuracy),
+         answer_accuracy = factor(answer_accuracy))
+
+table(fulldata_selected_wrangled$answer_accuracy)
+
+table(is.na(fulldata_selected_wrangled$answer_accuracy))
+
+fulldata_selected_wrangled %>%
+  select(sex, answer_accuracy) %>%
+  miss_frac()
+```
+@PROBLEM: We have 7051 missings here, that did answer the rest of the survey. We did not mention in the preregistration what to do with these cases.
+
+
+## Scales
+### Categories for relationship status
+```{r Categories for relationship status}
+fulldata_selected_wrangled$relationship_status= ifelse(grepl("Long-term", fulldata_selected_wrangled$relationship), "Long-term",
+                                                       ifelse(grepl("Ongoing", fulldata_selected_wrangled$relationship), "Long-term", 
+                                                              ifelse(grepl("Short-term", fulldata_selected_wrangled$relationship), "Short-term",
+                                                                     ifelse(grepl("New", fulldata_selected_wrangled$relationship), "Short-term",
+                                                                            ifelse(grepl("No romantic", fulldata_selected_wrangled$relationship), "No relationship",
+                                                                                   NA)))))
+
+fulldata_selected_wrangled$other = ifelse(grepl("Other", fulldata_selected_wrangled$relationship), "Other", "No")
+other = fulldata_selected_wrangled %>% filter(other == "Other")
+table(other$relationship_status)
+# looks like there is no case in which only "Other" was selected
+```
+
+### Creating dimensions for partner preference and self rating items
+#### Partner preferences
+```{r Creating dimensions for partner preference items}
+
+# Kind-supportive
+fulldata_selected_wrangled$pref_imp_ks = fulldata_selected_wrangled %>% 
+  select(pref_imp_kind, pref_imp_supportive) %>% 
+  rowMeans(na.rm = T)
+
+# Attractiveness
+fulldata_selected_wrangled$pref_imp_att = fulldata_selected_wrangled %>%
+  select(pref_imp_attractive_body, pref_imp_attractive_face) %>%
+  rowMeans(na.rm = T)
+  
+# Financially secure-successful
+fulldata_selected_wrangled$pref_imp_fs = fulldata_selected_wrangled %>%
+  select(pref_imp_financially_secure, pref_imp_successful_ambitous) %>% 
+  rowMeans(na.rm = T)
+
+# Confident-assertive
+fulldata_selected_wrangled$pref_imp_ca = fulldata_selected_wrangled %>%
+  select(pref_imp_confident, pref_imp_assertive) %>%
+  rowMeans(na.rm = T)
+
+# Educated-intelligent
+fulldata_selected_wrangled$pref_imp_ei = fulldata_selected_wrangled %>%
+  select(pref_imp_educated, pref_imp_intelligence) %>%
+  rowMeans(na.rm = T)
+```
+
+#### Self Ratings
+```{r Creating dimensions for self rating items}
+
+# Kind-supportive
+fulldata_selected_wrangled$self_ks = fulldata_selected_wrangled %>% 
+  select(self_kind, self_supportive) %>%
+  rowMeans(na.rm = T)
+
+# Attractiveness
+fulldata_selected_wrangled$self_att = fulldata_selected_wrangled %>%
+  select(self_attractive_body, self_attractive_face) %>%
+  rowMeans(na.rm = T)
+  
+# Financially secure-successful
+fulldata_selected_wrangled$self_fs = fulldata_selected_wrangled %>%
+  select(self_financially_secure, self_successful_ambitous) %>%
+  rowMeans(na.rm = T)
+
+# Confident-assertive
+fulldata_selected_wrangled$self_ca = fulldata_selected_wrangled %>%
+  select(self_confident, self_assertive) %>%
+  rowMeans(na.rm = T)
+
+# Educated-intelligent
+fulldata_selected_wrangled$self_ei = fulldata_selected_wrangled %>% 
+  select(self_educated, self_intelligence) %>%
+  rowMeans(na.rm = T)
+```
+
+
+## Exclusion criteria
+Following the order the criteria were listed in the preregistration
+1. Excluding participants not identifying as women
+```{r Exlcusion criterion 1}
+fulldata_selected_wrangled_main = fulldata_selected_wrangled %>%
+  filter(sex == "Woman")
+
+nrow(fulldata_selected_wrangled_main) # 64879 women 
+```
+
+2. Excluding participants not identifying as asexual or heterosexual
+```{r Excluison criterion 2}
+fulldata_selected_wrangled_main = fulldata_selected_wrangled_main %>% 
+  filter(sexual_orientation == "Straight/Heterosexual" | sexual_orientation == "Asexual")
+
+nrow(fulldata_selected_wrangled_main) # 53390 women 
+table(fulldata_selected_wrangled_main$sexual_orientation) # 457 asexuals and 52933 heterosexuals
+```
+
+3. Excluding participants choosing not to answer the honesty question or indicating not having filled out the survey truthfully
+```{r Exclusion criterion 3}
+fulldata_selected_wrangled_main = fulldata_selected_wrangled_main %>%
+  filter(answer_accuracy == "I took the survey seriously; please use my information in the study.")
+
+nrow(fulldata_selected_wrangled_main) # 46310 women 
+table(fulldata_selected_wrangled_main$sexual_orientation) # 398 asexuals and 45912 heterosexuals
+
+
+# or: also including NAs
+# fulldata_selected_wrangled_main = fulldata_selected_wrangled_main %>%
+#   filter(answer_accuracy == "I took the survey seriously; please use my information in the study." & answer_accuracy == "")
+```
+
+
+
+### data set for main analyses
+### data set for robustness check
+1. Excluding participants not identifying as women, man or genderqueer/nonbinary
+```{r}
+fulldata_selected_wrangled_robustness = fulldata_selected_wrangled %>%
+  filter(sex == "Woman" | sex == "Man" | sex == "Genderqueer/Nonbinary")
+
+nrow(fulldata_selected_wrangled_robustness) # 67774 participants 
+```
+
+2. Excluding participants not identifying as asexual or heterosexual
+```{r}
+fulldata_selected_wrangled_robustness = fulldata_selected_wrangled_robustness %>% 
+  filter(sexual_orientation == "Straight/Heterosexual" | sexual_orientation == "Asexual")
+
+nrow(fulldata_selected_wrangled_robustness) # 55076 participants
+table(fulldata_selected_wrangled_robustness$sexual_orientation) # 539 asexuals and 54537 heterosexuals
+```
+
+3. Excluding participants choosing not to answer the honesty question or indicating not having filled out the survey truthfully
+```{r}
+fulldata_selected_wrangled_robustness = fulldata_selected_wrangled_robustness %>%
+  filter(answer_accuracy == "I took the survey seriously; please use my information in the study.")
+
+nrow(fulldata_selected_wrangled_robustness) # 47825 women 
+table(fulldata_selected_wrangled_robustness$sexual_orientation) # 467 asexuals and 47358 heterosexuals
+
+
+# or: also including NAs
+# fulldata_selected_wrangled_robustness = fulldata_selected_wrangled_robustness %>%
+#   filter(answer_accuracy == "I took the survey seriously; please use my information in the study." & answer_accuracy == "")
+```
+
+
+
+## Save Data
+### for main analyses
+```{r Save data main analyses}
+# write.csv(fulldata_selected_wrangled_main,
+#          file = "data_wrangled.csv")
+```
+
+### for robustness check
+```{r Save data robustness check}
+# write.csv(fulldata_selected_wrangled_robustness,
+#          file = "data_wrangled_robustness.csv")
+```
+  
