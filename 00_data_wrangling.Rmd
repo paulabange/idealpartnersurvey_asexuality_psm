@@ -15,8 +15,8 @@ library(formr)
 library(dplyr)
 ```
 
-## data
-```{r}
+## Load data
+```{r Load data}
 # load data
 fulldata_selected = read.csv(file = "data/fulldata_selected.csv")[,-1]
 ```
@@ -323,12 +323,13 @@ fulldata_selected_wrangled$relationship_status= ifelse(grepl("Long-term", fullda
 fulldata_selected_wrangled$other = ifelse(grepl("Other", fulldata_selected_wrangled$relationship), "Other", "No")
 other = fulldata_selected_wrangled %>% filter(other == "Other")
 table(other$relationship_status)
+sum(is.na(other$relationship_status))
 # looks like there is no case in which only "Other" was selected
 ```
 
 ### Creating dimensions for partner preference and self rating items
 #### Partner preferences
-```{r Creating dimensions for partner preference items}
+```{r Partner preference dimensions}
 
 # Kind-supportive
 fulldata_selected_wrangled$pref_imp_ks = fulldata_selected_wrangled %>% 
@@ -357,7 +358,7 @@ fulldata_selected_wrangled$pref_imp_ei = fulldata_selected_wrangled %>%
 ```
 
 #### Self Ratings
-```{r Creating dimensions for self rating items}
+```{r Self rating dimensions}
 
 # Kind-supportive
 fulldata_selected_wrangled$self_ks = fulldata_selected_wrangled %>% 
@@ -386,86 +387,8 @@ fulldata_selected_wrangled$self_ei = fulldata_selected_wrangled %>%
 ```
 
 
-## Exclusion criteria
-Following the order the criteria were listed in the preregistration
-1. Excluding participants not identifying as women
-```{r Exlcusion criterion 1}
-fulldata_selected_wrangled_main = fulldata_selected_wrangled %>%
-  filter(sex == "Woman")
-
-nrow(fulldata_selected_wrangled_main) # 64879 women 
+## Save wrangled data
+```{r Save data}
+# write.csv(fulldata_selected_wrangled,
+#           file = "data_wrangled.csv")
 ```
-
-2. Excluding participants not identifying as asexual or heterosexual
-```{r Excluison criterion 2}
-fulldata_selected_wrangled_main = fulldata_selected_wrangled_main %>% 
-  filter(sexual_orientation == "Straight/Heterosexual" | sexual_orientation == "Asexual")
-
-nrow(fulldata_selected_wrangled_main) # 53390 women 
-table(fulldata_selected_wrangled_main$sexual_orientation) # 457 asexuals and 52933 heterosexuals
-```
-
-3. Excluding participants choosing not to answer the honesty question or indicating not having filled out the survey truthfully
-```{r Exclusion criterion 3}
-fulldata_selected_wrangled_main = fulldata_selected_wrangled_main %>%
-  filter(answer_accuracy == "I took the survey seriously; please use my information in the study.")
-
-nrow(fulldata_selected_wrangled_main) # 46310 women 
-table(fulldata_selected_wrangled_main$sexual_orientation) # 398 asexuals and 45912 heterosexuals
-
-
-# or: also including NAs
-# fulldata_selected_wrangled_main = fulldata_selected_wrangled_main %>%
-#   filter(answer_accuracy == "I took the survey seriously; please use my information in the study." & answer_accuracy == "")
-```
-
-
-
-### data set for main analyses
-### data set for robustness check
-1. Excluding participants not identifying as women, man or genderqueer/nonbinary
-```{r}
-fulldata_selected_wrangled_robustness = fulldata_selected_wrangled %>%
-  filter(sex == "Woman" | sex == "Man" | sex == "Genderqueer/Nonbinary")
-
-nrow(fulldata_selected_wrangled_robustness) # 67774 participants 
-```
-
-2. Excluding participants not identifying as asexual or heterosexual
-```{r}
-fulldata_selected_wrangled_robustness = fulldata_selected_wrangled_robustness %>% 
-  filter(sexual_orientation == "Straight/Heterosexual" | sexual_orientation == "Asexual")
-
-nrow(fulldata_selected_wrangled_robustness) # 55076 participants
-table(fulldata_selected_wrangled_robustness$sexual_orientation) # 539 asexuals and 54537 heterosexuals
-```
-
-3. Excluding participants choosing not to answer the honesty question or indicating not having filled out the survey truthfully
-```{r}
-fulldata_selected_wrangled_robustness = fulldata_selected_wrangled_robustness %>%
-  filter(answer_accuracy == "I took the survey seriously; please use my information in the study.")
-
-nrow(fulldata_selected_wrangled_robustness) # 47825 women 
-table(fulldata_selected_wrangled_robustness$sexual_orientation) # 467 asexuals and 47358 heterosexuals
-
-
-# or: also including NAs
-# fulldata_selected_wrangled_robustness = fulldata_selected_wrangled_robustness %>%
-#   filter(answer_accuracy == "I took the survey seriously; please use my information in the study." & answer_accuracy == "")
-```
-
-
-
-## Save Data
-### for main analyses
-```{r Save data main analyses}
-# write.csv(fulldata_selected_wrangled_main,
-#          file = "data_wrangled.csv")
-```
-
-### for robustness check
-```{r Save data robustness check}
-# write.csv(fulldata_selected_wrangled_robustness,
-#          file = "data_wrangled_robustness.csv")
-```
-  

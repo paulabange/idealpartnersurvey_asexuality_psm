@@ -1,0 +1,102 @@
+---
+title: "01_exclusion"
+output: html_document
+date: '2022-04-01'
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Library
+```{r Library}
+library(formr)
+library(dplyr)
+```
+
+## Load data
+```{r Load data}
+data_wrangled = read.csv(file = "data/data_wrangled.csv")[,-1]
+```
+
+## Exclusion criteria
+### For main analyses
+Following the order the criteria were listed in the preregistration
+1. Excluding participants not identifying as women
+```{r Exlcusion criterion 1}
+data_wrangled_main = fulldata_selected_wrangled %>%
+  filter(sex == "Woman")
+
+nrow(data_wrangled_main) # 64879 women 
+```
+
+2. Excluding participants not identifying as asexual or heterosexual
+```{r Excluison criterion 2}
+data_wrangled_main = data_wrangled_main %>% 
+  filter(sexual_orientation == "Straight/Heterosexual" | sexual_orientation == "Asexual")
+
+nrow(data_wrangled_main) # 53390 women 
+table(data_wrangled_main$sexual_orientation) # 457 asexuals and 52933 heterosexuals
+```
+
+3. Excluding participants choosing not to answer the honesty question or indicating not having filled out the survey truthfully
+```{r Exclusion criterion 3}
+data_wrangled_main = data_wrangled_main %>%
+  filter(answer_accuracy == "I took the survey seriously; please use my information in the study.")
+
+nrow(data_wrangled_main) # 46310 women 
+table(data_wrangled_main$sexual_orientation) # 398 asexuals and 45912 heterosexuals
+
+
+# or: also including NAs
+# data_wrangled_main = data_wrangled_main %>%
+#   filter(answer_accuracy == "I took the survey seriously; please use my information in the study." & answer_accuracy == "")
+```
+
+### For robustness check
+1. Excluding participants not identifying as women, man or genderqueer/nonbinary
+```{r Criterion 1 robustness}
+data_wrangled_robustness = data_wrangled %>%
+  filter(sex == "Woman" | sex == "Man" | sex == "Genderqueer/Nonbinary")
+
+nrow(data_wrangled_robustness) # 67774 participants 
+```
+
+2. Excluding participants not identifying as asexual or heterosexual
+```{r Criterion 2 robustness}
+data_wrangled_robustness = data_wrangled_robustness %>% 
+  filter(sexual_orientation == "Straight/Heterosexual" | sexual_orientation == "Asexual")
+
+nrow(data_wrangled_robustness) # 55076 participants
+table(data_wrangled_robustness$sexual_orientation) # 539 asexuals and 54537 heterosexuals
+```
+
+3. Excluding participants choosing not to answer the honesty question or indicating not having filled out the survey truthfully
+```{r Criterion 3 robustness}
+data_wrangled_robustness = data_wrangled_robustness %>%
+  filter(answer_accuracy == "I took the survey seriously; please use my information in the study.")
+
+nrow(data_wrangled_robustness) # 47825 women 
+table(data_wrangled_robustness$sexual_orientation) # 467 asexuals and 47358 heterosexuals
+
+
+# or: also including NAs
+# data_wrangled_robustness = data_wrangled_robustness %>%
+#   filter(answer_accuracy == "I took the survey seriously; please use my information in the study." & answer_accuracy == "")
+```
+
+## Save data
+### For main analyses
+```{r Save data main analyses}
+# write.csv(data_wrangled_main,
+#          file = "data_main.csv")
+```
+
+### For robustness check
+```{r Save data robustness check}
+# write.csv(data_wrangled_robustness,
+#          file = "data_robustness.csv")
+```
+  
