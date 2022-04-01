@@ -320,10 +320,10 @@ fulldata_selected_wrangled$relationship_status= ifelse(grepl("Long-term", fullda
                                                                             ifelse(grepl("No romantic", fulldata_selected_wrangled$relationship), "No relationship",
                                                                                    NA)))))
 
-fulldata_selected_wrangled$other = ifelse(grepl("Other", fulldata_selected_wrangled$relationship), "Other", "No")
-other = fulldata_selected_wrangled %>% filter(other == "Other")
-table(other$relationship_status)
-sum(is.na(other$relationship_status))
+# fulldata_selected_wrangled$other = ifelse(grepl("Other", fulldata_selected_wrangled$relationship), "Other", "No")
+# other = fulldata_selected_wrangled %>% filter(other == "Other")
+# table(other$relationship_status)
+# sum(is.na(other$relationship_status))
 # looks like there is no case in which only "Other" was selected
 ```
 
