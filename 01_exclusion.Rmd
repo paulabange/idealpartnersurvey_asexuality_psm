@@ -87,6 +87,15 @@ table(data_wrangled_robustness$sexual_orientation) # 467 asexuals and 47358 hete
 #   filter(answer_accuracy == "I took the survey seriously; please use my information in the study." & answer_accuracy == "")
 ```
 
+## Total number of excluded participants
+```{r}
+# for main analyses
+nrow(data_wrangled) - nrow(data_wrangled_main) # 48428
+
+# for robustness check
+nrow(data_wrangled) - nrow(data_wrangled_robustness) # 46913
+```
+
 ## Save data
 ### For main analyses
 ```{r Save data main analyses}
