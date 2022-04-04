@@ -262,6 +262,11 @@ fulldata_selected_wrangled %>%
   lapply(table)
 ```
 
+Variable interest in being a parent should be named "interest_parent"
+```{r}
+fulldata_selected_wrangled = fulldata_selected_wrangled %>% rename(interest_parent = interst_parent)
+```
+
 ### Partner Preferences
 All partner preference items should range from 0 to 6
 ```{r Partner preferences}
@@ -357,7 +362,7 @@ fulldata_selected_wrangled$pref_imp_ei = fulldata_selected_wrangled %>%
   rowMeans(na.rm = T)
 ```
 
-#### Self Ratings
+#### Self ratings
 ```{r Self rating dimensions}
 
 # Kind-supportive
