@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(dplyr)
 library(formr)
+library(ggplot2)
 ```
 
 ## Load data
@@ -21,37 +22,11 @@ library(formr)
 data_main = read.csv(file = "data/data_main.csv")[,-1]
 ```
 
-## Descriptives
-```{r}
-# get means for variables in data frame 
-# excluding missing values
-sapply(data_main, mean, na.rm=TRUE)
-
-
-library(psych)
-describe(data_main) # über alle hinweg
-describeBy(data_main, data_main$sexual_orientation) # für sexuelle Orientierung aufgeteilt
-
-
-hist(data_main$interest_nonmonrel)
-asexual = data_main %>% filter(sexual_orientation == "Asexual")
-hetero =  data_main %>% filter(sexual_orientation == "Straight/Heterosexual")
-hist(asexual$interest_nonmonrel)
-hist(hetero$interest_nonmonrel)
-
-hist(asexual$interest_single)
-hist(hetero$interest_single)
-
-
-hist(asexual$interest_altrel)
-hist(hetero$interest_altrel)
-```
-
 ### Demographic data
 #### Sexual orientation
 ```{r}
 table(data_main$sexual_orientation) # sexual orientation in absolute numbers
-round(table(data_main$sexual_orientation)/sum(table(data_main$sexual_orientation)),2)*100 # sexual orientation in percent
+round(table(data_main$sexual_orientation)/sum(table(data_main$sexual_orientation)),4)*100 # sexual orientation in percent
 ```
 
 #### Country
@@ -69,13 +44,154 @@ round(table(data_main$country)/sum(table(data_main$country)),4)*100 # country in
 table(is.na(data_main$language)) #no NAs
 ```
 
-
-
-
-### scale values, internal consistencies, and descriptives for scales
+#### Age
 ```{r}
-#xxx
+table(data_main$age)
+range(data_main$age, na.rm = T) # range
+table(is.na(data_main$age)) # NAs
+# histogram 
+hist(data_main$age)
+
+# mean, sd
+mean(data_main$age, na.rm = T)
+sd(data_main$age, na.rm = T)
 ```
+
+### Sex 
+Gender
+Categories: Woman; Genderqueer/Nonbinary; Man; None of the above; Prefer not to say; Other
+```{r Sex}
+table(data_main$sex) # in absolute numbers
+round(table(data_main$sex)/sum(table(data_main$sex)),4)*100 # in percent
+table(is.na(data_main$sex))
+```
+
+### Transgender
+```{r Transgender}
+table(data_main$transgender) # in absolute numbers
+round(table(data_main$transgender)/sum(table(data_main$transgender)),4)*100 # in percent
+table(is.na(data_main$transgender))
+```
+
+#### Relationship status
+```{r}
+table(data_main$relationship_status) # in absolute numbers
+round(table(data_main$relationship_status)/sum(table(data_main$relationship_status)),4)*100 # in percent
+table(is.na(data_main$relationship_status)) # NAs
+```
+
+#### Relationship length 
+```{r}
+table(data_main$relationship_length)
+range(data_main$relationship_length, na.rm = T) # range
+table(is.na(data_main$relationship_length)) # NAs
+# histogram
+hist(data_main$relationship_length)
+
+# mean, sd
+mean(data_main$relationship_length, na.rm = T)
+sd(data_main$relationship_length, na.rm = T)
+```
+
+
+### Marital Status
+```{r}
+table(data_main$marital_status) # in absolute numbers
+round(table(data_main$marital_status)/sum(table(data_main$marital_status)),4)*100 # in percent
+table(is.na(data_main$marital_status)) # NAs
+```
+
+### Political Spectrum
+```{r}
+table(data_main$political_spectrum) # in absolute numbers
+round(table(data_main$political_spectrum)/sum(table(data_main$political_spectrum)),4)*100 # in percent
+table(is.na(data_main$political_spectrum)) # NAs
+```
+
+
+### Outcomes
+#### Relationship options
+```{r}
+data_main %>%
+  select(interest_hookups,
+         interest_nonsexrel,
+         interest_monrel,
+         interest_monrel,
+         interest_altrel,
+         interest_single,
+         interest_parent) %>% 
+  colMeans(na.rm = T) 
+
+
+round(apply(data_main %>% select(interest_hookups,
+                                 interest_nonsexrel,
+                                 interest_monrel,
+                                 interest_monrel,
+                                 interest_altrel,
+                                 interest_parent),2, sd, na.rm = T),2)
+
+table(is.na(data_main$interest_hookups))
+table(is.na(data_main$interest_nonsexrel))
+table(is.na(data_main$interest_monrel))
+table(is.na(data_main$interest_nonmonrel))
+table(is.na(data_main$interest_altrel))
+table(is.na(data_main$interest_single))
+table(is.na(data_main$interest_parent))
+```
+
+#### Partner preferences
+```{r}
+data_main %>% select(pref_imp_ks,
+                     pref_imp_att,
+                     pref_imp_fs,
+                     pref_imp_ca,
+                     pref_imp_ei) %>% 
+              colMeans(na.rm = T) 
+
+
+round(apply(data_main %>% select(pref_imp_ks,
+                                 pref_imp_att,
+                                 pref_imp_fs,
+                                 pref_imp_ca,
+                                 pref_imp_ei),2, sd, na.rm = T),2)
+
+table(is.na(data_main$pref_imp_ks))
+table(is.na(data_main$pref_imp_att))
+table(is.na(data_main$pref_imp_fs))
+table(is.na(data_main$pref_imp_ca))
+table(is.na(data_main$pref_imp_ei))
+```
+
+#### Self ratings
+```{r}
+data_main %>% select(self_ks,
+                     self_att,
+                     self_fs,
+                     self_ca,
+                     self_ei) %>% 
+              colMeans(na.rm = T) 
+
+
+round(apply(data_main %>% select(self_ks,
+                                 self_att,
+                                 self_fs,
+                                 self_ca,
+                                 self_ei),2, sd, na.rm = T),2)
+
+
+table(is.na(data_main$self_ks))
+table(is.na(data_main$self_att))
+table(is.na(data_main$self_fs))
+table(is.na(data_main$self_ca))
+table(is.na(data_main$self_ei))
+```
+
+
+### Descriptives by sexual orientation
+```{r}
+describe.by(data_main, data_main$sexual_orientation)
+```
+
 
 ### zero-order correlations
 ```{r}
@@ -96,4 +212,30 @@ table(is.na(data_main$language)) #no NAs
 
 
 ```
+
+
+
+### Zero-Order Correlations
+```{r}
+library(apaTables)
+
+correlations = data_main %>%
+  select(sexual_orientation,
+         age,
+         interest_hookups,
+         interest_nonsexrel,
+         interest_monrel,
+         interest_monrel,
+         interest_altrel,
+         interest_single,
+         interest_parent)
+
+correlations_table = apa.cor.table(correlations, filename = "Table.doc", table.number = 4)
+
+correlations_table
+
+```
+
+
+
 
