@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r Library}
 library(formr)
 library(dplyr)
+library(tidyr)
 ```
 
 ## Load data
@@ -26,7 +27,7 @@ data_wrangled = read.csv(file = "data/data_wrangled.csv")[,-1]
 Following the order the criteria were listed in the preregistration
 1. Excluding participants not identifying as women
 ```{r Exlcusion criterion 1}
-data_wrangled_main = fulldata_selected_wrangled %>%
+data_wrangled_main = data_wrangled %>%
   filter(sex == "Woman")
 
 nrow(data_wrangled_main) # 64879 women 
@@ -43,16 +44,16 @@ table(data_wrangled_main$sexual_orientation) # 457 asexuals and 52933 heterosexu
 
 3. Excluding participants choosing not to answer the honesty question or indicating not having filled out the survey truthfully
 ```{r Exclusion criterion 3}
+data_wrangled_main = data_wrangled_main %>% 
+ mutate(answer_accuracy = replace_na(answer_accuracy, "No value"))
 data_wrangled_main = data_wrangled_main %>%
-  filter(answer_accuracy == "I took the survey seriously; please use my information in the study.")
+  filter(answer_accuracy == "I took the survey seriously; please use my information in the study." | answer_accuracy == "No value")
 
-nrow(data_wrangled_main) # 46310 women 
-table(data_wrangled_main$sexual_orientation) # 398 asexuals and 45912 heterosexuals
+nrow(data_wrangled_main) # 51775 women 
+table(data_wrangled_main$sexual_orientation) # 447 asexuals and 51328 heterosexuals
 
-
-# or: also including NAs
-# data_wrangled_main = data_wrangled_main %>%
-#   filter(answer_accuracy == "I took the survey seriously; please use my information in the study." & answer_accuracy == "")
+table(is.na(data_wrangled_main$answer_accuracy))
+table(data_wrangled_main$answer_accuracy)
 ```
 
 ### For robustness check
@@ -75,25 +76,23 @@ table(data_wrangled_robustness$sexual_orientation) # 539 asexuals and 54537 hete
 
 3. Excluding participants choosing not to answer the honesty question or indicating not having filled out the survey truthfully
 ```{r Criterion 3 robustness}
+data_wrangled_robustness = data_wrangled_robustness %>% 
+ mutate(answer_accuracy = replace_na(answer_accuracy, "No value"))
 data_wrangled_robustness = data_wrangled_robustness %>%
-  filter(answer_accuracy == "I took the survey seriously; please use my information in the study.")
+  filter(answer_accuracy == "I took the survey seriously; please use my information in the study." | answer_accuracy == "No value")
 
-nrow(data_wrangled_robustness) # 47825 women 
-table(data_wrangled_robustness$sexual_orientation) # 467 asexuals and 47358 heterosexuals
+nrow(data_wrangled_robustness) # 53412 women 
+table(data_wrangled_robustness$sexual_orientation) # 527 asexuals and 46913 heterosexuals
 
-
-# or: also including NAs
-# data_wrangled_robustness = data_wrangled_robustness %>%
-#   filter(answer_accuracy == "I took the survey seriously; please use my information in the study." & answer_accuracy == "")
 ```
 
 ## Total number of excluded participants
 ```{r}
 # for main analyses
-nrow(data_wrangled) - nrow(data_wrangled_main) # 48428
+nrow(data_wrangled) - nrow(data_wrangled_main)
 
 # for robustness check
-nrow(data_wrangled) - nrow(data_wrangled_robustness) # 46913
+nrow(data_wrangled) - nrow(data_wrangled_robustness)
 ```
 
 ## Save data

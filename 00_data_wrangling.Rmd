@@ -19,11 +19,13 @@ library(dplyr)
 ```{r Load data}
 # load data
 fulldata_selected = read.csv(file = "data/fulldata_selected.csv")[,-1]
+names(fulldata_selected)
 ```
 
 ## Inspect Data
 ```{r Inspect Data}
 colnames(fulldata_selected)
+fulldata_selected %>% colnames() 
 
 fulldata_selected_wrangled = fulldata_selected
 ```
