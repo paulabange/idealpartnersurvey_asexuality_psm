@@ -42,21 +42,21 @@ codebook_data = read.csv(file = "data/data_main.csv")[,-1]
 codebook_data_robustness = read.csv(file = "data/data_robustness.csv")[,-1]
 
 # omit the following lines, if your missing values are already properly labelled
-codebook_data <- detect_missing(codebook_data,
-    only_labelled = TRUE, # only labelled values are autodetected as
-                                   # missing
-    negative_values_are_missing = FALSE, # negative values are missing values
-    ninety_nine_problems = TRUE,   # 99/999 are missing values, if they
-                                   # are more than 5 MAD from the median
-    )
-
-codebook_data_robustness <- detect_missing(codebook_data,
-    only_labelled = TRUE, # only labelled values are autodetected as
-                                   # missing
-    negative_values_are_missing = FALSE, # negative values are missing values
-    ninety_nine_problems = TRUE,   # 99/999 are missing values, if they
-                                   # are more than 5 MAD from the median
-    )
+# codebook_data <- detect_missing(codebook_data,
+#     only_labelled = TRUE, # only labelled values are autodetected as
+#                                    # missing
+#     negative_values_are_missing = FALSE, # negative values are missing values
+#     ninety_nine_problems = TRUE,   # 99/999 are missing values, if they
+#                                    # are more than 5 MAD from the median
+#     )
+# 
+# codebook_data_robustness <- detect_missing(codebook_data,
+#     only_labelled = TRUE, # only labelled values are autodetected as
+#                                    # missing
+#     negative_values_are_missing = FALSE, # negative values are missing values
+#     ninety_nine_problems = TRUE,   # 99/999 are missing values, if they
+#                                    # are more than 5 MAD from the median
+#     )
 # If you are not using formr, the codebook package needs to guess which items
 # form a scale. The following line finds item aggregates with names like this:
 # scale = scale_1 + scale_2R + scale_3R
@@ -100,11 +100,13 @@ codebook_outcomes = codebook_data %>% select(interest_hookups,
                                              pref_imp_fs,
                                              pref_imp_ca,
                                              pref_imp_ei,
+                                             pref_imp_sexually_experienced,
                                              self_ks,
                                              self_att,
                                              self_fs,
                                              self_ca,
-                                             self_ei)
+                                             self_ei,
+                                             self_sexually_experienced)
                                         
 
 codebook(codebook_outcomes)
@@ -115,13 +117,33 @@ codebook(codebook_outcomes)
 #### Asexuals
 ```{r}
 codebook_asexuals = codebook_data %>% filter(sexual_orientation == "Asexual") %>% 
-                                      select(sexual_orientation, country, language, age, sex, 
-                                             transgender, relationship_length, relationship_status, interest_hookups,
-                                             interest_nonsexrel, interest_monrel, interest_monrel, interest_altrel,
-                                             interest_single, interest_parent, 
-                                             pref_imp_ks, pref_imp_att,pref_imp_fs,
-                                             pref_imp_ca, pref_imp_ei,
-                                             self_ks, self_att, self_fs, self_ca, self_ei)
+                                      select(sexual_orientation,
+                                             country, 
+                                             language, 
+                                             age, 
+                                             sex, 
+                                             transgender,
+                                             relationship_length, 
+                                             relationship_status,
+                                             interest_hookups,
+                                             interest_nonsexrel,
+                                             interest_monrel,
+                                             interest_monrel,
+                                             interest_altrel,
+                                             interest_single,
+                                             interest_parent, 
+                                             pref_imp_ks,
+                                             pref_imp_att,
+                                             pref_imp_fs,
+                                             pref_imp_ca,
+                                             pref_imp_ei,
+                                             pref_imp_sexually_experienced,
+                                             self_ks,
+                                             self_att, 
+                                             self_fs, 
+                                             self_ca,
+                                             self_ei,
+                                             self_sexually_experienced)
 
 codebook(codebook_asexuals)                               
 ```
@@ -129,125 +151,33 @@ codebook(codebook_asexuals)
 #### Heterosexuals
 ```{r}
 codebook_heterosexuals = codebook_data %>% filter(sexual_orientation == "Straight/Heterosexual") %>% 
-                                           select(sexual_orientation, country, language, age, sex, 
-                                                  transgender, relationship_length, relationship_status, interest_hookups,
-                                                 interest_nonsexrel, interest_monrel, interest_monrel, interest_altrel,
-                                                 interest_single, interest_parent, 
-                                                 pref_imp_ks, pref_imp_att,pref_imp_fs,
-                                                 pref_imp_ca, pref_imp_ei,
-                                                 self_ks, self_att, self_fs, self_ca, self_ei)
+                                           select(sexual_orientation, 
+                                                  country, language, 
+                                                  age, 
+                                                  sex, 
+                                                  transgender,
+                                                  relationship_length,
+                                                  relationship_status, 
+                                                  interest_hookups,
+                                                  interest_nonsexrel, 
+                                                  interest_monrel,
+                                                  interest_monrel,
+                                                  interest_altrel,
+                                                  interest_single, 
+                                                  interest_parent, 
+                                                  pref_imp_ks, 
+                                                  pref_imp_att,
+                                                  pref_imp_fs,
+                                                  pref_imp_ca,
+                                                  pref_imp_ei,
+                                                  pref_imp_sexually_experienced,
+                                                  self_ks,
+                                                  self_att, 
+                                                  self_fs, 
+                                                  self_ca,
+                                                  self_ei,
+                                                  self_sexually_experienced)
 
 codebook(codebook_heterosexuals)  
-```
-
-
-
-## Create codebook for robustness data set
-### Codebook for demographics
-```{r}
-codebook_demographics_robustness = codebook_data_robustness %>% select(sexual_orientation, country, language, age, sex, 
-                                                 transgender, relationship_length, relationship_status)
-                                        
-
-codebook(codebook_demographics_robustness)
-```
-
-
-### Codebook for outcomes
-```{r}
-codebook_outcomes_robustness = codebook_data_robustness %>% select(interest_hookups,
-                                                                   interest_nonsexrel,
-                                                                   interest_monrel,
-                                                                   interest_monrel,
-                                                                   interest_altrel,
-                                                                   interest_single,
-                                                                   interest_parent,
-                                                                   pref_imp_ks,
-                                                                   pref_imp_att,
-                                                                   pref_imp_fs,
-                                                                   pref_imp_ca,
-                                                                   pref_imp_ei,
-                                                                   self_ks,
-                                                                   self_att,
-                                                                   self_fs,
-                                                                   self_ca,
-                                                                   self_ei)
-                                        
-
-codebook(codebook_outcomes_robustness)
-```
-
-
-### Codebook by sexual orientation for robustness data set
-#### Asexuals
-```{r}
-codebook_asexuals_robustness = codebook_data_robustness %>% filter(sexual_orientation == "Asexual") %>%
-                                                            select(sexual_orientation, country, language, age, sex,
-                                                            transgender, relationship_length, relationship_status, interest_hookups,
-                                                            interest_nonsexrel, interest_monrel, interest_monrel, interest_altrel,
-                                                            interest_single, interest_parent,
-                                                            pref_imp_ks, pref_imp_att,pref_imp_fs,
-                                                            pref_imp_ca, pref_imp_ei,
-                                                            self_ks, self_att, self_fs, self_ca, self_ei)
-
-codebook(codebook_asexuals_robustness)
-```
-
-#### Heterosexuals
-```{r}
-codebook_heterosexuals_robustness = codebook_data_robustness %>% filter(sexual_orientation == "Straight/Heterosexual") %>%
-                                                                 select(sexual_orientation, country, language, age, sex,
-                                                                 transgender, relationship_length, relationship_status, interest_hookups,
-                                                                 interest_nonsexrel, interest_monrel, interest_monrel, interest_altrel,
-                                                                 interest_single, interest_parent,
-                                                                 pref_imp_ks, pref_imp_att,pref_imp_fs,
-                                                                 pref_imp_ca, pref_imp_ei,
-                                                                 self_ks, self_att, self_fs, self_ca, self_ei)
-
-codebook(codebook_heterosexuals_robustness)
-```
-
-
-### Codebook by gender
-#### Women
-```{r}
-codebook_women = codebook_data_robustness %>% filter(sex == "Women") %>% 
-                                           select(sexual_orientation, country, language, age, sex, 
-                                                  transgender, relationship_length, relationship_status, interest_hookups,
-                                                 interest_nonsexrel, interest_monrel, interest_monrel, interest_altrel,
-                                                 interest_single, interest_parent, 
-                                                 pref_imp_ks, pref_imp_att,pref_imp_fs,
-                                                 pref_imp_ca, pref_imp_ei,
-                                                 self_ks, self_att, self_fs, self_ca, self_ei)
-
-codebook(codebook_men)  
-```
-
-#### Men 
-```{r}
-codebook_men = codebook_data_robustness %>% filter(sex == "Men") %>% 
-                                           select(sexual_orientation, country, language, age, sex, 
-                                                  transgender, relationship_length, relationship_status, interest_hookups,
-                                                 interest_nonsexrel, interest_monrel, interest_monrel, interest_altrel,
-                                                 interest_single, interest_parent, 
-                                                 pref_imp_ks, pref_imp_att,pref_imp_fs,
-                                                 pref_imp_ca, pref_imp_ei,
-                                                 self_ks, self_att, self_fs, self_ca, self_ei)
-
-codebook(codebook_men)  
-```
-
-#### Genderqueer/Nonbinary
-```{r}
-codebook_genderqueer = codebook_data_robustness %>% filter(sex == "Men") %>% 
-                                           select(sexual_orientation, country, language, age, sex, 
-                                                  transgender, relationship_length, relationship_status, interest_hookups,
-                                                 interest_nonsexrel, interest_monrel, interest_monrel, interest_altrel,
-                                                 interest_single, interest_parent, 
-                                                 pref_imp_ks, pref_imp_att,pref_imp_fs,
-                                                 pref_imp_ca, pref_imp_ei,
-                                                 self_ks, self_att, self_fs, self_ca, self_ei)
-
-codebook(codebook_genderqueer)  
 ```
 

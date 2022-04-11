@@ -152,7 +152,8 @@ data_main %>% select(pref_imp_ks,
                      pref_imp_att,
                      pref_imp_fs,
                      pref_imp_ca,
-                     pref_imp_ei) %>% 
+                     pref_imp_ei,
+                     pref_imp_sexually_experienced) %>% 
               colMeans(na.rm = T) 
 
 # standard deviations
@@ -160,7 +161,8 @@ round(apply(data_main %>% select(pref_imp_ks,
                                  pref_imp_att,
                                  pref_imp_fs,
                                  pref_imp_ca,
-                                 pref_imp_ei),2, sd, na.rm = T),2)
+                                 pref_imp_ei,
+                                 pref_imp_sexually_experienced),2, sd, na.rm = T),2)
 
 # check for NAs
 table(is.na(data_main$pref_imp_ks))
@@ -168,6 +170,7 @@ table(is.na(data_main$pref_imp_att))
 table(is.na(data_main$pref_imp_fs))
 table(is.na(data_main$pref_imp_ca))
 table(is.na(data_main$pref_imp_ei))
+table(is.na(data_main$pref_imp_sexually_experienced))
 ```
 
 #### Self ratings
@@ -177,7 +180,8 @@ data_main %>% select(self_ks,
                      self_att,
                      self_fs,
                      self_ca,
-                     self_ei) %>% 
+                     self_ei,
+                     self_sexually_experienced) %>% 
               colMeans(na.rm = T) 
 
 
@@ -186,7 +190,8 @@ round(apply(data_main %>% select(self_ks,
                                  self_att,
                                  self_fs,
                                  self_ca,
-                                 self_ei),2, sd, na.rm = T),2)
+                                 self_ei,
+                                 self_sexually_experienced),2, sd, na.rm = T),2)
 
 
 # check for NAS
@@ -195,6 +200,7 @@ table(is.na(data_main$self_att))
 table(is.na(data_main$self_fs))
 table(is.na(data_main$self_ca))
 table(is.na(data_main$self_ei))
+table(is.na(data_main$self_sexually_experienced))
 ```
 
 
@@ -454,7 +460,8 @@ data_main %>% group_by(sexual_orientation) %>%
                  "pref_imp_att",
                  "pref_imp_fs",
                  "pref_imp_ca",
-                 "pref_imp_ei"), mean, na.rm = T)
+                 "pref_imp_ei",
+                 "pref_imp_sexually_experienced"), mean, na.rm = T)
 
 
 # standard deviation
@@ -463,21 +470,25 @@ data_main %>% group_by(sexual_orientation) %>%
                  "pref_imp_att",
                  "pref_imp_fs",
                  "pref_imp_ca",
-                 "pref_imp_ei"), sd, na.rm = T)
+                 "pref_imp_ei",
+                 "pref_imp_sexually_experienced"), sd, na.rm = T)
 # min
 data_main %>% group_by(sexual_orientation) %>% 
   summarise_at(c("pref_imp_ks",
                  "pref_imp_att",
                  "pref_imp_fs",
                  "pref_imp_ca",
-                 "pref_imp_ei"), min, na.rm = T)
+                 "pref_imp_ei",
+                 "pref_imp_sexually_experienced"), min, na.rm = T)
 # max
 data_main %>% group_by(sexual_orientation) %>% 
   summarise_at(c("pref_imp_ks",
                  "pref_imp_att",
                  "pref_imp_fs",
                  "pref_imp_ca",
-                 "pref_imp_ei"), max, na.rm = T)
+                 "pref_imp_ei",
+                 "pref_imp_sexually_experienced"), max, na.rm = T)
+
 
 # check NAs
 data_main %>% 
@@ -500,6 +511,10 @@ data_main %>%
   group_by(sexual_orientation) %>% 
   summarise(sum(is.na(pref_imp_ei)))
 
+data_main %>% 
+  group_by(sexual_orientation) %>% 
+  summarise(sum(is.na(pref_imp_sexually_experienced)))
+
 
 
 
@@ -509,7 +524,8 @@ data_main %>% group_by(sexual_orientation) %>%
                  "pref_imp_att",
                  "pref_imp_fs",
                  "pref_imp_ca",
-                 "pref_imp_ei"), sum, na.rm = T)
+                 "pref_imp_ei",
+                 "pref_imp_sexually_experienced"), sum, na.rm = T)
 
 ```
 
@@ -521,7 +537,8 @@ data_main %>% group_by(sexual_orientation) %>%
                  "self_att",
                  "self_fs",
                  "self_ca",
-                 "self_ei"), mean, na.rm = T)
+                 "self_ei",
+                 "self_sexually_experienced"), mean, na.rm = T)
 
 
 # standard deviation
@@ -530,21 +547,24 @@ data_main %>% group_by(sexual_orientation) %>%
                  "self_att",
                  "self_fs",
                  "self_ca",
-                 "self_ei"), sd, na.rm = T)
+                 "self_ei",
+                 "self_sexually_experienced"), sd, na.rm = T)
 # min
 data_main %>% group_by(sexual_orientation) %>% 
   summarise_at(c("self_ks",
                  "self_att",
                  "self_fs",
                  "self_ca",
-                 "self_ei"), min, na.rm = T)
+                 "self_ei",
+                 "self_sexually_experienced"), min, na.rm = T)
 # max
 data_main %>% group_by(sexual_orientation) %>% 
   summarise_at(c("self_ks",
                  "self_att",
                  "self_fs",
                  "self_ca",
-                 "self_ei"), max, na.rm = T)
+                 "self_ei",
+                 "self_sexually_experienced"), max, na.rm = T)
 
 # check NAs
 data_main %>% 
@@ -567,7 +587,9 @@ data_main %>%
   group_by(sexual_orientation) %>% 
   summarise(sum(is.na(self_ei)))
 
-
+data_main %>% 
+  group_by(sexual_orientation) %>% 
+  summarise(sum(is.na(self_sexually_experienced)))
 
 
 # Total number per variable by sexual orientation
@@ -576,7 +598,8 @@ data_main %>% group_by(sexual_orientation) %>%
                  "self_att",
                  "self_fs",
                  "self_ca",
-                 "self_ei"), sum, na.rm = T)
+                 "self_ei",
+                 "self_sexually_experienced"), sum, na.rm = T)
 
 ```
 
@@ -652,11 +675,13 @@ correlations = data_main %>%
          pref_imp_fs,
          pref_imp_ca,
          pref_imp_ei,
+         pref_imp_sexually_experienced,
          self_ks,
          self_att,
          self_fs,
          self_ca,
-         self_ei)
+         self_ei,
+         self_sexually_experienced)
 
 
 # correlations_table = apa.cor.table(correlations, filename = "Table.doc", table.number = X)

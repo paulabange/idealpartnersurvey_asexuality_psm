@@ -24,9 +24,6 @@ names(fulldata_selected)
 
 ## Inspect Data
 ```{r Inspect Data}
-colnames(fulldata_selected)
-fulldata_selected %>% colnames() 
-
 fulldata_selected_wrangled = fulldata_selected
 ```
 
@@ -314,7 +311,7 @@ fulldata_selected_wrangled %>%
   select(sex, answer_accuracy) %>%
   miss_frac()
 ```
-@PROBLEM: We have 7051 missings here, that did answer the rest of the survey. We did not mention in the preregistration what to do with these cases.
+@PROBLEM: We have 7051 missings here, that did answer the rest of the survey. We did not mention in the preregistration what to do with these cases. NAs seem to caused by a technical bug, therefore all NAs will be included for the analyses.
 
 
 ## Scales
