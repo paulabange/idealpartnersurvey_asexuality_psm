@@ -1,0 +1,351 @@
+---
+title: "04_psm"
+output: html_document
+date: '2022-04-08'
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Propensity score matching
+
+## Library
+```{r}
+library(dplyr)
+library(formr)
+library(ggplot2)
+library(MatchIt)
+library(optmatch)
+library(cobalt)
+```
+
+## Load data
+```{r}
+data_main = read.csv(file = "data/data_main.csv")[,-1]
+```
+
+## PSM for partner preferences
+### Check for missings in covariates to be matched
+psm cannot handle missings
+covariates: language, age, country, gender/sex, relationship status, relationship length
+```{r}
+# outcomes = data_main %>% select(interest_hookups,
+#                                interest_nonsexrel,
+#                                interest_monrel,
+#                                interest_monrel,
+#                                interest_altrel,
+#                                interest_single,
+#                                interest_parent,
+#                                pref_imp_ks,
+#                                pref_imp_att,
+#                                pref_imp_fs,
+#                                pref_imp_ca,
+#                                pref_imp_ei,
+#                                pref_imp_sexually_experienced,
+#                                self_ks,
+#                                self_att,
+#                                self_fs,
+#                                self_ca,
+#                                self_ei,
+#                                self_sexually_experienced)
+
+# MatchIt does not allow missing values
+data_main_nomiss <- data_main %>% select(language, age, sex, country, relationship_status, relationship_length, sexual_orientation,
+                                         pref_imp_ks, pref_imp_att, pref_imp_fs, pref_imp_ca,
+                                         pref_imp_ei, pref_imp_sexually_experienced) %>%
+                                  na.omit()
+
+table(is.na(data_main_nomiss)) # no more NAs in data set
+```
+
+### Check if correct variable type 
+```{r}
+typeof(data_main_nomiss$sexual_orientation) # is variable of type character, but for PSM it needs to be a factor
+data_main_nomiss$sexual_orientation = as.factor(data_main_nomiss$sexual_orientation) # convert to factor
+levels(data_main_nomiss$sexual_orientation) # check levels of factor
+data_main_nomiss$sexual_orientation = factor(data_main_nomiss$sexual_orientation,
+                                             levels=rev(levels(data_main_nomiss$sexual_orientation))) # reverse order of factor levels
+levels(data_main_nomiss$sexual_orientation) # check factor level order
+```
+
+## Matching
+Rule: When setting caliper (nearest-neighbor matching), not more than 10% of asexual sample can be discarded
+SMD cut off <.10 (Austin, 2011)
+Variance ratios should be near 0
+Visualization (histograms, Q-Q Plots, Love plots)
+--> matching algorithm resulting in smds < 0.1 acrosse the largest number of covariates will be chosen as algorithm for all analyses
+
+### Matching with optimal matching algorithm
+```{r}
+om = matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "optimal", data = data_main_nomiss) # default setting: propensity score is estimated using logistic regression
+
+om_data = match.data(om) # construct a matched data set from match it object om
+
+nrow(om_data) # 780 observations
+table(om_data$subclass) # data includes only pairs of two observations
+dim(om_data) # 780 observations and 16 variables
+```
+
+#### Check balance
+```{r}
+summary_om = summary(om, standardize = T)
+print(summary_om)
+
+bal.tab(om, m.threshold = 0.1, un = T) #smd
+bal.tab(om, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
+```
+Based on SMDs, data is not balanced for 5 covariates (langauge_english, language_german, age, country_germany, country_United States of America) . For continuous variables variance ratios are close to 1.
+
+#### Visualize
+```{r}
+# Q-Q plot
+plot(om, type = "qq", interactive = FALSE, which.xs = c("age", "relationship_length"))
+# sieht schlechter aus als vorher
+
+# Jitter plot
+plot(om, type = "jitter", interactive = FALSE)
+
+# with cobalt package:
+# distributional density/histogram
+bal.plot(om, var.name = "age", which = "both", grid = T)
+bal.plot(om, var.name = "relationship_length", which = "both", grid = T)
+
+bal.plot(om, var.name = "relationship_status", which = "both", grid = T)
+bal.plot(om, var.name = "language", which = "both", grid = T)
+bal.plot(om, var.name = "country", which = "both", grid = T) # recht unübersichtlich
+
+bal.plot(om, var.name = "distance", which = "both",
+         type = "histogram", mirror = TRUE) # for PS
+
+love.plot(bal.tab(om, m.threshold = 0.1),
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F) 
+# mega unübersichtlich wegen Country Variable
+
+# remove country variable for love plot
+om_without_country = om
+om_without_country$X[c("country")] <- NULL 
+
+love.plot(bal.tab(om_without_country, m.threshold = 0.1),
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F) 
+
+# In cobalt, you can use the formula method as follows:
+# 
+# cobalt::love.plot(y ~ x1 + x2, data = D, weights = get.w(m.out))
+# Because you control which covariates are used, you don't have to display the covariates you don't want.
+# 
+# In MatchIt, one hacky way to do this would be to manually remove those variables from the matchit object. That is, you could run
+# 
+# m.out$X[c("location")] <- NULL
+# before running summary() and the location variable will be removed from the output.
+```
+
+
+### Matching with nearest-neighbor-algortihm without caliper
+```{r}
+nnm <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "nearest", data = data_main_nomiss)
+
+nnm_data <- match.data(nnm)
+
+nrow(nnm_data) # 780 observations
+table(nnm_data$subclass) # data includes only pairs of two observations
+dim(nnm_data) # 780 observations and 16 variables
+```
+No asexual unmatched. 
+
+#### Check balance
+```{r}
+summary_nnm = summary(nnm, standardize = T)
+print(summary_nnm)
+
+bal.tab(nnm, m.threshold = 0.1, un = T) #smd
+bal.tab(nnm, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
+```
+All variables balanced.
+
+#### Visualize
+```{r}
+# Q-Q plot
+plot(nnm, type = "qq", interactive = FALSE, which.xs = c("age", "relationship_length"))
+# sieht besser aus als vorher
+
+# Jitter plot
+plot(nnm, type = "jitter", interactive = FALSE)
+
+# with cobalt package:
+# distributional density/histogram
+bal.plot(nnm, var.name = "age", which = "both", grid = T)
+bal.plot(nnm, var.name = "relationship_length", which = "both", grid = T)
+
+bal.plot(nnm, var.name = "relationship_status", which = "both", grid = T)
+bal.plot(nnm, var.name = "language", which = "both", grid = T)
+bal.plot(nnm, var.name = "country", which = "both", grid = T) # recht unübersichtlich
+
+
+love.plot(bal.tab(nnm, m.threshold = 0.1),
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F) 
+# mega unübersichtlich wegen Country Variable
+
+# remove country variable for love plot
+nnm_without_country = nnm
+nnm_without_country$X[c("country")] <- NULL 
+
+love.plot(bal.tab(nnm_without_country, m.threshold = 0.1),
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F) 
+```
+
+
+
+### Matching with nearest-neighbor-algorithm with caliper = 0.2*sd 
+```{r}
+nnm_25 <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "nearest", caliper = 0.25, data = data_main_nomiss)
+
+nnm_25_data <- match.data(nnm_25)
+
+nrow(nnm_25_data) # 778 observations
+table(nnm_25_data$subclass) # data includes only pairs of two observations
+dim(nnm_25_data) # 778 observations and 16 variables
+```
+1 asexual unmatched.
+
+#### Check balance
+```{r}
+summary_nnm_25 = summary(nnm_25, standardize = T)
+print(summary_nnm_25)
+
+bal.tab(nnm_25, m.threshold = 0.1, un = T) #smd
+bal.tab(nnm_25, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
+```
+All variables are balanced.
+
+#### Visualize
+```{r}
+# Q-Q plot
+plot(nnm_25, type = "qq", interactive = FALSE, which.xs = c("age", "relationship_length"))
+# sieht besser aus als vorher
+
+# Jitter plot
+plot(nnm, type = "jitter", interactive = FALSE)
+
+# with cobalt package:
+# distributional density/histogram
+bal.plot(nnm, var.name = "age", which = "both", grid = T)
+bal.plot(nnm, var.name = "relationship_length", which = "both", grid = T)
+
+bal.plot(nnm, var.name = "relationship_status", which = "both", grid = T)
+bal.plot(nnm, var.name = "language", which = "both", grid = T)
+bal.plot(nnm, var.name = "country", which = "both", grid = T) # recht unübersichtlich
+
+
+love.plot(bal.tab(nnm, m.threshold = 0.1),
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F) 
+# mega unübersichtlich wegen Country Variable
+
+# remove country variable for love plot
+nnm_without_country = nnm
+nnm_without_country$X[c("country")] <- NULL 
+
+love.plot(bal.tab(nnm_without_country, m.threshold = 0.1),
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F) 
+```
+
+
+
+### Matching with nearest-neighbor-algorithm with caliper = 0.1*sd 
+```{r}
+nnm_10 <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "nearest", caliper = 0.1, data = data_main_nomiss)
+nnm_10_discard <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "nearest", caliper = 0.1, discard = "both", data = data_main_nomiss)
+
+nrow(nnm_10_discard$match.matrix)
+nnm_10_data <- match.data(nnm_25)
+nrow(nnm$match.matrix)
+?matchit
+nrow(nnm_10_data) # 778 observations
+table(nnm_10_data$subclass) # data includes only pairs of two observations
+dim(nnm_10_data) # 778 observations and 16 variables
+```
+3 asexuals unmatched.
+
+#### Check balance
+```{r}
+summary_nnm_10 = summary(nnm_10, standardize = T)
+print(summary_nnm_10)
+
+bal.tab(nnm_10, m.threshold = 0.1, un = T) #smd
+bal.tab(nnm_10, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
+```
+All variables are balanced.
+
+#### Visualize
+```{r}
+# Q-Q plot
+plot(nnm_25, type = "qq", interactive = FALSE, which.xs = c("age", "relationship_length"))
+# sieht besser aus als vorher
+
+# Jitter plot
+plot(nnm, type = "jitter", interactive = FALSE)
+
+# with cobalt package:
+# distributional density/histogram
+bal.plot(nnm, var.name = "age", which = "both", grid = T)
+bal.plot(nnm, var.name = "relationship_length", which = "both", grid = T)
+
+bal.plot(nnm, var.name = "relationship_status", which = "both", grid = T)
+bal.plot(nnm, var.name = "language", which = "both", grid = T)
+bal.plot(nnm, var.name = "country", which = "both", grid = T) # recht unübersichtlich
+
+
+love.plot(bal.tab(nnm, m.threshold = 0.1),
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F) 
+# mega unübersichtlich wegen Country Variable
+
+# remove country variable for love plot
+nnm_without_country = nnm
+nnm_without_country$X[c("country")] <- NULL 
+
+love.plot(bal.tab(nnm_without_country, m.threshold = 0.1),
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F) 
+```
+
+
+
+
+## **hilfreiche Funktionen**
+```{r}
+# check matched pairs
+# matchedobject$match.matrix
+
+# nnm --> order in which treated individuals is picked "largest", "mallest" or "random" (m.order = "largest")
+# nnm --> caliper (caliper = number) 8caliper = number of standard deviations of difference which can be tolerated between PS of the matched pair (default = 0 -- no caliper)
+```
+
+## get same results every time?
+here is an element of randomness when using matchit() and ties are present in the data. A tie occurs when two units of the same treatment group have the same propensity score. In versions of MatchIt prior to 4.0.0, a member of the tie is randomly sampled, so you may get different results each time.
+
+In MatchIt 4.0.0, which is now on CRAN, you should get the same results each time unless you reshuffle the dataset or select a random matching order. Ties are resolved by choosing units based on the order of the data. This adds a level of arbitrariness but ensures results are replicable when using the exact same dataset
