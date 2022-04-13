@@ -10,26 +10,26 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Library
-```{r Library}
+```{r}
 library(formr)
 library(dplyr)
 ```
 
 ## Load data
-```{r Load data}
+```{r}
 # load data
 fulldata_selected = read.csv(file = "data/fulldata_selected.csv")[,-1]
 names(fulldata_selected)
 ```
 
 ## Inspect Data
-```{r Inspect Data}
+```{r}
 fulldata_selected_wrangled = fulldata_selected
 ```
 
 ### Sexual Orientation
 heterosexual; Lesbian/Gay/Homosexual; Bisexual/Pansexual; Queer; Asexual; Prefer not to say; Other
-```{r Sexual orientation}
+```{r}
 table(fulldata_selected_wrangled$sexual_orientation)
 
 # Set missing values as NA
@@ -57,21 +57,21 @@ fulldata_selected_wrangled = fulldata_selected_wrangled %>%
 ```
 
 #### Overview Counties
-```{r Country}
+```{r}
 table(fulldata_selected_wrangled$country)
 table(is.na(fulldata_selected_wrangled$country))
 ```
 
 ### Language
 Chinese, Danish, English, French, German, Japanese, Portuguese, Russian, Spanish,
-```{r Language}
+```{r}
 table(fulldata_selected_wrangled$language)
 table(is.na(fulldata_selected_wrangled$country))
 ```
 
 ### Age
 Participants younger than 18 were able to insert age but the survey was ended for them afterwards.
-```{r Age}
+```{r}
 table(fulldata_selected_wrangled$age)
 ```
 
@@ -93,7 +93,7 @@ table(fulldata_selected_wrangled$age < 18)
 ### Sex 
 Gender
 Categories: Woman; Genderqueer/Nonbinary; Man; None of the above; Prefer not to say; Other
-```{r Sex}
+```{r}
 table(fulldata_selected_wrangled$sex)
 
 # Set missing values as NA
@@ -108,7 +108,7 @@ table(is.na(fulldata_selected_wrangled$sex))
 ```
 
 ### Transgender
-```{r Transgender}
+```{r}
 table(fulldata_selected_wrangled$transgender)
 
 # Set missing values as NA
@@ -121,8 +121,8 @@ table(fulldata_selected_wrangled$transgender)
 table(is.na(fulldata_selected_wrangled$transgender))
 ```
 
-### Relationship
-```{r Relationship}
+### Relationship status
+```{r}
 table(fulldata_selected_wrangled$relationship) #No romantic or sexual relationships during the past 3 months
 table(fulldata_selected_wrangled$relationship1) #Other
 table(fulldata_selected_wrangled$relationship2) #Short-term (casual) sexual relationship (e.g. hookups or one-night-stands)
