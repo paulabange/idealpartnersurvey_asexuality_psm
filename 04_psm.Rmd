@@ -10,9 +10,9 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Propensity score matching
+# Propensity score matching
 
-## Library
+## 0.1 Library
 ```{r}
 library(dplyr)
 library(formr)
@@ -20,14 +20,15 @@ library(ggplot2)
 library(MatchIt)
 library(optmatch)
 library(cobalt)
+library(psych)
 ```
 
-## Load data
+## 0.2 Load data
 ```{r}
 data_main = read.csv(file = "data/data_main.csv")[,-1]
 ```
 
-## PSM for partner preferences
+## 1.  PSM for partner preferences
 ### Check for missings in covariates to be matched
 psm cannot handle missings
 covariates: language, age, country, gender/sex, relationship status, relationship length
@@ -71,14 +72,14 @@ data_main_nomiss$sexual_orientation = factor(data_main_nomiss$sexual_orientation
 levels(data_main_nomiss$sexual_orientation) # check factor level order
 ```
 
-## Matching
+### Matching
 Rule: When setting caliper (nearest-neighbor matching), not more than 10% of asexual sample can be discarded
 SMD cut off <.10 (Austin, 2011)
 Variance ratios should be near 0
 Visualization (histograms, Q-Q Plots, Love plots)
 --> matching algorithm resulting in smds < 0.1 acrosse the largest number of covariates will be chosen as algorithm for all analyses
 
-### Matching with optimal matching algorithm
+#### Matching with optimal matching algorithm
 ```{r}
 om = matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "optimal", data = data_main_nomiss) # default setting: propensity score is estimated using logistic regression
 
@@ -89,7 +90,7 @@ table(om_data$subclass) # data includes only pairs of two observations
 dim(om_data) # 780 observations and 16 variables
 ```
 
-#### Check balance
+##### Check balance
 ```{r}
 summary_om = summary(om, standardize = T)
 print(summary_om)
@@ -99,7 +100,7 @@ bal.tab(om, v.threshold = 2, un = T) #vr (can only be calculated for continuous 
 ```
 Based on SMDs, data is not balanced for 5 covariates (langauge_english, language_german, age, country_germany, country_United States of America) . For continuous variables all variance ratios are close to 1.
 
-#### Visualize
+##### Visualize
 ```{r}
 # Q-Q plot
 plot(om, type = "qq", interactive = FALSE, which.xs = c("age", "relationship_length"))
@@ -149,7 +150,7 @@ love.plot(bal.tab(om_without_country, m.threshold = 0.1),
 ```
 Optimal matching results in five covariates not being balanced after matching (based on SMDs). 
 
-### Matching with nearest-neighbor-algortihm without caliper
+#### Matching with nearest-neighbor-algortihm without caliper
 ```{r}
 nnm <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "nearest", data = data_main_nomiss)
 
@@ -161,7 +162,7 @@ dim(nnm_data) # 780 observations and 16 variables
 ```
 No asexual unmatched. 
 
-#### Check balance
+##### Check balance
 ```{r}
 summary_nnm = summary(nnm, standardize = T)
 print(summary_nnm)
@@ -171,7 +172,7 @@ bal.tab(nnm, v.threshold = 2, un = T) #vr (can only be calculated for continuous
 ```
 All variables balanced.
 
-#### Visualize
+##### Visualize
 ```{r}
 # Q-Q plot
 plot(nnm, type = "qq", interactive = FALSE, which.xs = c("age", "relationship_length"))
@@ -210,7 +211,7 @@ love.plot(bal.tab(nnm_without_country, m.threshold = 0.1),
 
 
 
-### Matching with nearest-neighbor-algorithm with caliper = 0.2*sd 
+#### Matching with nearest-neighbor-algorithm with caliper = 0.2*sd 
 ```{r}
 nnm_25 <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "nearest", caliper = 0.25, data = data_main_nomiss)
 
@@ -222,7 +223,7 @@ dim(nnm_25_data) # 778 observations and 16 variables
 ```
 1 asexual unmatched.
 
-#### Check balance
+##### Check balance
 ```{r}
 summary_nnm_25 = summary(nnm_25, standardize = T)
 print(summary_nnm_25)
@@ -232,26 +233,26 @@ bal.tab(nnm_25, v.threshold = 2, un = T) #vr (can only be calculated for continu
 ```
 All variables are balanced.
 
-#### Visualize
+##### Visualize
 ```{r}
 # Q-Q plot
 plot(nnm_25, type = "qq", interactive = FALSE, which.xs = c("age", "relationship_length"))
 # sieht besser aus als vorher
 
 # Jitter plot
-plot(nnm, type = "jitter", interactive = FALSE)
+plot(nnm_25, type = "jitter", interactive = FALSE)
 
 # with cobalt package:
 # distributional density/histogram
-bal.plot(nnm, var.name = "age", which = "both", grid = T)
-bal.plot(nnm, var.name = "relationship_length", which = "both", grid = T)
+bal.plot(nnm_25, var.name = "age", which = "both", grid = T)
+bal.plot(nnm_25, var.name = "relationship_length", which = "both", grid = T)
 
-bal.plot(nnm, var.name = "relationship_status", which = "both", grid = T)
-bal.plot(nnm, var.name = "language", which = "both", grid = T)
-bal.plot(nnm, var.name = "country", which = "both", grid = T) # recht unübersichtlich
+bal.plot(nnm_25, var.name = "relationship_status", which = "both", grid = T)
+bal.plot(nnm_25, var.name = "language", which = "both", grid = T)
+bal.plot(nnm_25, var.name = "country", which = "both", grid = T) # recht unübersichtlich
 
 
-love.plot(bal.tab(nnm, m.threshold = 0.1),
+love.plot(bal.tab(nnm_25, m.threshold = 0.1),
           stat = "mean.diffs",
           grid = T,
           stars = "raw",
@@ -259,10 +260,10 @@ love.plot(bal.tab(nnm, m.threshold = 0.1),
 # mega unübersichtlich wegen Country Variable
 
 # remove country variable for love plot
-nnm_without_country = nnm
-nnm_without_country$X[c("country")] <- NULL 
+nnm__25_without_country = nnm_25
+nnm__25without_country$X[c("country")] <- NULL 
 
-love.plot(bal.tab(nnm_without_country, m.threshold = 0.1),
+love.plot(bal.tab(nnm_25_without_country, m.threshold = 0.1),
           stat = "mean.diffs",
           grid = T,
           stars = "raw",
@@ -270,8 +271,7 @@ love.plot(bal.tab(nnm_without_country, m.threshold = 0.1),
 ```
 
 
-
-### Matching with nearest-neighbor-algorithm with caliper = 0.1*sd 
+#### Matching with nearest-neighbor-algorithm with caliper = 0.1*sd 
 ```{r}
 nnm_10 <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "nearest", caliper = 0.1, data = data_main_nomiss)
 
@@ -283,7 +283,7 @@ dim(nnm_10_data) # 774 observations and 16 variables
 ```
 3 asexuals unmatched.
 
-#### Check balance
+##### Check balance
 ```{r}
 summary_nnm_10 = summary(nnm_10, standardize = T)
 print(summary_nnm_10)
@@ -293,26 +293,26 @@ bal.tab(nnm_10, v.threshold = 2, un = T) #vr (can only be calculated for continu
 ```
 All variables are balanced.
 
-#### Visualize
+##### Visualize
 ```{r}
 # Q-Q plot
 plot(nnm_25, type = "qq", interactive = FALSE, which.xs = c("age", "relationship_length"))
 # sieht besser aus als vorher
 
 # Jitter plot
-plot(nnm, type = "jitter", interactive = FALSE)
+plot(nnm_10, type = "jitter", interactive = FALSE)
 
 # with cobalt package:
 # distributional density/histogram
-bal.plot(nnm, var.name = "age", which = "both", grid = T)
-bal.plot(nnm, var.name = "relationship_length", which = "both", grid = T)
+bal.plot(nnm_10, var.name = "age", which = "both", grid = T)
+bal.plot(nnm_10, var.name = "relationship_length", which = "both", grid = T)
 
-bal.plot(nnm, var.name = "relationship_status", which = "both", grid = T)
-bal.plot(nnm, var.name = "language", which = "both", grid = T)
-bal.plot(nnm, var.name = "country", which = "both", grid = T) # recht unübersichtlich
+bal.plot(nnm_10, var.name = "relationship_status", which = "both", grid = T)
+bal.plot(nnm_10, var.name = "language", which = "both", grid = T)
+bal.plot(nnm_10, var.name = "country", which = "both", grid = T) # recht unübersichtlich
 
 
-love.plot(bal.tab(nnm, m.threshold = 0.1),
+love.plot(bal.tab(nnm_10, m.threshold = 0.1),
           stat = "mean.diffs",
           grid = T,
           stars = "raw",
@@ -320,21 +320,423 @@ love.plot(bal.tab(nnm, m.threshold = 0.1),
 # mega unübersichtlich wegen Country Variable
 
 # remove country variable for love plot
-nnm_without_country = nnm
-nnm_without_country$X[c("country")] <- NULL 
+nnm_10_without_country = nnm
+nnm_10_without_country$X[c("country")] <- NULL 
 
-love.plot(bal.tab(nnm_without_country, m.threshold = 0.1),
+love.plot(bal.tab(nnm_10_without_country, m.threshold = 0.1),
           stat = "mean.diffs",
           grid = T,
           stars = "raw",
           abs = F) 
 ```
 
+## Comparison of matching algorithms
+Variable country was left out for a clearer visualization
+```{r}
+# smds
+love.plot(sexual_orientation ~ language + age + 
+            relationship_status + relationship_length,
+          data = data_main_nomiss,
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F,
+          weights = list(w1 = get.w(om),
+                         w2 = get.w(nnm)),
+          thresholds = c(m = .1),
+          sample.names = c("Unadjusted", "Optimal Matching", "Nearest-Neighbor-Matching")) 
+
+# variance ratios
+love.plot(sexual_orientation ~ language + age + 
+            relationship_status + relationship_length,
+          data = data_main_nomiss,
+          stat = "variance.ratios",
+          grid = T,
+          stars = "raw",
+          abs = F,
+          weights = list(w1 = get.w(om),
+                         w2 = get.w(nnm)),
+          sample.names = c("Unadjusted", "Optimal Matching", "Nearest-Neighbor-Matching")) 
+```
+
+
+
+```{r}
+# stat = "variance.ratios"
+# add confidence interval: +
+#  geom_errorbar(aes(ymin=lower,ymax=upper))
+
+```
+
+## country and language 
+### create subsamples
+```{r}
+# create subsamples based on sexual orientation
+asexual_nnm = nnm_data %>% filter(sexual_orientation == "Asexual")
+heterosex_nnm = nnm_data %>%  filter(sexual_orientation =="Straight/Heterosexual")
+
+# match subsamples based on assigned subclass (propensity-score matched pairs will be matched)
+matched = inner_join(asexual_nnm, heterosex_nnm, by = "subclass")
+```
+
+
+### country
+```{r}
+# create variable indicating whether pair comes from same country, if so country is printed
+matched$same_country = ifelse(matched$country.x == matched$country.y, matched$country.x, "no")
+
+# how many pairs per country
+table(matched$same_country) 
+
+# countries of pairs from differing countries
+matched$country_1 = ifelse(matched$country.x != matched$country.y, matched$country.x, "no")
+matched$country_2 = ifelse(matched$country.x != matched$country.y, matched$country.y, "no")
+
+# table 
+xtabs(~country_1 + country_2, matched) 
+
+# how many pairs share same language?
+sum(matched$same_country != "no") # 358
+sum(matched$same_country != "no")/nrow(matched) # 92%
+```
+
+### language
+```{r}
+# create variable indicating whether pair asnwered survey in same language, if so that language is printed
+matched$same_language = ifelse(matched$language.x == matched$language.y, matched$language.x, "no")
+
+# how many pairs per language
+table(matched$same_language) 
+
+# countries of pairs with different languages
+matched$language_1 = ifelse(matched$language.x != matched$language.y, matched$language.x, "no")
+matched$language_2 = ifelse(matched$language.x != matched$language.y, matched$language.y, "no")
+
+# table 
+xtabs(~language_1 + language_2, matched) 
+
+# how many pairs share same language?
+sum(matched$same_language != "no") # 376
+sum(matched$same_language != "no")/nrow(matched) # 96%
+
+```
+
+
 ## overview
 ```{r}
-library(psych)
 describe.by(nnm_data,nnm_data$sexual_orientation)
 ```
+
+## 2. PSM for self-ratings
+### Check for missings in covariates to be matched
+psm cannot handle missings
+covariates: language, age, country, gender/sex, relationship status, relationship length
+```{r}
+# MatchIt does not allow missing values
+data_main_nomiss_self <- data_main %>% select(language, age, sex, country, relationship_status, relationship_length, sexual_orientation,
+                                         self_ks, self_att, self_fs,self_ca, self_ei, self_sexually_experienced) %>%
+                                  na.omit()
+
+table(is.na(data_main_nomiss_self)) # no more NAs in data set
+```
+
+### Check if correct variable type 
+```{r}
+typeof(data_main_nomiss_self$sexual_orientation) # is variable of type character, but for PSM it needs to be a factor
+data_main_nomiss_self$sexual_orientation = as.factor(data_main_nomiss_self$sexual_orientation) # convert to factor
+levels(data_main_nomiss_self$sexual_orientation) # check levels of factor
+data_main_nomiss_self$sexual_orientation = factor(data_main_nomiss_self$sexual_orientation,
+                                             levels=rev(levels(data_main_nomiss_self$sexual_orientation))) # reverse order of factor levels
+levels(data_main_nomiss_self$sexual_orientation) # check factor level order
+```
+
+### Matching
+Rule: When setting caliper (nearest-neighbor matching), not more than 10% of asexual sample can be discarded
+SMD cut off <.10 (Austin, 2011)
+Variance ratios should be near 0
+Visualization (histograms, Q-Q Plots, Love plots)
+--> matching algorithm resulting in smds < 0.1 acrosse the largest number of covariates will be chosen as algorithm for all analyses
+
+#### Matching with nearest-neighbor-algortihm without caliper
+```{r}
+nnm_self <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "nearest", data = data_main_nomiss_self)
+
+nnm_self_data <- match.data(nnm_self)
+
+nrow(nnm_self_data) # 772 observations
+table(nnm_self_data$subclass) # data includes only pairs of two observations
+dim(nnm_self_data) # 772 observations and 16 variables
+```
+No asexual unmatched. 
+
+##### Check balance
+```{r}
+summary_nnm_self = summary(nnm_self, standardize = T)
+print(summary_nnm_self)
+
+bal.tab(nnm_self, m.threshold = 0.1, un = T) #smd
+bal.tab(nnm_self, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
+```
+All variables balanced.
+
+##### Visualize
+```{r}
+# Q-Q plot
+plot(nnm_self, type = "qq", interactive = FALSE, which.xs = c("age", "relationship_length"))
+# looks better after matching
+
+# Jitter plot
+plot(nnm_self, type = "jitter", interactive = FALSE)
+
+# with cobalt package:
+# distributional density/histogram
+bal.plot(nnm_self, var.name = "age", which = "both", grid = T)
+bal.plot(nnm_self, var.name = "relationship_length", which = "both", grid = T)
+
+bal.plot(nnm_self, var.name = "relationship_status", which = "both", grid = T)
+bal.plot(nnm_self, var.name = "language", which = "both", grid = T)
+bal.plot(nnm_self, var.name = "country", which = "both", grid = T) # recht unübersichtlich
+
+
+love.plot(bal.tab(nnm_self, m.threshold = 0.1),
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F) 
+# mega unübersichtlich wegen Country Variable
+
+# remove country variable for love plot
+nnm_self_without_country = nnm_self
+nnm_self_without_country$X[c("country")] <- NULL 
+
+love.plot(bal.tab(nnm_self_without_country, m.threshold = 0.1),
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F) 
+```
+
+## country and language 
+### create subsamples
+```{r}
+# create subsamples based on sexual orientation
+asexual_nnm_self = nnm_self_data %>% filter(sexual_orientation == "Asexual")
+heterosex_nnm_self = nnm_self_data %>%  filter(sexual_orientation =="Straight/Heterosexual")
+
+# match subsamples based on assigned subclass (propensity-score matched pairs will be matched)
+matched_self = inner_join(asexual_nnm_self, heterosex_nnm_self, by = "subclass")
+```
+
+
+### country
+```{r}
+# create variable indicating whether pair comes from same country, if so country is printed
+matched_self$same_country = ifelse(matched_self$country.x == matched_self$country.y, matched_self$country.x, "no")
+
+# how many pairs per country
+table(matched_self$same_country) 
+
+# countries of pairs from differing countries
+matched_self$country_1 = ifelse(matched_self$country.x != matched_self$country.y, matched_self$country.x, "no")
+matched_self$country_2 = ifelse(matched_self$country.x != matched_self$country.y, matched_self$country.y, "no")
+
+# table 
+xtabs(~country_1 + country_2, matched_self) 
+
+# how many pairs share same language?
+sum(matched_self$same_country != "no") # 351
+sum(matched_self$same_country != "no")/nrow(matched_self) # 91%
+```
+
+### language
+```{r}
+# create variable indicating whether pair asnwered survey in same language, if so that language is printed
+matched_self$same_language = ifelse(matched_self$language.x == matched_self$language.y, matched_self$language.x, "no")
+
+
+# how many pairs per language
+table(matched_self$same_language) 
+
+# countries of pairs with different languages
+matched_self$language_1 = ifelse(matched_self$language.x != matched_self$language.y, matched_self$language.x, "no")
+matched_self$language_2 = ifelse(matched_self$language.x != matched_self$language.y, matched_self$language.y, "no")
+
+# table 
+xtabs(~language_1 + language_2, matched_self) 
+
+# how many pairs share same language?
+sum(matched_self$same_language != "no") # 368
+sum(matched_self$same_language != "no")/nrow(matched_self) # 95%
+```
+
+
+## overview 
+```{r}
+describe.by(nnm_self_data, nnm_self_data$sexual_orientation) 
+
+# histogram sexual experience by sexual orientation
+ggplot(nnm_self_data, aes(x = self_sexually_experienced, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+```
+Sexual experience:mean asexual = 1.05; mean hetero = 2.13
+
+
+## 3. PSM for relationship options
+### Check for missings in covariates to be matched
+psm cannot handle missings
+covariates: language, age, country, gender/sex, relationship status, relationship length
+```{r}
+# MatchIt does not allow missing values
+data_main_nomiss_rel <- data_main %>% select(language, age, sex, country, relationship_status, relationship_length,
+                                             sexual_orientation,
+                                             interest_hookups,
+                                             interest_nonsexrel,
+                                             interest_monrel,
+                                             interest_monrel,
+                                             interest_nonmonrel,
+                                             interest_altrel,
+                                             interest_single,
+                                             interest_parent) %>%
+                                      na.omit()
+
+table(is.na(data_main_nomiss_rel)) # no more NAs in data set
+```
+
+### Check if correct variable type 
+```{r}
+typeof(data_main_nomiss_rel$sexual_orientation) # is variable of type character, but for PSM it needs to be a factor
+data_main_nomiss_rel$sexual_orientation = as.factor(data_main_nomiss_rel$sexual_orientation) # convert to factor
+levels(data_main_nomiss_rel$sexual_orientation) # check levels of factor
+data_main_nomiss_rel$sexual_orientation = factor(data_main_nomiss_rel$sexual_orientation,
+                                             levels=rev(levels(data_main_nomiss_rel$sexual_orientation))) # reverse order of factor levels
+levels(data_main_nomiss_rel$sexual_orientation) # check factor level order
+```
+
+### Matching
+Rule: When setting caliper (nearest-neighbor matching), not more than 10% of asexual sample can be discarded
+SMD cut off <.10 (Austin, 2011)
+Variance ratios should be near 0
+Visualization (histograms, Q-Q Plots, Love plots)
+--> matching algorithm resulting in smds < 0.1 acrosse the largest number of covariates will be chosen as algorithm for all analyses
+
+#### Matching with nearest-neighbor-algortihm without caliper
+```{r}
+nnm_rel <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "nearest", data = data_main_nomiss_rel)
+
+nnm_rel_data <- match.data(nnm_rel)
+
+nrow(nnm_rel_data) # 652 observations
+table(nnm_rel_data$subclass) # data includes only pairs of two observations
+dim(nnm_rel_data) # 652 observations and 16 variables
+```
+No asexual unmatched. 
+
+##### Check balance
+```{r}
+summary_nnm_rel = summary(nnm_rel, standardize = T)
+print(summary_nnm_rel)
+
+bal.tab(nnm_rel, m.threshold = 0.1, un = T) #smd
+bal.tab(nnm_rel, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
+```
+All variables balanced.
+
+##### Visualize
+```{r}
+# Q-Q plot
+plot(nnm_rel, type = "qq", interactive = FALSE, which.xs = c("age", "relationship_length"))
+# looks better after matching
+
+# Jitter plot
+plot(nnm_rel, type = "jitter", interactive = FALSE)
+
+# with cobalt package:
+# distributional density/histogram
+bal.plot(nnm_rel, var.name = "age", which = "both", grid = T)
+bal.plot(nnm_rel, var.name = "relationship_length", which = "both", grid = T)
+
+bal.plot(nnm_rel, var.name = "relationship_status", which = "both", grid = T)
+bal.plot(nnm_rel, var.name = "language", which = "both", grid = T)
+bal.plot(nnm_rel, var.name = "country", which = "both", grid = T) # recht unübersichtlich
+
+
+love.plot(bal.tab(nnm_rel, m.threshold = 0.1),
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F) 
+# mega unübersichtlich wegen Country Variable
+
+# remove country variable for love plot
+nnm_rel_without_country = nnm_rel
+nnm_rel_without_country$X[c("country")] <- NULL 
+
+love.plot(bal.tab(nnm_rel_without_country, m.threshold = 0.1),
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F) 
+```
+
+## country and language 
+### create subsamples
+```{r}
+# create subsamples based on sexual orientation
+asexual_nnm_rel = nnm_rel_data %>% filter(sexual_orientation == "Asexual")
+heterosex_nnm_rel = nnm_rel_data %>%  filter(sexual_orientation =="Straight/Heterosexual")
+
+# match subsamples based on assigned subclass (propensity-score matched pairs will be matched)
+matched_rel = inner_join(asexual_nnm_rel, heterosex_nnm_rel, by = "subclass")
+```
+
+
+### country
+```{r}
+# create variable indicating whether pair comes from same country, if so country is printed
+matched_rel$same_country = ifelse(matched_rel$country.x == matched_rel$country.y, matched_rel$country.x, "no")
+
+# how many pairs per country
+table(matched_rel$same_country) 
+
+# countries of pairs from differing countries
+matched_rel$country_1 = ifelse(matched_rel$country.x != matched_rel$country.y, matched_rel$country.x, "no")
+matched_rel$country_2 = ifelse(matched_rel$country.x != matched_rel$country.y, matched_rel$country.y, "no")
+
+# table 
+xtabs(~country_1 + country_2, matched_rel) 
+
+# how many pairs share same language?
+sum(matched_rel$same_country != "no") # 293
+sum(matched_rel$same_country != "no")/nrow(matched_rel) # 90%
+```
+
+### language
+```{r}
+# create variable indicating whether pair answered survey in same language, if so that language is printed
+matched_rel$same_language = ifelse(matched_rel$language.x == matched_rel$language.y, matched_rel$language.x, "no")
+
+
+# how many pairs per language
+table(matched_rel$same_language) 
+
+# countries of pairs with different languages
+matched_rel$language_1 = ifelse(matched_rel$language.x != matched_rel$language.y, matched_rel$language.x, "no")
+matched_rel$language_2 = ifelse(matched_rel$language.x != matched_rel$language.y, matched_rel$language.y, "no")
+
+# table 
+xtabs(~language_1 + language_2, matched_rel) 
+
+# how many pairs share same language?
+sum(matched_rel$same_language != "no") # 308
+sum(matched_rel$same_language != "no")/nrow(matched_rel) # 94%
+```
+
+
+## overview
+```{r}
+describe.by(nnm_rel_data, nnm_rel_data$sexual_orientation) 
+```
+
 
 
 ## **hilfreiche Funktionen**
