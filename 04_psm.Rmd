@@ -97,13 +97,13 @@ print(summary_om)
 bal.tab(om, m.threshold = 0.1, un = T) #smd
 bal.tab(om, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
 ```
-Based on SMDs, data is not balanced for 5 covariates (langauge_english, language_german, age, country_germany, country_United States of America) . For continuous variables variance ratios are close to 1.
+Based on SMDs, data is not balanced for 5 covariates (langauge_english, language_german, age, country_germany, country_United States of America) . For continuous variables all variance ratios are close to 1.
 
 #### Visualize
 ```{r}
 # Q-Q plot
 plot(om, type = "qq", interactive = FALSE, which.xs = c("age", "relationship_length"))
-# sieht schlechter aus als vorher
+# looks worse than before matching
 
 # Jitter plot
 plot(om, type = "jitter", interactive = FALSE)
@@ -114,11 +114,11 @@ bal.plot(om, var.name = "age", which = "both", grid = T)
 bal.plot(om, var.name = "relationship_length", which = "both", grid = T)
 
 bal.plot(om, var.name = "relationship_status", which = "both", grid = T)
-bal.plot(om, var.name = "language", which = "both", grid = T)
+bal.plot(om, var.name = "language", which = "both", grid = T) # looks worse than before matching, some countries are not represented for heterosexual individuals anymore 
 bal.plot(om, var.name = "country", which = "both", grid = T) # recht unübersichtlich
 
 bal.plot(om, var.name = "distance", which = "both",
-         type = "histogram", mirror = TRUE) # for PS
+         type = "histogram", mirror = TRUE) # for propensity score
 
 love.plot(bal.tab(om, m.threshold = 0.1),
           stat = "mean.diffs",
@@ -147,7 +147,7 @@ love.plot(bal.tab(om_without_country, m.threshold = 0.1),
 # m.out$X[c("location")] <- NULL
 # before running summary() and the location variable will be removed from the output.
 ```
-
+Optimal matching results in five covariates not being balanced after matching (based on SMDs). 
 
 ### Matching with nearest-neighbor-algortihm without caliper
 ```{r}
@@ -175,7 +175,7 @@ All variables balanced.
 ```{r}
 # Q-Q plot
 plot(nnm, type = "qq", interactive = FALSE, which.xs = c("age", "relationship_length"))
-# sieht besser aus als vorher
+# looks better after matching
 
 # Jitter plot
 plot(nnm, type = "jitter", interactive = FALSE)
@@ -274,15 +274,12 @@ love.plot(bal.tab(nnm_without_country, m.threshold = 0.1),
 ### Matching with nearest-neighbor-algorithm with caliper = 0.1*sd 
 ```{r}
 nnm_10 <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "nearest", caliper = 0.1, data = data_main_nomiss)
-nnm_10_discard <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "nearest", caliper = 0.1, discard = "both", data = data_main_nomiss)
 
-nrow(nnm_10_discard$match.matrix)
-nnm_10_data <- match.data(nnm_25)
-nrow(nnm$match.matrix)
-?matchit
-nrow(nnm_10_data) # 778 observations
+nnm_10_data <- match.data(nnm_10)
+
+nrow(nnm_10_data) # 774 observations
 table(nnm_10_data$subclass) # data includes only pairs of two observations
-dim(nnm_10_data) # 778 observations and 16 variables
+dim(nnm_10_data) # 774 observations and 16 variables
 ```
 3 asexuals unmatched.
 
@@ -333,7 +330,11 @@ love.plot(bal.tab(nnm_without_country, m.threshold = 0.1),
           abs = F) 
 ```
 
-
+## overview
+```{r}
+library(psych)
+describe.by(nnm_data,nnm_data$sexual_orientation)
+```
 
 
 ## **hilfreiche Funktionen**
