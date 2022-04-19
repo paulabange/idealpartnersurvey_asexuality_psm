@@ -666,7 +666,7 @@ correlations = data_main %>%
          interest_hookups,
          interest_nonsexrel,
          interest_monrel,
-         interest_monrel,
+         interest_nonmonrel,
          interest_altrel,
          interest_single,
          interest_parent,

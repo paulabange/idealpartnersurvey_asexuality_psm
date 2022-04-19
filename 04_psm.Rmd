@@ -738,13 +738,28 @@ describe.by(nnm_rel_data, nnm_rel_data$sexual_orientation)
 ```
 
 
+## save PSM samples as data files
+```{r}
+# for partner preference psm sample
+write.csv(nnm_data,
+         file = "data_prefs.csv")
+
+# for self-ratings psm sample
+write.csv(nnm_self_data,
+         file = "data_self.csv")
+
+# for preferred relationship options
+write.csv(nnm_rel_data,
+         file = "data_rel.csv")
+```
+
 
 ## **hilfreiche Funktionen**
 ```{r}
 # check matched pairs
 # matchedobject$match.matrix
 
-# nnm --> order in which treated individuals is picked "largest", "mallest" or "random" (m.order = "largest")
+# nnm --> order in which treated individuals is picked "largest", "smallest" or "random" (m.order = "largest")
 # nnm --> caliper (caliper = number) 8caliper = number of standard deviations of difference which can be tolerated between PS of the matched pair (default = 0 -- no caliper)
 ```
 
