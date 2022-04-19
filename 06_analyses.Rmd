@@ -1,0 +1,284 @@
+---
+title: "06_analyses"
+output: html_document
+date: '2022-04-19'
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Analyses
+
+## Library
+```{r}
+library(dplyr)
+library(formr)
+library(ggplot2)
+library(psych)
+library(effsize)
+```
+
+## Load data
+```{r}
+data_rel = read.csv(file = "data/data_rel.csv")[,-1]
+data_prefs = read.csv(file = "data/data_prefs.csv")[,-1]
+data_self = read.csv(file = "data/data_self.csv")[,-1]
+```
+
+## sort data by subclass number within sexual_orientation
+```{r}
+data_rel = data_rel %>% 
+        group_by(sexual_orientation) %>%
+        arrange(subclass, .by_group = TRUE)
+
+data_prefs = data_prefs %>% 
+        group_by(sexual_orientation) %>%
+        arrange(subclass, .by_group = TRUE)
+
+data_self = data_self %>% 
+        group_by(sexual_orientation) %>%
+        arrange(subclass, .by_group = TRUE)
+```
+
+## 1. Relationship options
+### interest non-sexual relationships
+```{r}
+t.test(interest_nonsexrel ~ sexual_orientation, 
+       data = data_rel,
+       alternative = "greater",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(interest_nonsexrel ~ sexual_orientation, data = data_rel, paired = T)
+```
+
+### interest sexual relationships
+```{r}
+t.test(interest_hookups ~ sexual_orientation, 
+       data = data_rel,
+       alternative = "less",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(interest_hookups ~ sexual_orientation, data = data_rel, paired = T)
+```
+
+### interest non-monogamous relationships
+```{r}
+t.test(interest_nonmonrel ~ sexual_orientation, 
+       data = data_rel,
+       alternative = "greater",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(interest_nonmonrel ~ sexual_orientation, data = data_rel, paired = T)
+```
+
+### interest alternativ committed relationships
+```{r}
+t.test(interest_altrel ~ sexual_orientation, 
+       data = data_rel,
+       alternative = "greater",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(interest_altrel ~ sexual_orientation, data = data_rel, paired = T)
+```
+
+### interest single
+```{r}
+t.test(interest_single ~ sexual_orientation, 
+       data = data_rel,
+       alternative = "greater",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(interest_single ~ sexual_orientation, data = data_rel, paired = T)
+```
+
+## Exploratory analyses
+### interest monogamous relationships
+```{r}
+t.test(interest_monrel ~ sexual_orientation, 
+       data = data_rel,
+       alternative = "two.sided",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(interest_monrel ~ sexual_orientation, data = data_rel, paired = T)
+```
+
+### interest parent 
+```{r}
+t.test(interest_parent ~ sexual_orientation, 
+       data = data_rel,
+       alternative = "two.sided",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(interest_parent ~ sexual_orientation, data = data_rel, paired = T)
+```
+
+
+## 2. Partner preferences
+### confident-assertive
+```{r}
+t.test(pref_imp_ca ~ sexual_orientation, 
+       data = data_prefs,
+       alternative = "less",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(pref_imp_ca ~ sexual_orientation, data = data_prefs, paired = T)
+```
+
+### attractive
+```{r}
+t.test(pref_imp_att ~ sexual_orientation, 
+       data = data_prefs,
+       alternative = "less",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(pref_imp_att ~ sexual_orientation, data = data_prefs, paired = T)
+```
+
+### sexually experienced
+```{r}
+t.test(pref_imp_sexually_experienced ~ sexual_orientation, 
+       data = data_prefs,
+       alternative = "less",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(pref_imp_sexually_experienced ~ sexual_orientation, data = data_prefs, paired = T)
+```
+
+## Exploratory analyses
+### kind-supportive
+```{r}
+t.test(pref_imp_ks ~ sexual_orientation, 
+       data = data_prefs,
+       alternative = "two.sided",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(pref_imp_ks ~ sexual_orientation, data = data_prefs, paired = T)
+```
+
+
+### financially-secure/successfull
+```{r}
+t.test(pref_imp_fs ~ sexual_orientation, 
+       data = data_prefs,
+       alternative = "two.sided",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(pref_imp_fs ~ sexual_orientation, data = data_prefs, paired = T)
+```
+
+
+### educated-intelligent
+```{r}
+t.test(pref_imp_ei ~ sexual_orientation, 
+       data = data_prefs,
+       alternative = "two.sided",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(pref_imp_ei ~ sexual_orientation, data = data_prefs, paired = T)
+```
+
+
+## 3. Self-ratings
+### confident-assertive
+```{r}
+t.test(self_ca ~ sexual_orientation, 
+       data = data_self,
+       alternative = "less",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(self_ca ~ sexual_orientation, data = data_self, paired = T)
+```
+
+### attractive
+```{r}
+t.test(self_att ~ sexual_orientation, 
+       data = data_self,
+       alternative = "less",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(self_att ~ sexual_orientation, data = data_self, paired = T)
+```
+
+### sexually experienced
+```{r}
+t.test(self_sexually_experienced ~ sexual_orientation, 
+       data = data_self,
+       alternative = "less",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(self_sexually_experienced ~ sexual_orientation, data = data_self, paired = T)
+```
+
+## Exploratory analyses
+### kind-supportive
+```{r}
+t.test(self_ks ~ sexual_orientation, 
+       data = data_self,
+       alternative = "two.sided",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(self_ks ~ sexual_orientation, data = data_self, paired = T)
+```
+
+
+### financially-secure/successfull
+```{r}
+t.test(self_fs ~ sexual_orientation, 
+       data = data_self,
+       alternative = "two.sided",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(self_fs ~ sexual_orientation, data = data_self, paired = T)
+```
+
+### educated-intelligent
+```{r}
+t.test(self_ei ~ sexual_orientation, 
+       data = data_self,
+       alternative = "two.sided",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(self_ei ~ sexual_orientation, data = data_self, paired = T)
+```
+
