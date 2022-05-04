@@ -22,27 +22,42 @@ library(tidyr)
 data_wrangled = read.csv(file = "data/data_wrangled.csv")[,-1]
 ```
 
+## Total number of responses 
+```{r}
+nrow(data_wrangled) 
+```
+94,738 responses in total. 
+
 ## Exclusion criteria
 ### For main analyses
 Following the order the criteria were listed in the preregistration
-1. Excluding participants not identifying as women
+#### 1. Excluding participants not identifying as women
 ```{r Exlcusion criterion 1}
 data_wrangled_main = data_wrangled %>%
   filter(sex == "Woman")
 
 nrow(data_wrangled_main) # 64879 women 
-```
+nrow(data_wrangled) - nrow(data_wrangled_main) # number of excluded participants
 
-2. Excluding participants not identifying as asexual or heterosexual
+table(data_wrangled_main$sex) # check gender
+table(data_wrangled_main$sexual_orientation)# check sexual orientations
+```
+N = 29,859 participants were excluded, leaving N = 64,879 participants. Of those women, n = 447 identify as asexual and n = 51,328 identify as heterosexual.
+
+
+#### 2. Excluding participants not identifying as asexual or heterosexual
 ```{r Excluison criterion 2}
 data_wrangled_main = data_wrangled_main %>% 
   filter(sexual_orientation == "Straight/Heterosexual" | sexual_orientation == "Asexual")
 
 nrow(data_wrangled_main) # 53390 women 
+64879 - nrow(data_wrangled_main) # number of excluded participants
 table(data_wrangled_main$sexual_orientation) # 457 asexuals and 52933 heterosexuals
-```
+``` 
+N = 11,489 participants were excluded, leaving N = 53,390 participants. Of those, n = 457 identify as asesxual and n = 52,933 identify as heterosexual. 
 
-3. Excluding participants choosing not to answer the honesty question or indicating not having filled out the survey truthfully
+
+#### 3. Excluding participants choosing not to answer the honesty question or indicating not having filled out the survey truthfully
 ```{r Exclusion criterion 3}
 data_wrangled_main = data_wrangled_main %>% 
  mutate(answer_accuracy = replace_na(answer_accuracy, "No value"))
@@ -50,41 +65,62 @@ data_wrangled_main = data_wrangled_main %>%
   filter(answer_accuracy == "I took the survey seriously; please use my information in the study." | answer_accuracy == "No value")
 
 nrow(data_wrangled_main) # 51775 women 
+53390 - nrow(data_wrangled_main) # number of excluded participants
 table(data_wrangled_main$sexual_orientation) # 447 asexuals and 51328 heterosexuals
 
-table(is.na(data_wrangled_main$answer_accuracy))
+# check NAs
+table(is.na(data_wrangled_main$answer_accuracy)) 
 table(data_wrangled_main$answer_accuracy)
 ```
+N = 1615 participants were excluded, leaving N = 51,775 participants. Of those, n = 447 identify as asexual and n = 51,328 identify as heterosexual.
+
 
 ### For robustness check
-1. Excluding participants not identifying as women, man or genderqueer/nonbinary
+#### 1. Excluding participants not identifying as women, man or genderqueer/nonbinary
 ```{r Criterion 1 robustness}
 data_wrangled_robustness = data_wrangled %>%
   filter(sex == "Woman" | sex == "Man" | sex == "Genderqueer/Nonbinary")
 
 nrow(data_wrangled_robustness) # 67774 participants 
-```
+nrow(data_wrangled) - nrow(data_wrangled_robustness) # number of excluded participants
 
-2. Excluding participants not identifying as asexual or heterosexual
+table(data_wrangled_robustness$sex) # check gender
+table(data_wrangled_robustness$sexual_orientation)# check sexual orientations
+```
+N = 26,964 participants were excluded, leaving N = 67,774 participants. Of those, n = 64,879 identify as women, n = 2055 as men, and n = 840 as genderqueer/nonbinary.
+
+
+#### 2. Excluding participants not identifying as asexual or heterosexual
 ```{r Criterion 2 robustness}
 data_wrangled_robustness = data_wrangled_robustness %>% 
   filter(sexual_orientation == "Straight/Heterosexual" | sexual_orientation == "Asexual")
 
 nrow(data_wrangled_robustness) # 55076 participants
-table(data_wrangled_robustness$sexual_orientation) # 539 asexuals and 54537 heterosexuals
-```
+67774 - nrow(data_wrangled_robustness) # number of excluded participants
 
-3. Excluding participants choosing not to answer the honesty question or indicating not having filled out the survey truthfully
+table(data_wrangled_robustness$sex) # check gender
+table(data_wrangled_robustness$sexual_orientation) # check sexual orientation
+```
+N = 12,698 participants were excluded, leaving N = 55,076 participants. Of those, n = 53,390 identify as women, n = 1581 as men, and n = 105 as genderqueer/nonbinary.
+N = 539 identify as asexual and n = 54,537 as heterosexual.
+
+
+#### 3. Excluding participants choosing not to answer the honesty question or indicating not having filled out the survey truthfully
 ```{r Criterion 3 robustness}
 data_wrangled_robustness = data_wrangled_robustness %>% 
  mutate(answer_accuracy = replace_na(answer_accuracy, "No value"))
 data_wrangled_robustness = data_wrangled_robustness %>%
   filter(answer_accuracy == "I took the survey seriously; please use my information in the study." | answer_accuracy == "No value")
 
-nrow(data_wrangled_robustness) # 53412 women 
-table(data_wrangled_robustness$sexual_orientation) # 527 asexuals and 46913 heterosexuals
+nrow(data_wrangled_robustness) # 53412 partiicpants
+55076 - nrow(data_wrangled_robustness) # total number of excluded participants
 
+table(data_wrangled_robustness$sex) # check gender
+table(data_wrangled_robustness$sexual_orientation) # check sexual orientation
 ```
+N = 1664 participants were excluded, leaving N = 53,412 participants. Of those, n = 51,775 identify as women, n = 1535 as men, and n = 102 as genderqueer/nonbinary.
+N = 527 identify as asexual and n = 52,885 as heterosexual. 
+
 
 ## Total number of excluded participants
 ```{r}
@@ -94,6 +130,9 @@ nrow(data_wrangled) - nrow(data_wrangled_main)
 # for robustness check
 nrow(data_wrangled) - nrow(data_wrangled_robustness)
 ```
+For the main analyses, a total of 42,963 participants were excluded, leaving 51,775 participants.
+For the robustness analyses, a total of 41,326 participants were excluded, leaving 53,412 participants. 
+
 
 ## Save data
 ### For main analyses
