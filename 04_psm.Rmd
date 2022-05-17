@@ -26,35 +26,18 @@ library(psych)
 ## 0.2 Load data
 ```{r}
 data_main = read.csv(file = "data/data_main.csv")[,-1]
+
+# add id variable 
+data_main$id = 1:51775
 ```
 
 ## 1.  PSM for partner preferences
 ### Check for missings in covariates to be matched
 psm cannot handle missings
-covariates: language, age, country, gender/sex, relationship status, relationship length
+covariates: language, age, country, relationship status, relationship length
 ```{r}
-# outcomes = data_main %>% select(interest_hookups,
-#                                interest_nonsexrel,
-#                                interest_monrel,
-#                                interest_monrel,
-#                                interest_altrel,
-#                                interest_single,
-#                                interest_parent,
-#                                pref_imp_ks,
-#                                pref_imp_att,
-#                                pref_imp_fs,
-#                                pref_imp_ca,
-#                                pref_imp_ei,
-#                                pref_imp_sexually_experienced,
-#                                self_ks,
-#                                self_att,
-#                                self_fs,
-#                                self_ca,
-#                                self_ei,
-#                                self_sexually_experienced)
-
 # MatchIt does not allow missing values
-data_main_nomiss <- data_main %>% select(language, age, sex, country, relationship_status, relationship_length, sexual_orientation,
+data_main_nomiss <- data_main %>% select(id, language, age, sex, country, relationship_status, relationship_length, sexual_orientation,
                                          pref_imp_ks, pref_imp_att, pref_imp_fs, pref_imp_ca,
                                          pref_imp_ei, pref_imp_sexually_experienced) %>%
                                   na.omit()
@@ -68,16 +51,16 @@ typeof(data_main_nomiss$sexual_orientation) # is variable of type character, but
 data_main_nomiss$sexual_orientation = as.factor(data_main_nomiss$sexual_orientation) # convert to factor
 levels(data_main_nomiss$sexual_orientation) # check levels of factor
 data_main_nomiss$sexual_orientation = factor(data_main_nomiss$sexual_orientation,
-                                             levels=rev(levels(data_main_nomiss$sexual_orientation))) # reverse order of factor levels
+                                             levels=rev(levels(data_main_nomiss$sexual_orientation))) # reverse order of factor levels 
 levels(data_main_nomiss$sexual_orientation) # check factor level order
 ```
 
 ### Matching
-Rule: When setting caliper (nearest-neighbor matching), not more than 10% of asexual sample can be discarded
-SMD cut off <.10 (Austin, 2011)
-Variance ratios should be near 0
-Visualization (histograms, Q-Q Plots, Love plots)
---> matching algorithm resulting in smds < 0.1 acrosse the largest number of covariates will be chosen as algorithm for all analyses
+- Rule: When setting caliper (nearest-neighbor matching), not more than 10% of asexual sample can be discarded
+- SMD cut off <.10 (Austin, 2011)
+- Variance ratios should be near 0
+- Visualization (histograms, Q-Q Plots, Love plots)
+*matching algorithm resulting in smds < 0.1 acrosse the largest number of covariates will be chosen as algorithm for all analyses*
 
 #### Matching with optimal matching algorithm
 ```{r}
@@ -126,7 +109,7 @@ love.plot(bal.tab(om, m.threshold = 0.1),
           grid = T,
           stars = "raw",
           abs = F) 
-# mega unübersichtlich wegen Country Variable
+# not readable due to country variable
 
 # remove country variable for love plot
 om_without_country = om
@@ -158,7 +141,7 @@ nnm_data <- match.data(nnm)
 
 nrow(nnm_data) # 780 observations
 table(nnm_data$subclass) # data includes only pairs of two observations
-dim(nnm_data) # 780 observations and 16 variables
+dim(nnm_data) # 780 observations and 17 variables
 ```
 No asexual unmatched. 
 
@@ -188,7 +171,7 @@ bal.plot(nnm, var.name = "relationship_length", which = "both", grid = T)
 
 bal.plot(nnm, var.name = "relationship_status", which = "both", grid = T)
 bal.plot(nnm, var.name = "language", which = "both", grid = T)
-bal.plot(nnm, var.name = "country", which = "both", grid = T) # recht unübersichtlich
+bal.plot(nnm, var.name = "country", which = "both", grid = T) # not readable
 
 
 love.plot(bal.tab(nnm, m.threshold = 0.1),
@@ -196,7 +179,7 @@ love.plot(bal.tab(nnm, m.threshold = 0.1),
           grid = T,
           stars = "raw",
           abs = F) 
-# mega unübersichtlich wegen Country Variable
+# not readable due to country variable
 
 # remove country variable for love plot
 nnm_without_country = nnm
@@ -210,8 +193,7 @@ love.plot(bal.tab(nnm_without_country, m.threshold = 0.1),
 ```
 
 
-
-#### Matching with nearest-neighbor-algorithm with caliper = 0.2*sd 
+#### Matching with nearest-neighbor-algorithm with caliper = 0.25*sd 
 ```{r}
 nnm_25 <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "nearest", caliper = 0.25, data = data_main_nomiss)
 
@@ -249,7 +231,7 @@ bal.plot(nnm_25, var.name = "relationship_length", which = "both", grid = T)
 
 bal.plot(nnm_25, var.name = "relationship_status", which = "both", grid = T)
 bal.plot(nnm_25, var.name = "language", which = "both", grid = T)
-bal.plot(nnm_25, var.name = "country", which = "both", grid = T) # recht unübersichtlich
+bal.plot(nnm_25, var.name = "country", which = "both", grid = T)  # not readable
 
 
 love.plot(bal.tab(nnm_25, m.threshold = 0.1),
@@ -257,11 +239,11 @@ love.plot(bal.tab(nnm_25, m.threshold = 0.1),
           grid = T,
           stars = "raw",
           abs = F) 
-# mega unübersichtlich wegen Country Variable
+# nt readable due to country variable
 
 # remove country variable for love plot
-nnm__25_without_country = nnm_25
-nnm__25without_country$X[c("country")] <- NULL 
+nnm_25_without_country = nnm_25
+nnm_25_without_country$X[c("country")] <- NULL 
 
 love.plot(bal.tab(nnm_25_without_country, m.threshold = 0.1),
           stat = "mean.diffs",
@@ -269,7 +251,7 @@ love.plot(bal.tab(nnm_25_without_country, m.threshold = 0.1),
           stars = "raw",
           abs = F) 
 ```
-
+Unmatched asexual lies within the area of common support. 
 
 #### Matching with nearest-neighbor-algorithm with caliper = 0.1*sd 
 ```{r}
@@ -309,7 +291,7 @@ bal.plot(nnm_10, var.name = "relationship_length", which = "both", grid = T)
 
 bal.plot(nnm_10, var.name = "relationship_status", which = "both", grid = T)
 bal.plot(nnm_10, var.name = "language", which = "both", grid = T)
-bal.plot(nnm_10, var.name = "country", which = "both", grid = T) # recht unübersichtlich
+bal.plot(nnm_10, var.name = "country", which = "both", grid = T) # not readable
 
 
 love.plot(bal.tab(nnm_10, m.threshold = 0.1),
@@ -317,7 +299,7 @@ love.plot(bal.tab(nnm_10, m.threshold = 0.1),
           grid = T,
           stars = "raw",
           abs = F) 
-# mega unübersichtlich wegen Country Variable
+# not readable due to country variable
 
 # remove country variable for love plot
 nnm_10_without_country = nnm
@@ -329,6 +311,7 @@ love.plot(bal.tab(nnm_10_without_country, m.threshold = 0.1),
           stars = "raw",
           abs = F) 
 ```
+All unmatched asexuals lie within the area of common support. 
 
 ## Comparison of matching algorithms
 Variable country was left out for a clearer visualization
@@ -359,6 +342,35 @@ love.plot(sexual_orientation ~ language + age +
           sample.names = c("Unadjusted", "Optimal Matching", "Nearest-Neighbor-Matching")) 
 ```
 
+Comparison of NNM algorithms
+```{r}
+# smds
+love.plot(sexual_orientation ~ language + age + 
+            relationship_status + relationship_length,
+          data = data_main_nomiss,
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F,
+          weights = list(w1 = get.w(nnm),
+                         w2 = get.w(nnm_25),
+                         w3 = get.w(nnm_10)),
+          thresholds = c(m = .1),
+          sample.names = c("Unadjusted", "Nearest-Neighbor-Matching", "NNM 0.25", "NNM 0.10")) 
+
+# variance ratios
+love.plot(sexual_orientation ~ language + age + 
+            relationship_status + relationship_length,
+          data = data_main_nomiss,
+          stat = "variance.ratios",
+          grid = T,
+          stars = "raw",
+          abs = F,
+          weights = list(w1 = get.w(om),
+                         w2 =  get.w(nnm_25),
+                         w3 = get.w(nnm_10)),
+          sample.names = c("Unadjusted","Nearest-Neighbor-Matching", "NNM 0.25", "NNM 0.10")) 
+```
 
 
 ```{r}
@@ -382,7 +394,7 @@ matched = inner_join(asexual_nnm, heterosex_nnm, by = "subclass")
 
 ### country
 ```{r}
-# create variable indicating whether pair comes from same country, if so country is printed
+# create variable indicating whether pair comes from same country, if that is the case country is printed
 matched$same_country = ifelse(matched$country.x == matched$country.y, matched$country.x, "no")
 
 # how many pairs per country
@@ -395,14 +407,14 @@ matched$country_2 = ifelse(matched$country.x != matched$country.y, matched$count
 # table 
 xtabs(~country_1 + country_2, matched) 
 
-# how many pairs share same language?
+# how many pairs share same country?
 sum(matched$same_country != "no") # 358
 sum(matched$same_country != "no")/nrow(matched) # 92%
 ```
 
 ### language
 ```{r}
-# create variable indicating whether pair asnwered survey in same language, if so that language is printed
+# create variable indicating whether pair answered survey in same language, if that is the case that language is printed
 matched$same_language = ifelse(matched$language.x == matched$language.y, matched$language.x, "no")
 
 # how many pairs per language
@@ -418,22 +430,23 @@ xtabs(~language_1 + language_2, matched)
 # how many pairs share same language?
 sum(matched$same_language != "no") # 376
 sum(matched$same_language != "no")/nrow(matched) # 96%
-
 ```
 
+*NNM without a caliper selected as matching algorithm*
 
 ## overview
 ```{r}
 describe.by(nnm_data,nnm_data$sexual_orientation)
 ```
 
+
 ## 2. PSM for self-ratings
 ### Check for missings in covariates to be matched
 psm cannot handle missings
-covariates: language, age, country, gender/sex, relationship status, relationship length
+covariates: language, age, country, relationship status, relationship length
 ```{r}
 # MatchIt does not allow missing values
-data_main_nomiss_self <- data_main %>% select(language, age, sex, country, relationship_status, relationship_length, sexual_orientation,
+data_main_nomiss_self <- data_main %>% select(id, language, age, sex, country, relationship_status, relationship_length, sexual_orientation,
                                          self_ks, self_att, self_fs,self_ca, self_ei, self_sexually_experienced) %>%
                                   na.omit()
 
@@ -451,12 +464,6 @@ levels(data_main_nomiss_self$sexual_orientation) # check factor level order
 ```
 
 ### Matching
-Rule: When setting caliper (nearest-neighbor matching), not more than 10% of asexual sample can be discarded
-SMD cut off <.10 (Austin, 2011)
-Variance ratios should be near 0
-Visualization (histograms, Q-Q Plots, Love plots)
---> matching algorithm resulting in smds < 0.1 acrosse the largest number of covariates will be chosen as algorithm for all analyses
-
 #### Matching with nearest-neighbor-algortihm without caliper
 ```{r}
 nnm_self <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "nearest", data = data_main_nomiss_self)
@@ -465,7 +472,7 @@ nnm_self_data <- match.data(nnm_self)
 
 nrow(nnm_self_data) # 772 observations
 table(nnm_self_data$subclass) # data includes only pairs of two observations
-dim(nnm_self_data) # 772 observations and 16 variables
+dim(nnm_self_data) # 772 observations and 17 variables
 ```
 No asexual unmatched. 
 
@@ -495,7 +502,7 @@ bal.plot(nnm_self, var.name = "relationship_length", which = "both", grid = T)
 
 bal.plot(nnm_self, var.name = "relationship_status", which = "both", grid = T)
 bal.plot(nnm_self, var.name = "language", which = "both", grid = T)
-bal.plot(nnm_self, var.name = "country", which = "both", grid = T) # recht unübersichtlich
+bal.plot(nnm_self, var.name = "country", which = "both", grid = T) # not readable
 
 
 love.plot(bal.tab(nnm_self, m.threshold = 0.1),
@@ -503,7 +510,7 @@ love.plot(bal.tab(nnm_self, m.threshold = 0.1),
           grid = T,
           stars = "raw",
           abs = F) 
-# mega unübersichtlich wegen Country Variable
+# not readable due to country variable
 
 # remove country variable for love plot
 nnm_self_without_country = nnm_self
@@ -543,7 +550,7 @@ matched_self$country_2 = ifelse(matched_self$country.x != matched_self$country.y
 # table 
 xtabs(~country_1 + country_2, matched_self) 
 
-# how many pairs share same language?
+# how many pairs share same country?
 sum(matched_self$same_country != "no") # 351
 sum(matched_self$same_country != "no")/nrow(matched_self) # 91%
 ```
@@ -573,21 +580,16 @@ sum(matched_self$same_language != "no")/nrow(matched_self) # 95%
 ## overview 
 ```{r}
 describe.by(nnm_self_data, nnm_self_data$sexual_orientation) 
-
-# histogram sexual experience by sexual orientation
-ggplot(nnm_self_data, aes(x = self_sexually_experienced, fill = sexual_orientation)) + 
-  geom_histogram(position = "dodge")
 ```
-Sexual experience:mean asexual = 1.05; mean hetero = 2.13
 
 
 ## 3. PSM for relationship options
 ### Check for missings in covariates to be matched
 psm cannot handle missings
-covariates: language, age, country, gender/sex, relationship status, relationship length
+covariates: language, age, country, relationship status, relationship length
 ```{r}
 # MatchIt does not allow missing values
-data_main_nomiss_rel <- data_main %>% select(language, age, sex, country, relationship_status, relationship_length,
+data_main_nomiss_rel <- data_main %>% select(id, language, age, sex, country, relationship_status, relationship_length,
                                              sexual_orientation,
                                              interest_hookups,
                                              interest_nonsexrel,
@@ -613,21 +615,15 @@ levels(data_main_nomiss_rel$sexual_orientation) # check factor level order
 ```
 
 ### Matching
-Rule: When setting caliper (nearest-neighbor matching), not more than 10% of asexual sample can be discarded
-SMD cut off <.10 (Austin, 2011)
-Variance ratios should be near 0
-Visualization (histograms, Q-Q Plots, Love plots)
---> matching algorithm resulting in smds < 0.1 acrosse the largest number of covariates will be chosen as algorithm for all analyses
-
 #### Matching with nearest-neighbor-algortihm without caliper
 ```{r}
 nnm_rel <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "nearest", data = data_main_nomiss_rel)
 
 nnm_rel_data <- match.data(nnm_rel)
 
-nrow(nnm_rel_data) # 652 observations
+nrow(nnm_rel_data) # 646 observations
 table(nnm_rel_data$subclass) # data includes only pairs of two observations
-dim(nnm_rel_data) # 652 observations and 16 variables
+dim(nnm_rel_data) # 646 observations and 18 variables
 ```
 No asexual unmatched. 
 
@@ -657,7 +653,7 @@ bal.plot(nnm_rel, var.name = "relationship_length", which = "both", grid = T)
 
 bal.plot(nnm_rel, var.name = "relationship_status", which = "both", grid = T)
 bal.plot(nnm_rel, var.name = "language", which = "both", grid = T)
-bal.plot(nnm_rel, var.name = "country", which = "both", grid = T) # recht unübersichtlich
+bal.plot(nnm_rel, var.name = "country", which = "both", grid = T) # not readable
 
 
 love.plot(bal.tab(nnm_rel, m.threshold = 0.1),
@@ -665,7 +661,7 @@ love.plot(bal.tab(nnm_rel, m.threshold = 0.1),
           grid = T,
           stars = "raw",
           abs = F) 
-# mega unübersichtlich wegen Country Variable
+# not readable due to coutnry variable
 
 # remove country variable for love plot
 nnm_rel_without_country = nnm_rel
@@ -705,7 +701,7 @@ matched_rel$country_2 = ifelse(matched_rel$country.x != matched_rel$country.y, m
 # table 
 xtabs(~country_1 + country_2, matched_rel) 
 
-# how many pairs share same language?
+# how many pairs share same country?
 sum(matched_rel$same_country != "no") # 293
 sum(matched_rel$same_country != "no")/nrow(matched_rel) # 90%
 ```
@@ -741,18 +737,35 @@ describe.by(nnm_rel_data, nnm_rel_data$sexual_orientation)
 ## save PSM samples as data files
 ```{r}
 # for partner preference psm sample
-write.csv(nnm_data,
-         file = "data_prefs.csv")
+# write.csv(nnm_data,
+#         file = "data_prefs.csv")
 
 # for self-ratings psm sample
-write.csv(nnm_self_data,
-         file = "data_self.csv")
+# write.csv(nnm_self_data,
+#         file = "data_self.csv")
 
-# for preferred relationship options
-write.csv(nnm_rel_data,
-         file = "data_rel.csv")
+# for preferred relationship options psm sample
+# write.csv(nnm_rel_data,
+#        file = "data_rel.csv")
 ```
 
+## save unmatched heterosexuals for each psm sample as data files
+```{r}
+# for partner preference sample
+data_prefs_unmatched = anti_join(data_main_nomiss, nnm_data) # saves only unmatched cases
+# write.csv(data_prefs_unmatched,
+#           file = "data_prefs_unmatched.csv")
+
+# for self-rating sample
+data_self_unmatched = anti_join(data_main_nomiss_self, nnm_self_data) 
+# write.csv(data_self_unmatched,
+#           file = "data_self_unmatched.csv")
+
+# for preferred relationship optiopns sample
+data_rel_unmatched = anti_join(data_main_nomiss_rel, nnm_rel_data) 
+# write.csv(data_rel_unmatched,
+#           file = "data_rel_unmatched.csv")
+```
 
 ## **hilfreiche Funktionen**
 ```{r}
