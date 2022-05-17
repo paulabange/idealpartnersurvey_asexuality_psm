@@ -28,7 +28,7 @@ data_main = read.csv(file = "data/data_main.csv")[,-1]
 #### Sexual orientation
 ```{r}
 table(data_main$sexual_orientation) # sexual orientation in absolute numbers
-round(table(data_main$sexual_orientation)/sum(table(data_main$sexual_orientation)),4)*100 # sexual orientation in percent
+round(table(data_main$sexual_orientation)/sum(table(data_main$sexual_orientation)),3)*100 # sexual orientation in percent
 table(is.na(data_main$sexual_orientation)) # no NAs 
 ```
 
@@ -57,8 +57,8 @@ table(is.na(data_main$age)) # NAs
 hist(data_main$age)
 
 # mean, sd
-mean(data_main$age, na.rm = T)
-sd(data_main$age, na.rm = T)
+round(mean(data_main$age, na.rm = T),2)
+round(sd(data_main$age, na.rm = T),2)
 ```
 
 #### Sex 
@@ -71,7 +71,7 @@ table(is.na(data_main$sex))
 ```
 
 #### Transgender
-```{r Transgender}
+```{r}
 table(data_main$transgender) # in absolute numbers
 round(table(data_main$transgender)/sum(table(data_main$transgender)),4)*100 # in percent
 table(is.na(data_main$transgender))
@@ -80,7 +80,7 @@ table(is.na(data_main$transgender))
 #### Relationship status
 ```{r}
 table(data_main$relationship_status) # in absolute numbers
-round(table(data_main$relationship_status)/sum(table(data_main$relationship_status)),4)*100 # in percent
+round(table(data_main$relationship_status)/sum(table(data_main$relationship_status)),3)*100 # in percent
 table(is.na(data_main$relationship_status)) # NAs
 ```
 
@@ -93,8 +93,8 @@ table(is.na(data_main$relationship_length)) # NAs
 hist(data_main$relationship_length)
 
 # mean, sd
-mean(data_main$relationship_length, na.rm = T)
-sd(data_main$relationship_length, na.rm = T)
+round(mean(data_main$relationship_length, na.rm = T),2)
+round(sd(data_main$relationship_length, na.rm = T),2)
 ```
 
 
