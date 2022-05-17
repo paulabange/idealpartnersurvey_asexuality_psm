@@ -48,7 +48,7 @@ table(is.na(data_rel$country)) # no NAs
 Chinese, Danish, English, French, German, Japanese, Portuguese, Russian, Spanish, Italian
 ```{r Language}
 table(data_rel$language) # language in absolute numbers
-round(table(data_rel$country)/sum(table(data_rel$country)),4)*100 # country in percent
+round(table(data_rel$language)/sum(table(data_rel$language)),4)*100 # country in percent
 table(is.na(data_rel$language)) #no NAs
 ```
 
@@ -62,8 +62,11 @@ table(is.na(data_rel$age)) # NAs
 hist(data_rel$age)
 
 # mean, sd
-mean(data_rel$age, na.rm = T)
-sd(data_rel$age, na.rm = T)
+round(mean(data_rel$age, na.rm = T),2)
+round(sd(data_rel$age, na.rm = T),2)
+
+# median
+median(data_rel$age)
 ```
 
 ##### Sex 
@@ -289,6 +292,35 @@ data_rel %>% group_by(sexual_orientation) %>%
   summarise_at(c("interest_hookups", "interest_nonsexrel", "interest_monrel",
                  "interest_nonmonrel","interest_altrel", "interest_single", "interest_parent"), sum, na.rm = T)
 
+
+# histogram
+# sexual, non-romantic relationship
+ggplot(data_rel, aes(x = interest_hookups, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+
+# non-sexual, romantic relationship
+ggplot(data_rel, aes(x = interest_nonsexrel, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+
+# monogamous relationship
+ggplot(data_rel, aes(x = interest_monrel, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+
+# non-monogamous relationship
+ggplot(data_rel, aes(x = interest_nonmonrel, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+
+# alternative committed relationship
+ggplot(data_rel, aes(x = interest_altrel, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+
+# single
+ggplot(data_rel, aes(x = interest_single, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+
+# parent
+ggplot(data_rel, aes(x = interest_parent, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
 ```
 
 #### Zero-order correlations
@@ -589,6 +621,30 @@ data_prefs %>% group_by(sexual_orientation) %>%
                  "pref_imp_ei",
                  "pref_imp_sexually_experienced"), sum, na.rm = T)
 
+# histogram
+# kind-supportive
+ggplot(data_prefs, aes(x = pref_imp_ks, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+
+# attractive
+ggplot(data_prefs, aes(x = pref_imp_att, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+
+# financially secure-successful
+ggplot(data_prefs, aes(x = pref_imp_fs, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+
+# confident-assertive
+ggplot(data_prefs, aes(x = pref_imp_ca, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+
+# educated-intelligent
+ggplot(data_prefs, aes(x = pref_imp_ei, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+
+# sexually experienced
+ggplot(data_prefs, aes(x = pref_imp_sexually_experienced, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
 ```
 
 #### Zero-order correlations
@@ -887,6 +943,31 @@ data_self %>% group_by(sexual_orientation) %>%
                  "self_ca",
                  "self_ei",
                  "self_sexually_experienced"), sum, na.rm = T)
+
+# histograms
+# kind-supportive
+ggplot(data_self, aes(x = self_ks, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+
+# attractive
+ggplot(data_self, aes(x = self_att, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+
+# financially secure-successful
+ggplot(data_self, aes(x = self_fs, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+
+# confident-assertive
+ggplot(data_self, aes(x = self_ca, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+
+# educated-intelligent
+ggplot(data_self, aes(x = self_ei, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
+
+# sexually experienced
+ggplot(data_self, aes(x = self_sexually_experienced, fill = sexual_orientation)) + 
+  geom_histogram(position = "dodge")
 
 ```
 
