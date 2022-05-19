@@ -26,9 +26,6 @@ library(psych)
 ## 0.2 Load data
 ```{r}
 data_main = read.csv(file = "data/data_main.csv")[,-1]
-
-# add id variable 
-data_main$id = 1:51775
 ```
 
 ## 1.  PSM for partner preferences

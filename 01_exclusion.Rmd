@@ -28,6 +28,13 @@ nrow(data_wrangled)
 ```
 94,738 responses in total. 
 
+
+## Add id variable to wrangled data
+```{r}
+data_wrangled$id = 1:94738
+```
+
+
 ## Exclusion criteria
 ### For main analyses
 Following the order the criteria were listed in the preregistration

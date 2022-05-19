@@ -390,7 +390,6 @@ fulldata_selected_wrangled$self_ei = fulldata_selected_wrangled %>%
   rowMeans(na.rm = T)
 ```
 
-
 ## Save wrangled data
 ```{r Save data}
 # write.csv(fulldata_selected_wrangled,
