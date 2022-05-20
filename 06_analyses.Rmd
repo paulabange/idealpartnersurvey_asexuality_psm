@@ -320,24 +320,88 @@ data_self_itemlevel = left_join(data_self, data_main_self_items, by = "id")
 
 
 ### overview
+### for partner preferences
 ```{r}
+# quick overview by sexual orientation
+describe.by(data_prefs_itemlevel, data_prefs_itemlevel$sexual_orientation)
+
 # mean
-data_prefs_itemlevel %>% select(pref_imp_confident, pref_imp_assertive, 
-                                pref_imp_attractive_body, pref_imp_attractive_face,
-                                pref_imp_kind, pref_imp_supportive,
-                                pref_imp_educated, pref_imp_intelligence,
-                                pref_imp_financially_secure, pref_imp_successful_ambitous) %>% 
-                        colMeans(na.rm = T) 
+data_prefs_itemlevel %>% group_by(sexual_orientation) %>% 
+  summarise_at(c("pref_imp_confident", "pref_imp_assertive",
+                 "pref_imp_attractive_body", "pref_imp_attractive_face",
+                 "pref_imp_kind","pref_imp_supportive",
+                 "pref_imp_financially_secure", "pref_imp_successful_ambitous", 
+                 "pref_imp_educated", "pref_imp_intelligence",
+                 "pref_imp_sexually_experienced"), mean, na.rm = T)
 
-# standard deviations
-round(apply(data_prefs %>% select(pref_imp_ks,
-                                 pref_imp_att,
-                                 pref_imp_fs,
-                                 pref_imp_ca,
-                                 pref_imp_ei,
-                                 pref_imp_sexually_experienced),2, sd, na.rm = T),2)
 
+# standard deviation
+data_prefs_itemlevel %>% group_by(sexual_orientation) %>% 
+  summarise_at(c("pref_imp_confident", "pref_imp_assertive",
+                 "pref_imp_attractive_body", "pref_imp_attractive_face",
+                 "pref_imp_kind","pref_imp_supportive",
+                 "pref_imp_financially_secure", "pref_imp_successful_ambitous", 
+                 "pref_imp_educated", "pref_imp_intelligence",
+                 "pref_imp_sexually_experienced"), sd, na.rm = T)
+# min
+data_prefs_itemlevel %>% group_by(sexual_orientation) %>% 
+  summarise_at(c("pref_imp_confident", "pref_imp_assertive",
+                 "pref_imp_attractive_body", "pref_imp_attractive_face",
+                 "pref_imp_kind","pref_imp_supportive",
+                 "pref_imp_financially_secure", "pref_imp_successful_ambitous", 
+                 "pref_imp_educated", "pref_imp_intelligence",
+                 "pref_imp_sexually_experienced"), min, na.rm = T)
+# max
+data_prefs_itemlevel %>% group_by(sexual_orientation) %>% 
+  summarise_at(c("pref_imp_confident", "pref_imp_assertive",
+                 "pref_imp_attractive_body", "pref_imp_attractive_face",
+                 "pref_imp_kind","pref_imp_supportive",
+                 "pref_imp_financially_secure", "pref_imp_successful_ambitous", 
+                 "pref_imp_educated", "pref_imp_intelligence",
+                 "pref_imp_sexually_experienced"), max, na.rm = T)
 ```
+
+### for self-ratings
+```{r}
+# quick overview by sexual orientation
+describe.by(data_self_itemlevel, data_self_itemlevel$sexual_orientation)
+
+# mean
+data_self_itemlevel %>% group_by(sexual_orientation) %>% 
+  summarise_at(c("self_confident", "self_assertive",
+                 "self_attractive_body", "self_attractive_face",
+                 "self_kind","self_supportive",
+                 "self_financially_secure", "self_successful_ambitous", 
+                 "self_educated", "self_intelligence",
+                 "self_sexually_experienced"), mean, na.rm = T)
+
+
+# standard deviation
+data_self_itemlevel %>% group_by(sexual_orientation) %>% 
+  summarise_at(c("self_confident", "self_assertive",
+                 "self_attractive_body", "self_attractive_face",
+                 "self_kind","self_supportive",
+                 "self_financially_secure", "self_successful_ambitous", 
+                 "self_educated", "self_intelligence",
+                 "self_sexually_experienced"), sd, na.rm = T)
+# min
+data_self_itemlevel %>% group_by(sexual_orientation) %>% 
+  summarise_at(c("self_confident", "self_assertive",
+                 "self_attractive_body", "self_attractive_face",
+                 "self_kind","self_supportive",
+                 "self_financially_secure", "self_successful_ambitous", 
+                 "self_educated", "self_intelligence",
+                 "self_sexually_experienced"), min, na.rm = T)
+# max
+data_self_itemlevel %>% group_by(sexual_orientation) %>% 
+  summarise_at(c("self_confident", "self_assertive",
+                 "self_attractive_body", "self_attractive_face",
+                 "self_kind","self_supportive",
+                 "self_financially_secure", "self_successful_ambitous", 
+                 "self_educated", "self_intelligence",
+                 "self_sexually_experienced"), max, na.rm = T)
+```
+
 
 ### Partner preferences
 ### confident-assertive
@@ -358,6 +422,14 @@ grid.arrange(prefs_confident, prefs_assertive, ncol = 2)
 
 #### confident
 ```{r}
+# mean, sd, min, max
+data_prefs_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(pref_imp_confident, na.rm = T), 
+            sd(pref_imp_confident, na.rm = T), 
+            min(pref_imp_confident, na.rm = T),
+            max(pref_imp_confident, na.rm = T))
+
 # compute t-test
 t.test(pref_imp_confident ~ sexual_orientation, 
        data = data_prefs_itemlevel,
@@ -371,9 +443,13 @@ effsize::cohen.d(pref_imp_confident ~ sexual_orientation, data = data_prefs_item
 
 #### assertive
 ```{r}
-# histogram
-ggplot(data_prefs_itemlevel, aes(x = pref_imp_assertive, fill = sexual_orientation)) + 
-  geom_histogram(position = "dodge")
+# mean, sd, min, max
+data_prefs_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(pref_imp_assertive, na.rm = T), 
+            sd(pref_imp_assertive, na.rm = T), 
+            min(pref_imp_assertive, na.rm = T),
+            max(pref_imp_assertive, na.rm = T))
 
 
 t.test(pref_imp_assertive ~ sexual_orientation, 
@@ -403,11 +479,26 @@ prefs_attractive_face = ggplot(data_prefs_itemlevel, aes(x = pref_imp_attractive
   ylim(0,150) +
   ggtitle("Attractive face")
 
-grid.arrange(prefs_attractive_body, prefs_attractive_face, ncol = 2)  
+grid.arrange(prefs_attractive_body, prefs_attractive_face, ncol = 2) 
+
+# correlation between attractive body and attractive face
+cor.test(data_prefs_itemlevel$pref_imp_attractive_body, data_prefs_itemlevel$pref_imp_attractive_face, method=c("pearson"))
 ```
+Correlation between attractive face and body r = .69.
+
+
 
 #### attractive body
 ```{r}
+# mean, sd, min, max
+data_prefs_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(pref_imp_attractive_body, na.rm = T), 
+            sd(pref_imp_attractive_body, na.rm = T), 
+            min(pref_imp_attractive_body, na.rm = T),
+            max(pref_imp_attractive_body, na.rm = T))
+
+# compute t-test
 t.test(pref_imp_attractive_body ~ sexual_orientation, 
        data = data_prefs_itemlevel,
        alternative = "less",
@@ -420,7 +511,15 @@ effsize::cohen.d(pref_imp_attractive_body ~ sexual_orientation, data = data_pref
 
 #### attractive face
 ```{r}
+# mean, sd, min, max
+data_prefs_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(pref_imp_attractive_face, na.rm = T), 
+            sd(pref_imp_attractive_face, na.rm = T), 
+            min(pref_imp_attractive_face, na.rm = T),
+            max(pref_imp_attractive_face, na.rm = T))
 
+# compute t-test
 t.test(pref_imp_attractive_face ~ sexual_orientation, 
        data = data_prefs_itemlevel,
        alternative = "less",
@@ -455,6 +554,15 @@ grid.arrange(prefs_kind, prefs_supportive, ncol = 2)
 
 #### kind
 ```{r}
+# mean, sd, min, max
+data_prefs_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(pref_imp_kind, na.rm = T), 
+            sd(pref_imp_kind, na.rm = T), 
+            min(pref_imp_kind, na.rm = T),
+            max(pref_imp_kind, na.rm = T))
+
+# compute t-test
 t.test(pref_imp_kind ~ sexual_orientation, 
        data = data_prefs_itemlevel,
        alternative = "two.sided",
@@ -468,6 +576,15 @@ effsize::cohen.d(pref_imp_kind ~ sexual_orientation, data = data_prefs_itemlevel
 
 #### supportive
 ```{r}
+# mean, sd, min, max
+data_prefs_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(pref_imp_supportive, na.rm = T), 
+            sd(pref_imp_supportive, na.rm = T), 
+            min(pref_imp_supportive, na.rm = T),
+            max(pref_imp_supportive, na.rm = T))
+
+# compute t-test
 t.test(pref_imp_supportive ~ sexual_orientation, 
        data = data_prefs_itemlevel,
        alternative = "two.sided",
@@ -497,6 +614,15 @@ grid.arrange(prefs_financially_secure, prefs_successful_ambitious, ncol = 2)
 
 #### financially-secure
 ```{r}
+# mean, sd, min, max
+data_prefs_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(pref_imp_financially_secure, na.rm = T), 
+            sd(pref_imp_financially_secure, na.rm = T), 
+            min(pref_imp_financially_secure, na.rm = T),
+            max(pref_imp_financially_secure, na.rm = T))
+
+# compute t-test
 t.test(pref_imp_financially_secure ~ sexual_orientation, 
        data = data_prefs_itemlevel,
        alternative = "two.sided",
@@ -510,6 +636,15 @@ effsize::cohen.d(pref_imp_financially_secure ~ sexual_orientation, data = data_p
 
 #### successful ambitious
 ```{r}
+# mean, sd, min, max
+data_prefs_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(pref_imp_successful_ambitous, na.rm = T), 
+            sd(pref_imp_successful_ambitous, na.rm = T), 
+            min(pref_imp_successful_ambitous, na.rm = T),
+            max(pref_imp_successful_ambitous, na.rm = T))
+
+# compute t-test
 t.test(pref_imp_successful_ambitous ~ sexual_orientation, 
        data = data_prefs_itemlevel,
        alternative = "two.sided",
@@ -538,6 +673,15 @@ grid.arrange(prefs_educated, prefs_intelligent, ncol = 2)
 
 #### educated
 ```{r}
+# mean, sd, min, max
+data_prefs_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(pref_imp_educated, na.rm = T), 
+            sd(pref_imp_educated, na.rm = T), 
+            min(pref_imp_educated, na.rm = T),
+            max(pref_imp_educated, na.rm = T))
+
+# compute t-test
 t.test(pref_imp_educated ~ sexual_orientation, 
        data = data_prefs_itemlevel,
        alternative = "two.sided",
@@ -551,6 +695,15 @@ effsize::cohen.d(pref_imp_educated ~ sexual_orientation, data = data_prefs_iteml
 
 #### intelligent
 ```{r}
+# mean, sd, min, max
+data_prefs_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(pref_imp_intelligence, na.rm = T), 
+            sd(pref_imp_intelligence, na.rm = T), 
+            min(pref_imp_intelligence, na.rm = T),
+            max(pref_imp_intelligence, na.rm = T))
+
+# compute t-test
 t.test(pref_imp_intelligence~ sexual_orientation, 
        data = data_prefs_itemlevel,
        alternative = "two.sided",
@@ -565,6 +718,7 @@ effsize::cohen.d(pref_imp_intelligence ~ sexual_orientation, data = data_prefs_i
 ### Self-ratings
 ### confident-assertive
 ```{r}
+# compute t-test
 # compare distributions
 self_confident = ggplot(data_self_itemlevel, aes(x = self_confident, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge") +
@@ -581,6 +735,14 @@ grid.arrange(self_confident, self_assertive, ncol = 2)
 
 #### confident
 ```{r}
+# mean, sd, min, max
+data_self_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(self_confident, na.rm = T), 
+            sd(self_confident, na.rm = T), 
+            min(self_confident, na.rm = T),
+            max(self_confident, na.rm = T))
+
 # compute t-test
 t.test(self_confident ~ sexual_orientation, 
        data = data_self_itemlevel,
@@ -595,6 +757,15 @@ effsize::cohen.d(self_confident ~ sexual_orientation, data = data_self_itemlevel
 
 #### assertive
 ```{r}
+# mean, sd, min, max
+data_self_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(self_assertive, na.rm = T), 
+            sd(self_assertive, na.rm = T), 
+            min(self_assertive, na.rm = T),
+            max(self_assertive, na.rm = T))
+
+# compute t-test
 t.test(self_assertive ~ sexual_orientation, 
        data = data_self_itemlevel,
        alternative = "less",
@@ -620,10 +791,24 @@ self_attractive_face = ggplot(data_self_itemlevel, aes(x = self_attractive_face,
   ggtitle("Attractive face")
 
 grid.arrange(self_attractive_body, self_attractive_face, ncol = 2)  
+
+# correlation between attractive body and attractive face
+cor.test(data_self_itemlevel$self_attractive_body, data_self_itemlevel$self_attractive_face, method=c("pearson"))
 ```
+Correlation between attractive body and face r = 0.66. 
+
 
 #### attractive body
 ```{r}
+# mean, sd, min, max
+data_self_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(self_attractive_body, na.rm = T), 
+            sd(self_attractive_body, na.rm = T), 
+            min(self_attractive_body, na.rm = T),
+            max(self_attractive_body, na.rm = T))
+
+# compute t-test
 t.test(self_attractive_body ~ sexual_orientation, 
        data = data_self_itemlevel,
        alternative = "less",
@@ -637,6 +822,15 @@ effsize::cohen.d(self_attractive_body ~ sexual_orientation, data = data_self_ite
 
 #### attractive face
 ```{r}
+# mean, sd, min, max
+data_self_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(self_attractive_face, na.rm = T), 
+            sd(self_attractive_face, na.rm = T), 
+            min(self_attractive_face, na.rm = T),
+            max(self_attractive_face, na.rm = T))
+
+# compute t-test
 t.test(self_attractive_face ~ sexual_orientation, 
        data = data_self_itemlevel,
        alternative = "less",
@@ -669,6 +863,15 @@ grid.arrange(self_kind, self_supportive, ncol = 2)
 
 #### kind
 ```{r}
+# mean, sd, min, max
+data_self_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(self_kind, na.rm = T), 
+            sd(self_kind, na.rm = T), 
+            min(self_kind, na.rm = T),
+            max(self_kind, na.rm = T))
+
+# compute t-test
 t.test(self_kind ~ sexual_orientation, 
        data = data_self_itemlevel,
        alternative = "two.sided",
@@ -682,6 +885,15 @@ effsize::cohen.d(self_kind ~ sexual_orientation, data = data_self_itemlevel, pai
 
 #### supportive
 ```{r}
+# mean, sd, min, max
+data_self_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(self_supportive, na.rm = T), 
+            sd(self_supportive, na.rm = T), 
+            min(self_supportive, na.rm = T),
+            max(self_supportive, na.rm = T))
+
+# compute t-test
 t.test(self_supportive ~ sexual_orientation, 
        data = data_self_itemlevel,
        alternative = "two.sided",
@@ -711,6 +923,15 @@ grid.arrange(self_financially_secure, self_successful_ambitious, ncol = 2)
 
 #### financially-secure
 ```{r}
+# mean, sd, min, max
+data_self_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(self_financially_secure, na.rm = T), 
+            sd(self_financially_secure, na.rm = T), 
+            min(self_financially_secure, na.rm = T),
+            max(self_financially_secure, na.rm = T))
+
+# compute t-test
 t.test(self_financially_secure ~ sexual_orientation, 
        data = data_self_itemlevel,
        alternative = "two.sided",
@@ -724,6 +945,15 @@ effsize::cohen.d(self_financially_secure ~ sexual_orientation, data = data_self_
 
 #### successful ambitious
 ```{r}
+# mean, sd, min, max
+data_self_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(self_successful_ambitous, na.rm = T), 
+            sd(self_successful_ambitous, na.rm = T), 
+            min(self_successful_ambitous, na.rm = T),
+            max(self_successful_ambitous, na.rm = T))
+
+# compute t-test
 t.test(self_successful_ambitous ~ sexual_orientation, 
        data = data_self_itemlevel,
        alternative = "two.sided",
@@ -753,6 +983,15 @@ grid.arrange(self_educated, self_intelligent, ncol = 2)
 
 #### educated
 ```{r}
+# mean, sd, min, max
+data_self_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(self_educated, na.rm = T), 
+            sd(self_educated, na.rm = T), 
+            min(self_educated, na.rm = T),
+            max(self_educated, na.rm = T))
+
+# compute t-test
 t.test(self_educated ~ sexual_orientation, 
        data = data_self_itemlevel,
        alternative = "two.sided",
@@ -766,6 +1005,15 @@ effsize::cohen.d(self_educated ~ sexual_orientation, data = data_self_itemlevel,
 
 #### intelligent
 ```{r}
+# mean, sd, min, max
+data_self_itemlevel %>%
+  group_by(sexual_orientation) %>%
+  summarise(mean(self_intelligence, na.rm = T), 
+            sd(self_intelligence, na.rm = T), 
+            min(self_intelligence, na.rm = T),
+            max(self_intelligence, na.rm = T))
+
+# compute t-test
 t.test(self_intelligence~ sexual_orientation, 
        data = data_self_itemlevel,
        alternative = "two.sided",
@@ -776,3 +1024,18 @@ t.test(self_intelligence~ sexual_orientation,
 effsize::cohen.d(self_intelligence ~ sexual_orientation, data = data_self_itemlevel, paired = T)
 ```
 @Problem. 
+
+
+
+```{r}
+ca =data_prefs %>% filter(sexual_orientation == "Straight/Heterosexual") %>% 
+  select(pref_imp_ca) 
+ca_asex = data_prefs %>% filter(sexual_orientation == "Asexual") %>% 
+  select(pref_imp_ca) 
+
+mean(ca$pref_imp_ca, na.rm = T)
+mean(ca_asex$pref_imp_ca, na.rm = T)
+mean(data_prefs$pref_imp_ca, na.rm = T)
+
+```
+
