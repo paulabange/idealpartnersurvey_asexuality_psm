@@ -21,6 +21,9 @@ library(MatchIt)
 library(optmatch)
 library(cobalt)
 library(psych)
+
+## set options for bal.tab function in cobalt package
+set.cobalt.options(binary = "std") # for binary covariates used in the matching procedure the bal.tab function will now display standardized mean differences instead of the raw difference
 ```
 
 ## 0.2 Load data
@@ -75,7 +78,7 @@ dim(om_data) # 780 observations and 16 variables
 summary_om = summary(om, standardize = T)
 print(summary_om)
 
-bal.tab(om, m.threshold = 0.1, un = T) #smd
+round(bal.tab(om, m.threshold = 0.1, un = T, binary = "std"),2) #smd
 bal.tab(om, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
 ```
 Based on SMDs, data is not balanced for 5 covariates (langauge_english, language_german, age, country_germany, country_United States of America) . For continuous variables all variance ratios are close to 1.
@@ -146,9 +149,21 @@ No asexual unmatched.
 ```{r}
 summary_nnm = summary(nnm, standardize = T)
 print(summary_nnm)
+round(head(summary_nnm$sum.all),2)
+round(summary_nnm$sum.all,2)
+round(tail(summary_nnm$sum.all),2)
+round(tail(summary_nnm$sum.matched),2)
+round(head(summary_nnm$sum.matched),2)
+round(summary_nnm$sum.matched, 2)
 
+
+bal.tab(nnm, m.threshold = 0.1, un = T, binary = "std") 
 bal.tab(nnm, m.threshold = 0.1, un = T) #smd
 bal.tab(nnm, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
+
+bal.tab(nnm, m.threshold = 0.1, un = T, binary = "std", s.d.denom = "pooled") 
+bal.tab(nnm, m.threshold = 0.1, un = T, binary = "std", s.d.denom = "treated")
+?bal.tab
 ```
 All variables balanced.
 
@@ -207,8 +222,8 @@ dim(nnm_25_data) # 778 observations and 16 variables
 summary_nnm_25 = summary(nnm_25, standardize = T)
 print(summary_nnm_25)
 
-bal.tab(nnm_25, m.threshold = 0.1, un = T) #smd
-bal.tab(nnm_25, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
+bal.tab(nnm_25, m.threshold = 0.1, un = T, binary = "std") #smd
+bal.tab(nnm_25, v.threshold = 2, un = T)#vr (can only be calculated for continuous variables)
 ```
 All variables are balanced.
 
@@ -266,6 +281,7 @@ dim(nnm_10_data) # 774 observations and 16 variables
 ```{r}
 summary_nnm_10 = summary(nnm_10, standardize = T)
 print(summary_nnm_10)
+round(tail(summary_nnm_10$sum.matched), 2)
 
 bal.tab(nnm_10, m.threshold = 0.1, un = T) #smd
 bal.tab(nnm_10, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
@@ -307,6 +323,7 @@ love.plot(bal.tab(nnm_10_without_country, m.threshold = 0.1),
           grid = T,
           stars = "raw",
           abs = F) 
+?love.plot
 ```
 All unmatched asexuals lie within the area of common support. 
 
@@ -762,6 +779,57 @@ data_self_unmatched = anti_join(data_main_nomiss_self, nnm_self_data)
 data_rel_unmatched = anti_join(data_main_nomiss_rel, nnm_rel_data) 
 # write.csv(data_rel_unmatched,
 #           file = "data_rel_unmatched.csv")
+```
+
+## create plot for methods section
+### Love plot for nnm in the partner preference sample
+```{r}
+# Using alternate variable names
+v <- data.frame(old = c("distance", "language_chinese", "language_japanese", "language_german","language_english", "language_italian", "language_danish", "language_spanish", "language_russian", "language_portuguese", "language_french", "age", "relationship_status_Long-term", "relationship_status_No relationship", "relationship_status_Short-term",
+                        "relationship_length"),
+                new = c("Propensity score", "Chinese", "Japanese", "German", "English", "Italian", "Danish", "Spanish", "Russian", "Portuguese", "French", "Long-term relationship", "No relationship", "Dating/Sexual Relationship","Age",  "Relationship length"))
+
+love.plot(bal.tab(nnm_without_country, m.threshold = 0.1),
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F,
+          sample.names = c("Before matching", "After matching"),
+          var.names = v) 
+
+```
+
+## love plot comparing all matching algorithms for smd and vr
+```{r}
+# smds
+love.plot(sexual_orientation ~ language + age + 
+            relationship_status + relationship_length,
+          data = data_main_nomiss,
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F,
+          weights = list(w1 = get.w(om),
+                         w2 = get.w(nnm),
+                         w3 = get.w(nnm_25),
+                         w4 = get.w(nnm_10)),
+          thresholds = c(m = .1),
+          s.d.denom = "pooled",
+          sample.names = c("Unmatched", "Optimal Matching", "Nearest-Neighbor-Matching", "NNM with caliper = 0.25", "NNM with caliper = 0.10"),
+          var.names = v) 
+
+
+# variance ratios
+love.plot(sexual_orientation ~ language + age + 
+            relationship_status + relationship_length,
+          data = data_main_nomiss,
+          stat = "variance.ratios",
+          grid = T,
+          stars = "raw",
+          abs = F,
+          weights = list(w1 = get.w(om),
+                         w2 = get.w(nnm)),
+          sample.names = c("Unadjusted", "Optimal Matching", "Nearest-Neighbor-Matching")) 
 ```
 
 ## **hilfreiche Funktionen**
