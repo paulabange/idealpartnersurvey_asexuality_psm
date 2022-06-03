@@ -12,6 +12,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Lifetime sexual partners
 ```{r}
+# load data_prefs and data_self
+data_prefs = read.csv(file = "data/data_prefs.csv")[,-1]
+data_self = read.csv(file = "data/data_self.csv")[,-1]
+
 # load data with lifetime sexual partners variable
 fulldata_selected_plus_sexual_partner_variable = read.csv(file = "data/fulldata_selected_plus_sexual_partner_variable.csv")[,-1]
 names(fulldata_selected_plus_sexual_partner_variable)
@@ -22,6 +26,7 @@ sexual_partner$id = 1:94738
 
 # add variables to data
 data_prefs_plus_sexual_partner_variable = left_join(data_prefs, sexual_partner) # joined by id variable
+data_self_plus_sexual_partner_variable = left_join(data_self, sexual_partner) # joined by id variable
 ```
 
 
@@ -59,19 +64,17 @@ table(data_prefs_plus_sexual_partner_variable$total_sex_partners2)
 cor(data_prefs_plus_sexual_partner_variable$total_sex_partners, data_prefs_plus_sexual_partner_variable$total_sex_partners2, method = "pearson", na.rm = TRUE) # funktioniert nicht --> warum?
 cor.test(data_prefs_plus_sexual_partner_variable$total_sex_partners, data_prefs_plus_sexual_partner_variable$total_sex_partners2, method = "pearson", na.rm = T)
 ```
+Both variables are highly correlated (r = 0.99) - as expected. total_sex_partners_2 will be used for the following analysis.
 
 
+### correlation between number of total sex partners and preference for a sexually experienced partner
 ```{r}
 cor.test(data_prefs_plus_sexual_partner_variable$total_sex_partners2, data_prefs_plus_sexual_partner_variable$pref_imp_sexually_experienced, method = "pearson", na.rm = T)
 ```
+r = 0.26
 
 
 ## for self-ratings
-
-```{r}
-# add variables to data
-data_self_plus_sexual_partner_variable = left_join(data_self, sexual_partner) # joined by id variable
-```
 
 # look at sexual partners variables
 ```{r}
@@ -107,9 +110,54 @@ table(data_self_plus_sexual_partner_variable$total_sex_partners2)
 cor(data_self_plus_sexual_partner_variable$total_sex_partners, data_self_plus_sexual_partner_variable$total_sex_partners2, method = "pearson", na.rm = TRUE) # funktioniert nicht --> warum?
 cor.test(data_self_plus_sexual_partner_variable$total_sex_partners, data_self_plus_sexual_partner_variable$total_sex_partners2, method = "pearson", na.rm = T)
 ```
+Both variables are highly correlated (r = 0.99).
 
-
+### correlation between total number of sex partners and being sexually experienced 
 ```{r}
 cor.test(data_self_plus_sexual_partner_variable$total_sex_partners2, data_self_plus_sexual_partner_variable$self_sexually_experienced, method = "pearson", na.rm = T)
 ```
+
+
+
+```{r}
+t.test(total_sex_partners2 ~ sexual_orientation, data = data_self_plus_sexual_partner_variable,
+       alternative = "two.sided",
+       paired = F)
+```
+
+## Longest relationship variable
+```{r}
+# load data with lifetime sexual partners variable
+fulldata_selected_plus_longest_rel_variable = read.csv(file = "data/fulldata_selected_plus_sexual_partner_variable.csv")[,-1]
+names(fulldata_selected_plus_longest_rel_variable)
+longest_rel = fulldata_selected_plus_longest_rel_variable %>% select("longest_relationship")
+
+# add id variable to longest relationship data set
+longest_rel$id = 1:94738
+
+# add variables to data
+data_prefs_plus_longest_rel_variable = left_join(data_prefs, longest_rel) # joined by id variable
+```
+
+# look at longest relationship variable
+```{r}
+# turn longest relationship variable into a factor
+data_prefs_plus_longest_rel_variable$longest_relationship = as.factor(data_prefs_plus_longest_rel_variable$longest_relationship) # convert to factor
+levels(data_prefs_plus_longest_rel_variable$longest_relationship) # check levels of factor
+data_prefs_plus_longest_rel_variable$longest_relationship = factor(data_prefs_plus_longest_rel_variable$longest_relationship,
+                                             levels=c("Less than a year", "1-2.9 years", "3-5.9 years", "6-7.9 years", "8-10.9 years", "11-19.9 years","More than 20 years")) # change order of the factor levels
+levels(data_prefs_plus_longest_rel_variable$longest_relationship) # check factor level order
+
+
+# counts
+table(data_prefs_plus_longest_rel_variable$longest_relationship)
+
+```
+
+
+### correlation between longest relationship and sexual experience??
+```{r}
+cor.test(data_prefs_plus_sexual_partner_variable$total_sex_partners2, data_prefs_plus_sexual_partner_variable$pref_imp_sexually_experienced, method = "pearson", na.rm = T)
+```
+r = 0.26
 
