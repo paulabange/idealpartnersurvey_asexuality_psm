@@ -139,6 +139,22 @@ nrow(data_wrangled) - nrow(data_wrangled_robustness)
 ```
 For the main analyses, a total of 42,963 participants were excluded, leaving 51,775 participants.
 For the robustness analyses, a total of 41,326 participants were excluded, leaving 53,412 participants. 
+## Included participants
+```{r}
+# for main analyses
+# by sexual orientation
+table(data_wrangled_main$sexual_orientation)
+
+# for robustness check
+# by sexual orientation
+table(data_wrangled_robustness$sexual_orientation)
+
+# by gender
+table(data_wrangled_robustness$sex)
+
+# by gender and sexual orientation
+xtabs(~sex+sexual_orientation, data_wrangled_robustness) 
+```
 
 
 ## Save data
