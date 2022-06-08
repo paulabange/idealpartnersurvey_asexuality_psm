@@ -72,7 +72,7 @@ x = m.pairs.pref_imp_ca[,1] # asexuals
 y = m.pairs.pref_imp_ca[,2] # heterosexuals
 
 
-psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
+psens(x = y, y = x, Gamma = 6, GammaInc = 0.1)
 
 ####
 nnm
@@ -328,7 +328,8 @@ nnm_rel_data[nnm_rel$match.matrix, 'interest_hookups'])
 x = m.pairs.interest_hookups[,1]
 y = m.pairs.interest_hookups[,2]
 
-psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
+psens(x = y, y = x, Gamma = 6, GammaInc = 0.1)
+?psens
 ```
 Gamma = 5.9
 

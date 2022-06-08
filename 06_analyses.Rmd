@@ -455,8 +455,10 @@ data_prefs_itemlevel %>%
 t.test(pref_imp_assertive ~ sexual_orientation, 
        data = data_prefs_itemlevel,
        alternative = "less",
-       paired = TRUE) 
-
+       paired = TRUE,
+       na.action = na.omit) 
+?t.test
+getOption("na.action")
 table(is.na(data_prefs_itemlevel$pref_imp_assertive))
 weird = data_prefs_itemlevel %>%  filter(is.na(pref_imp_assertive))
 

@@ -78,10 +78,10 @@ dim(om_data) # 780 observations and 16 variables
 summary_om = summary(om, standardize = T)
 print(summary_om)
 
-round(bal.tab(om, m.threshold = 0.1, un = T, binary = "std"),2) #smd
+bal.tab(om, m.threshold = 0.1, un = T, binary = "std") #smd
 bal.tab(om, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
 ```
-Based on SMDs, data is not balanced for 5 covariates (langauge_english, language_german, age, country_germany, country_United States of America) . For continuous variables all variance ratios are close to 1.
+Based on SMDs, data is not balanced for 27 covariates. For continuous variables all variance ratios are close to 1.
 
 ##### Visualize
 ```{r}
@@ -115,7 +115,7 @@ love.plot(bal.tab(om, m.threshold = 0.1),
 om_without_country = om
 om_without_country$X[c("country")] <- NULL 
 
-love.plot(bal.tab(om_without_country, m.threshold = 0.1),
+love.plot(bal.tab(om_without_country, m.threshold = 0.1, binardy = "std"),
           stat = "mean.diffs",
           grid = T,
           stars = "raw",
@@ -130,8 +130,25 @@ love.plot(bal.tab(om_without_country, m.threshold = 0.1),
 # 
 # m.out$X[c("location")] <- NULL
 # before running summary() and the location variable will be removed from the output.
+
+
+## love plot using alternate variable names
+# Using alternate variable names
+v <- data.frame(old = c("distance", "language_chinese", "language_japanese", "language_german","language_english", "language_italian", "language_danish", "language_spanish", "language_russian", "language_portuguese", "language_french", "age", "relationship_status_Long-term", "relationship_status_No relationship", "relationship_status_Short-term",
+                        "relationship_length"),
+                new = c("Propensity scores", "Chinese", "Japanese", "German", "English", "Italian", "Danish", "Spanish", "Russian", "Portuguese", "French", "Long-term relationship", "No relationship", "Dating/Sexual Relationship","Age",  "Relationship length"))
+
+love.plot(bal.tab(om_without_country, m.threshold = 0.1, binardy = "std"),
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F,
+          sample.names = c("Unmatched", "Optimal Matching"),
+          var.names = v) 
+
+
 ```
-Optimal matching results in five covariates not being balanced after matching (based on SMDs). 
+Optimal matching results in 27 covariates not being balanced after matching (based on SMDs). 
 
 #### Matching with nearest-neighbor-algortihm without caliper
 ```{r}
@@ -149,13 +166,6 @@ No asexual unmatched.
 ```{r}
 summary_nnm = summary(nnm, standardize = T)
 print(summary_nnm)
-round(head(summary_nnm$sum.all),2)
-round(summary_nnm$sum.all,2)
-round(tail(summary_nnm$sum.all),2)
-round(tail(summary_nnm$sum.matched),2)
-round(head(summary_nnm$sum.matched),2)
-round(summary_nnm$sum.matched, 2)
-
 
 bal.tab(nnm, m.threshold = 0.1, un = T, binary = "std") 
 bal.tab(nnm, m.threshold = 0.1, un = T) #smd
