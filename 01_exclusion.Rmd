@@ -24,9 +24,10 @@ data_wrangled = read.csv(file = "data/data_wrangled.csv")[,-1]
 
 ## Total number of responses 
 ```{r}
-nrow(data_wrangled) 
+nrow(data_wrangled) # total number of clicks on the survey
+nrow(data_wrangled %>% filter(age >= 18)) # total number of responses for participants 18 or older
 ```
-94,738 responses in total. 
+94,738 clicks on the survey in total. 68,085 responses from participants 18 years or older. 
 
 
 ## Add id variable to wrangled data
