@@ -78,7 +78,7 @@ dim(om_data) # 780 observations and 16 variables
 summary_om = summary(om, standardize = T)
 print(summary_om)
 
-bal.tab(om, m.threshold = 0.1, un = T, binary = "std") #smd
+bal.tab(om, m.threshold = 0.1, un = T, binary = "std") #sm
 bal.tab(om, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
 ```
 Based on SMDs, data is not balanced for 27 covariates. For continuous variables all variance ratios are close to 1.
@@ -167,13 +167,8 @@ No asexual unmatched.
 summary_nnm = summary(nnm, standardize = T)
 print(summary_nnm)
 
-bal.tab(nnm, m.threshold = 0.1, un = T, binary = "std") 
-bal.tab(nnm, m.threshold = 0.1, un = T) #smd
+bal.tab(nnm, m.threshold = 0.1, un = T, binary = "std") #smd
 bal.tab(nnm, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
-
-bal.tab(nnm, m.threshold = 0.1, un = T, binary = "std", s.d.denom = "pooled") 
-bal.tab(nnm, m.threshold = 0.1, un = T, binary = "std", s.d.denom = "treated")
-?bal.tab
 ```
 All variables balanced.
 
@@ -212,6 +207,22 @@ love.plot(bal.tab(nnm_without_country, m.threshold = 0.1),
           grid = T,
           stars = "raw",
           abs = F) 
+
+
+## love plot using alternate variable names
+# Using alternate variable names
+v <- data.frame(old = c("distance", "language_chinese", "language_japanese", "language_german","language_english", "language_italian", "language_danish", "language_spanish", "language_russian", "language_portuguese", "language_french", "age", "relationship_status_Long-term", "relationship_status_No relationship", "relationship_status_Short-term",
+                        "relationship_length"),
+                new = c("Propensity scores", "Chinese", "Japanese", "German", "English", "Italian", "Danish", "Spanish", "Russian", "Portuguese", "French", "Long-term relationship", "No relationship", "Dating/Sexual Relationship","Age",  "Relationship length"))
+
+love.plot(bal.tab(nnm_without_country, m.threshold = 0.1, binary = "std"),
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F,
+          sample.names = c("Before Matching", "After Matching"),
+          var.names = v) 
+
 ```
 
 
@@ -333,11 +344,46 @@ love.plot(bal.tab(nnm_10_without_country, m.threshold = 0.1),
           grid = T,
           stars = "raw",
           abs = F) 
-?love.plot
 ```
 All unmatched asexuals lie within the area of common support. 
 
 ## Comparison of matching algorithms
+### smd and percent balance improvement
+Comparing percent balance improvement after matching 
+```{r}
+## looking at the percent balance improvement
+# nnm vs nnm_25
+summary_nnm$reduction[,1]
+summary_nnm_25$reduction[,1]
+comp = ifelse(summary_nnm$reduction[,1]==summary_nnm_25$reduction[,1], "Yes",
+             summary_nnm$reduction[,1]-summary_nnm_25$reduction[,1])
+table(comp)
+
+
+# nnm vs nnm_10
+summary_nnm$reduction[,1]
+summary_nnm_10$reduction[,1]
+comp2 = ifelse(summary_nnm$reduction[,1]==summary_nnm_10$reduction[,1], "Yes",
+             summary_nnm$reduction[,1]-summary_nnm_10$reduction[,1])
+table(comp2)
+
+
+
+### smd
+# nnm vs nnm_25
+comp_smd = ifelse(summary_nnm$sum.matched[,1]==summary_nnm_25$sum.matched[,1], "Yes",
+             summary_nnm$sum.matched[,1]-summary_nnm_25$sum.matched[,1])
+table(comp_smd)
+
+# nnm vs nnm_10
+comp2_smd = ifelse(summary_nnm$sum.matched[,1]==summary_nnm_10$sum.matched[,1], "Yes",
+             summary_nnm$sum.matched[,1]-summary_nnm_10$sum.matched[,1])
+table(comp2_smd)
+```
+Setting a caliper width did bring minor improvement in balance, mostly for some of the country variables. However, improvements were only minor but both algorithms did lead to asexual participants being discarded. Since without caliper adjustment balance criteria were already sufficed and no asexual participant was lost in the process, using nearest-neighbor-matching without a caliper is chosen. 
+
+
+### Visualize
 Variable country was left out for a clearer visualization
 ```{r}
 # smds
@@ -349,11 +395,21 @@ love.plot(sexual_orientation ~ language + age +
           stars = "raw",
           abs = F,
           weights = list(w1 = get.w(om),
-                         w2 = get.w(nnm)),
+                         w2 = get.w(nnm),
+                         w3 = get.w(nnm_25),
+                         w4 = get.w(nnm_10)),
           thresholds = c(m = .1),
-          sample.names = c("Unadjusted", "Optimal Matching", "Nearest-Neighbor-Matching")) 
+          sample.names = c("Before Matching", "Optimal Matching", "Nearest-Neighbor-Matching", "Nearest-Neighbor-Matching with caliper = 0.25", "Nearest-Neighbor-Matching with caliper = 0.10"),
+          var.names = v,
+          s.d.denom = "treated")
+
 
 # variance ratios
+# alternatve variable names 
+v.vr = data.frame(old = c("distance", "age",
+                        "relationship_length"),
+                new = c("Propensity scores", "Age", "Relationship length"))
+
 love.plot(sexual_orientation ~ language + age + 
             relationship_status + relationship_length,
           data = data_main_nomiss,
@@ -361,9 +417,14 @@ love.plot(sexual_orientation ~ language + age +
           grid = T,
           stars = "raw",
           abs = F,
+          thresholds = c(v = 2),
           weights = list(w1 = get.w(om),
-                         w2 = get.w(nnm)),
-          sample.names = c("Unadjusted", "Optimal Matching", "Nearest-Neighbor-Matching")) 
+                         w2 = get.w(nnm),
+                         w3 = get.w(nnm_25),
+                         w4 = get.w(nnm_10)),
+          sample.names = c("Before Matching", "Optimal Matching", "Nearest-Neighbor-Matching", "Nearest-Neighbor-Matching with caliper = 0.25", "Nearest-Neighbor-Matching with caliper = 0.10"),
+          var.names = v.vr,
+          s.d.denom = "treated") 
 ```
 
 Comparison of NNM algorithms
@@ -825,7 +886,7 @@ love.plot(sexual_orientation ~ language + age +
                          w4 = get.w(nnm_10)),
           thresholds = c(m = .1),
           s.d.denom = "pooled",
-          sample.names = c("Unmatched", "Optimal Matching", "Nearest-Neighbor-Matching", "NNM with caliper = 0.25", "NNM with caliper = 0.10"),
+          sample.names = c("Unmatched", "Optimal matching", "Nearest-neighbor-matching", "Nearest-neighbor-matching with caliper = 0.25", "Nearest-neighbor-matching with caliper = 0.10"),
           var.names = v) 
 
 
