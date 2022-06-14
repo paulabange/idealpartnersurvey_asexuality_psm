@@ -161,13 +161,13 @@ xtabs(~sex+sexual_orientation, data_wrangled_robustness)
 ## Save data
 ### For main analyses
 ```{r Save data main analyses}
-# write.csv(data_wrangled_main,
-#          file = "data_main.csv")
+write.csv(data_wrangled_main,
+          file = "data/data_main.csv")
 ```
 
 ### For robustness check
 ```{r Save data robustness check}
-# write.csv(data_wrangled_robustness,
-#          file = "data_robustness.csv")
+write.csv(data_wrangled_robustness,
+          file = "data/data_robustness.csv")
 ```
   

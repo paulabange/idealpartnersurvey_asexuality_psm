@@ -393,5 +393,5 @@ fulldata_selected_wrangled$self_ei = fulldata_selected_wrangled %>%
 ## Save wrangled data
 ```{r Save data}
 write.csv(fulldata_selected_wrangled,
-           file = "data_wrangled.csv")
+           file = "data/data_wrangled.csv")
 ```

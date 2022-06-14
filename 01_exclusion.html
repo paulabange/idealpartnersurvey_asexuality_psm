@@ -391,16 +391,23 @@ library(dplyr)</code></pre>
 </div>
 <div id="total-number-of-responses" class="section level2">
 <h2>Total number of responses</h2>
-<pre class="r"><code>nrow(data_wrangled) </code></pre>
+<pre class="r"><code>nrow(data_wrangled) # total number of clicks on the survey</code></pre>
 <pre><code>## [1] 94738</code></pre>
-<p>94,738 responses in total.</p>
+<pre class="r"><code>nrow(data_wrangled %&gt;% filter(age &gt;= 18)) # total number of responses for participants 18 or older</code></pre>
+<pre><code>## [1] 68085</code></pre>
+<p>94,738 clicks on the survey in total. 68,085 responses from
+participants 18 years or older.</p>
+</div>
+<div id="add-id-variable-to-wrangled-data" class="section level2">
+<h2>Add id variable to wrangled data</h2>
+<pre class="r"><code>data_wrangled$id = 1:94738</code></pre>
 </div>
 <div id="exclusion-criteria" class="section level2">
 <h2>Exclusion criteria</h2>
 <div id="for-main-analyses" class="section level3">
 <h3>For main analyses</h3>
 <p>Following the order the criteria were listed in the preregistration
-1. Excluding participants not identifying as women</p>
+#### 1. Excluding participants not identifying as women</p>
 <pre class="r"><code>data_wrangled_main = data_wrangled %&gt;%
   filter(sex == &quot;Woman&quot;)
 
@@ -423,10 +430,9 @@ nrow(data_wrangled_main) # 64879 women </code></pre>
 <p>N = 29,859 participants were excluded, leaving N = 64,879
 participants. Of those women, n = 447 identify as asexual and n = 51,328
 identify as heterosexual.</p>
-<ol start="2" style="list-style-type: decimal">
-<li>Excluding participants not identifying as asexual or
-heterosexual</li>
-</ol>
+<div id="excluding-participants-not-identifying-as-asexual-or-heterosexual" class="section level4">
+<h4>2. Excluding participants not identifying as asexual or
+heterosexual</h4>
 <pre class="r"><code>data_wrangled_main = data_wrangled_main %&gt;% 
   filter(sexual_orientation == &quot;Straight/Heterosexual&quot; | sexual_orientation == &quot;Asexual&quot;)
 
@@ -441,10 +447,10 @@ nrow(data_wrangled_main) # 53390 women </code></pre>
 <p>N = 11,489 participants were excluded, leaving N = 53,390
 participants. Of those, n = 457 identify as asesxual and n = 52,933
 identify as heterosexual.</p>
-<ol start="3" style="list-style-type: decimal">
-<li>Excluding participants choosing not to answer the honesty question
-or indicating not having filled out the survey truthfully</li>
-</ol>
+</div>
+<div id="excluding-participants-choosing-not-to-answer-the-honesty-question-or-indicating-not-having-filled-out-the-survey-truthfully" class="section level4">
+<h4>3. Excluding participants choosing not to answer the honesty
+question or indicating not having filled out the survey truthfully</h4>
 <pre class="r"><code>data_wrangled_main = data_wrangled_main %&gt;% 
  mutate(answer_accuracy = replace_na(answer_accuracy, &quot;No value&quot;))
 data_wrangled_main = data_wrangled_main %&gt;%
@@ -473,12 +479,12 @@ table(is.na(data_wrangled_main$answer_accuracy)) </code></pre>
 Of those, n = 447 identify as asexual and n = 51,328 identify as
 heterosexual.</p>
 </div>
+</div>
 <div id="for-robustness-check" class="section level3">
 <h3>For robustness check</h3>
-<ol style="list-style-type: decimal">
-<li>Excluding participants not identifying as women, man or
-genderqueer/nonbinary</li>
-</ol>
+<div id="excluding-participants-not-identifying-as-women-man-or-genderqueernonbinary" class="section level4">
+<h4>1. Excluding participants not identifying as women, man or
+genderqueer/nonbinary</h4>
 <pre class="r"><code>data_wrangled_robustness = data_wrangled %&gt;%
   filter(sex == &quot;Woman&quot; | sex == &quot;Man&quot; | sex == &quot;Genderqueer/Nonbinary&quot;)
 
@@ -501,10 +507,10 @@ nrow(data_wrangled_robustness) # 67774 participants </code></pre>
 <p>N = 26,964 participants were excluded, leaving N = 67,774
 participants. Of those, n = 64,879 identify as women, n = 2055 as men,
 and n = 840 as genderqueer/nonbinary.</p>
-<ol start="2" style="list-style-type: decimal">
-<li>Excluding participants not identifying as asexual or
-heterosexual</li>
-</ol>
+</div>
+<div id="excluding-participants-not-identifying-as-asexual-or-heterosexual-1" class="section level4">
+<h4>2. Excluding participants not identifying as asexual or
+heterosexual</h4>
 <pre class="r"><code>data_wrangled_robustness = data_wrangled_robustness %&gt;% 
   filter(sexual_orientation == &quot;Straight/Heterosexual&quot; | sexual_orientation == &quot;Asexual&quot;)
 
@@ -524,10 +530,10 @@ nrow(data_wrangled_robustness) # 55076 participants</code></pre>
 participants. Of those, n = 53,390 identify as women, n = 1581 as men,
 and n = 105 as genderqueer/nonbinary. N = 539 identify as asexual and n
 = 54,537 as heterosexual.</p>
-<ol start="3" style="list-style-type: decimal">
-<li>Excluding participants choosing not to answer the honesty question
-or indicating not having filled out the survey truthfully</li>
-</ol>
+</div>
+<div id="excluding-participants-choosing-not-to-answer-the-honesty-question-or-indicating-not-having-filled-out-the-survey-truthfully-1" class="section level4">
+<h4>3. Excluding participants choosing not to answer the honesty
+question or indicating not having filled out the survey truthfully</h4>
 <pre class="r"><code>data_wrangled_robustness = data_wrangled_robustness %&gt;% 
  mutate(answer_accuracy = replace_na(answer_accuracy, &quot;No value&quot;))
 data_wrangled_robustness = data_wrangled_robustness %&gt;%
@@ -551,6 +557,7 @@ genderqueer/nonbinary. N = 527 identify as asexual and n = 52,885 as
 heterosexual.</p>
 </div>
 </div>
+</div>
 <div id="total-number-of-excluded-participants" class="section level2">
 <h2>Total number of excluded participants</h2>
 <pre class="r"><code># for main analyses
@@ -559,22 +566,46 @@ nrow(data_wrangled) - nrow(data_wrangled_main)</code></pre>
 <pre class="r"><code># for robustness check
 nrow(data_wrangled) - nrow(data_wrangled_robustness)</code></pre>
 <pre><code>## [1] 41326</code></pre>
-<p>For the main analyses, a total of 51,775,326 participants were
-excluded, leaving 51,775 participants. For the robustness analyses, a
-total of 41,326 participants were excluded, leaving 53,412
-participants.</p>
+<p>For the main analyses, a total of 42,963 participants were excluded,
+leaving 51,775 participants. For the robustness analyses, a total of
+41,326 participants were excluded, leaving 53,412 participants. ##
+Included participants</p>
+<pre class="r"><code># for main analyses
+# by sexual orientation
+table(data_wrangled_main$sexual_orientation)</code></pre>
+<pre><code>## 
+##               Asexual Straight/Heterosexual 
+##                   447                 51328</code></pre>
+<pre class="r"><code># for robustness check
+# by sexual orientation
+table(data_wrangled_robustness$sexual_orientation)</code></pre>
+<pre><code>## 
+##               Asexual Straight/Heterosexual 
+##                   527                 52885</code></pre>
+<pre class="r"><code># by gender
+table(data_wrangled_robustness$sex)</code></pre>
+<pre><code>## 
+## Genderqueer/Nonbinary                   Man                 Woman 
+##                   102                  1535                 51775</code></pre>
+<pre class="r"><code># by gender and sexual orientation
+xtabs(~sex+sexual_orientation, data_wrangled_robustness) </code></pre>
+<pre><code>##                        sexual_orientation
+## sex                     Asexual Straight/Heterosexual
+##   Genderqueer/Nonbinary      68                    34
+##   Man                        12                  1523
+##   Woman                     447                 51328</code></pre>
 </div>
 <div id="save-data" class="section level2">
 <h2>Save data</h2>
 <div id="for-main-analyses-1" class="section level3">
 <h3>For main analyses</h3>
-<pre class="r"><code># write.csv(data_wrangled_main,
-#          file = &quot;data_main.csv&quot;)</code></pre>
+<pre class="r"><code>write.csv(data_wrangled_main,
+          file = &quot;data/data_main.csv&quot;)</code></pre>
 </div>
 <div id="for-robustness-check-1" class="section level3">
 <h3>For robustness check</h3>
-<pre class="r"><code># write.csv(data_wrangled_robustness,
-#          file = &quot;data_robustness.csv&quot;)</code></pre>
+<pre class="r"><code>write.csv(data_wrangled_robustness,
+          file = &quot;data/data_robustness.csv&quot;)</code></pre>
 </div>
 </div>
 
