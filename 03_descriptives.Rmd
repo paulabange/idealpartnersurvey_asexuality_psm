@@ -684,7 +684,7 @@ correlations = data_main %>%
          self_sexually_experienced)
 
 
-# correlations_table = apa.cor.table(correlations, filename = "Table.doc", table.number = X)
+# correlations_table = apa.cor.table(correlations, filename = "Table.doc", table.number = 1)
 
 # correlations_table
 

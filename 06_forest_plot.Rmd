@@ -64,7 +64,8 @@ preferred_relationship_options  %>%
               xticks = c(-.1, -0.5, -0.1,0, .1, .5, 1),
              col = fpColors(box = "royalblue",
                             line = "black",
-                            summary = "royalblue"))
+                            summary = "royalblue"),
+             xlab = "Effect size (Cohen's d)")
 ```
 
 
@@ -288,7 +289,7 @@ base_data_rel <- tibble(mean  = c(-0.67, 1.12, -0.46, 0.20, 0.57, 0.61, -0.77),
                     d = c("-0.67", "1.12", "-0.46", "0.20", "0.57", "0.61", "-0.77"))
 
 
-header_rel <- tibble(Preferred_relationship_options = c("", "Preferred relationship options"),
+header_rel <- tibble(Preferred_relationship_options = c("", "Outcome"),
                 d = c("", "d"),
                  summary = TRUE)
 
@@ -300,7 +301,7 @@ preferred_relationship_options <- bind_rows(header_rel,
 
 
 
-preferred_relationship_options  %>% 
+plot_preferred_relationship_options = preferred_relationship_options  %>% 
   forestplot(labeltext = c(Preferred_relationship_options, d), 
              graph.pos = 3,
               clip = c(-1,2),
@@ -309,11 +310,16 @@ preferred_relationship_options  %>%
               is.summary = summary,
               grid = structure(c(-.26, .26), 
                               gp = gpar(lty = 2, col = "darkblue")), 
-              xticks = c(-1, -0.5, -0.26,0, .26, .5, 1, 1.2),
-             txt_gp = fpTxtGp(ticks=gpar(cex=.75)),
+              xticks = c(-1.5,-1, -0.5, -0.26,0, .26, .5, 1, 1.5),
+             xlab = "Effect size (Cohen's d)",
+             txt_gp = fpTxtGp(ticks=gpar(cex=.75), xlab=gpar(cex=1)),
              col = fpColors(box = "royalblue",
                             line = "black",
-                            summary = "royalblue"))
+                            summary = "royalblue"),
+             title = "Preferred Relationship Options (n = 646)",
+             graphwidth = unit(150, "mm"))
+
+plot_preferred_relationship_options
 ```
 
 
@@ -326,17 +332,17 @@ base_data_prefs <- tibble(mean  = c(-0.37, -0.52, -0.66, -0.16, -0.21, 0.01),
                     d = c("-0.37", "-0.52", "-0.66", "-0.16", "-0.21", "0.01"))
 
 
-header <- tibble(Partner_preferences = c("", "Partner preferences"),
+header_prefs <- tibble(Partner_preferences = c("", "Outcome"),
                 d = c("", "d"),
                  summary = TRUE)
 
 
-partner_preferences <- bind_rows(header,
+partner_preferences_prefs <- bind_rows(header_prefs,
                                 base_data_prefs)
 
 
 
-partner_preferences %>% 
+plot_partner_preferences = partner_preferences %>% 
   forestplot(labeltext = c(Partner_preferences, d), 
              graph.pos = 3,
               clip = c(-2,2),
@@ -345,11 +351,16 @@ partner_preferences %>%
               is.summary = summary,
               grid = structure(c(-.26, .26), 
                               gp = gpar(lty = 2, col = "darkblue")), 
-             xticks = c(-1, -0.5, -0.26,0, .26, .5, 1),
-             txt_gp = fpTxtGp(ticks=gpar(cex=.75)),
+             xticks = c(-1.5,-1, -0.5, -0.26,0, .26, .5, 1, 1.5),
+             xlab = "Effect size (Cohen's d)",
+             txt_gp = fpTxtGp(ticks=gpar(cex=.75), xlab = gpar(cex=1)),
              col = fpColors(box = "royalblue",
                             line = "black",
-                            summary = "royalblue"))
+                            summary = "royalblue"),
+             title = "Ideal Long-Term Partner Preferences (n = 780)",
+             graphwidth = unit(150, "mm"))
+
+plot_partner_preferences
 
 ```
 
@@ -362,14 +373,14 @@ base_data_self <- tibble(mean  = c(-0.43, -0.49, -0.65, -0.40, -0.45, -0.17),
                     self_ratings = c("Confident-assertive", "Attractive", "Sexually experienced", "Kind-supportive", "Financially secure-successful", "Educated-intelligent"),
                     d = c("-0.43", "-0.49", "-0.65", "-0.40", "-0.45", "-0.17"))
 
-header <- tibble(self_ratings = c("", "Self-ratings"),
+header_self <- tibble(self_ratings = c("", "Outcome"),
                 d = c("", "d"),
                  summary = TRUE)
 
-self_ratings <- bind_rows(header,
+self_ratings <- bind_rows(header_self,
                           base_data_self)
 
-self_ratings %>% 
+plot_self_ratings = self_ratings %>% 
   forestplot(labeltext = c(self_ratings, d), 
              graph.pos = 3,
               clip = c(-2,2),
@@ -378,13 +389,32 @@ self_ratings %>%
               is.summary = summary,
               grid = structure(c(-.26, .26), 
                               gp = gpar(lty = 2, col = "darkblue")), 
-             xticks = c(-1, -0.5, -0.26,0, .26, .5, 1),
-             txt_gp = fpTxtGp(ticks=gpar(cex=.75)),
+             xticks = c(-1.5,-1, -0.5, -0.26,0, .26, .5, 1, 1.5),
+             xlab = "Effect size (Cohen's d)",
+             txt_gp = fpTxtGp(ticks=gpar(cex=.75), xlab=gpar(cex=1)),
              col = fpColors(box = "royalblue",
                             line = "black",
-                            summary = "royalblue"))
+                            summary = "royalblue"),
+             title = "Self-Ratings (n = 772)",
+             graphwidth = unit(150, "mm"))
+
+plot_self_ratings
+
+```
 
 
+```{r}
+library(ggplotify)
+library(patchwork)
+
+p1 <- grid2grob(print(plot_self_ratings))
+p2 <- grid2grob(print(plot_partner_preferences))
+p_both <- wrap_elements(p1) / wrap_elements(p2)
+p_both
+
+p3 <- grid2grob(print(plot_preferred_relationship_options))
+p_three <- wrap_elements(p_both) / wrap_elements(p3)
+p_three
 ```
 
 

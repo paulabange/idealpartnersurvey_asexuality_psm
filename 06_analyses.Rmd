@@ -279,7 +279,10 @@ t.test(self_ei ~ sexual_orientation,
 
 
 # effect size
-effsize::cohen.d(self_ei ~ sexual_orientation, data = data_self, paired = T)
+d = effsize::cohen.d(self_ei ~ sexual_orientation, data = data_self, paired = T)
+d$sd
+d$var
+?effsize::cohen.d
 ```
 
 
