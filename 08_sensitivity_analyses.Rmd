@@ -72,7 +72,7 @@ x = m.pairs.pref_imp_ca[,1] # asexuals
 y = m.pairs.pref_imp_ca[,2] # heterosexuals
 
 
-psens(x = y, y = x, Gamma = 6, GammaInc = 0.1)
+psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 
 ####
 nnm
@@ -80,7 +80,7 @@ nnm$match.matrix
 nnm$treat
 row.names(nnm$match.matrix)
 ```
-Gamma = 2.6 --> p-Value becomes significant. 
+Gamma = 1.7  
 
 
 ```{r}
@@ -113,7 +113,7 @@ y = m.pairs.pref_imp_att[,2]
 
 psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 ```
-Gamma = 3.1 --> p-Value becomes significant.
+Gamma = 2.0 
 
 #### sexually experienced
 ```{r}
@@ -126,7 +126,7 @@ y = m.pairs.pref_imp_sexually_experienced[,2]
 
 psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 ```
-Gamma = 1.7 --> p-Value becomes significant.
+Gamma = 2.8 
 
 
 ### kind-supportive
@@ -140,7 +140,7 @@ y = m.pairs.pref_imp_ks[,2]
 
 psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 ```
-Gamma = 4.7 --> p-Value becomes significant.
+Gamma = 1.1 
 
 ### financially secure - successful
 ```{r}
@@ -153,7 +153,7 @@ y = m.pairs.pref_imp_fs[,2]
 
 psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 ```
-Gamma = 1.9 --> p-Value becomes significant.
+Gamma = 1.2 
 
 ## Self-ratings
 ## PSM for self-ratings
@@ -200,7 +200,7 @@ y = m.pairs.self_ca[,2]
 
 psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 ```
-Gamma = 2.8 --> p-Value becomes significant.
+Gamma = 1.8 
 
 ### attractive
 ```{r}
@@ -213,7 +213,7 @@ y = m.pairs.self_att[,2]
 
 psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 ```
-Gamma = 3.2 --> p-Value becomes significant.
+Gamma = 2.0 
 
 ### sexually experienced
 ```{r}
@@ -224,10 +224,9 @@ nnm_self_data[nnm_self$match.matrix, 'self_sexually_experienced'])
 x = m.pairs.self_sexually_experienced[,1]
 y = m.pairs.self_sexually_experienced[,2]
 
-psens(x = x, y = y, Gamma = 6, GammaInc = 0.1) # at Gamma = 6 still no change in p-value
-psens(x = x, y = y, Gamma = 10, GammaInc = 0.1)
+psens(x = x, y = y, Gamma = 6, GammaInc = 0.1) 
 ```
-Gamma = 6.5 --> p-Value becomes significant.
+Gamma = 3.6 
 
 ### kind-supportive
 ```{r}
@@ -240,7 +239,7 @@ y = m.pairs.self_ks[,2]
 
 psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 ```
-Gamma = 2.6 --> p-Value becomes significant.
+Gamma = 1.7 
 
 ### financially secure-successful
 ```{r}
@@ -253,7 +252,7 @@ y = m.pairs.self_fs[,2]
 
 psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 ```
-Gamma = 2.9 --> p-Value becomes significant.
+Gamma = 1.9 
 
 ### educated-intelligent
 ```{r}
@@ -266,7 +265,7 @@ y = m.pairs.self_ei[,2]
 
 psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 ```
-Gamma = 1.8 --> p-Value becomes significant.
+Gamma = 1.2
 
 ## PSM for relationship options
 ### Check for missings in covariates to be matched
@@ -317,7 +316,7 @@ y = m.pairs.interest_nonsexrel[,2]
 
 psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 ```
-??????
+Gamma = 5.3
 
 ### interest sexual relationships
 ```{r}
@@ -328,10 +327,9 @@ nnm_rel_data[nnm_rel$match.matrix, 'interest_hookups'])
 x = m.pairs.interest_hookups[,1]
 y = m.pairs.interest_hookups[,2]
 
-psens(x = y, y = x, Gamma = 6, GammaInc = 0.1)
-?psens
+psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 ```
-Gamma = 5.9
+Gamma = 3.1
 
 ### interest monogamous relationships
 ```{r}
@@ -344,7 +342,7 @@ y = m.pairs.interest_monrel[,2]
 
 psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 ```
-Gamma = 3.6
+Gamma = 2.1
 
 ### interest non-monogamous relationships
 ```{r}
@@ -357,7 +355,7 @@ y = m.pairs.interest_nonmonrel[,2]
 
 psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 ```
-?????
+Gamma = 1.2
 
 
 ### interest alternative committed relationships
@@ -371,7 +369,7 @@ y = m.pairs.interest_altrel[,2]
 
 psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 ```
-?????
+Gamma = 2.3
 
 ### interest single
 ```{r}
@@ -384,7 +382,7 @@ y = m.pairs.interest_single[,2]
 
 psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 ```
-????
+Gamma = 2.5
 
 ### interest parent
 ```{r}
@@ -395,16 +393,180 @@ nnm_rel_data[nnm_rel$match.matrix, 'interest_parent'])
 x = m.pairs.interest_parent[,1]
 y = m.pairs.interest_parent[,2]
 
-psens(x = y, y = x, Gamma = 6, GammaInc = 0.1)
+psens(x = x, y = y, Gamma = 6, GammaInc = 0.1)
 ```
-Gamma = 5.7
+Gamma = 3.2
 
 ### E-Value
+E-value is calculated for each Cohen's d (for signficant results only) and for its confidence limit that is closer to Null (VanderWeele & Ding, 2017)
 ### partner preferencs
 #### confident-assertive
 ```{r}
-evalue(MD(0.40), lo = 0.51, hi = 0.24)
-?evalue
--0.51, -0.24
+evalues.MD(est = -0.37)
+
+
+
+# for d
+evalue(MD(-0.37), lo = -0.51, hi = -0.24)
+
+# for confidence limit closer to null
+evalue(MD(-0.24))
 ```
 
+#### attractive
+```{r}
+# for d
+evalue(MD(-0.52), lo = -0.66, hi = -0.37)
+
+# for confidence limit closer to null
+evalue(MD(-0.37))
+```
+
+#### sexually experienced
+```{r}
+# for d
+evalue(MD(-0.66), lo = -0.81, hi = -0.51)
+
+# for confidence limit closer to null
+evalue(MD(-0.51))
+```
+
+#### kind-supportive
+```{r}
+# for d
+evalue(MD(-0.16), lo = -0.30, hi = -0.02)
+
+# for confidence limit closer to null
+evalue(MD(-0.02))
+```
+
+#### financially secure-successful
+```{r}
+# for d
+evalue(MD(-0.21), lo = -0.35, hi = -0.08)
+
+# for confidence limit closer to null
+evalue(MD(-0.08))
+```
+
+
+### self-ratings
+#### confident-assertive
+```{r}
+# for d
+evalue(MD(-0.43), lo = -0.57, hi = -0.29)
+
+# for confidence limit closer to null
+evalue(MD(-0.29))
+```
+
+#### attractive
+```{r}
+# for d
+evalue(MD(-0.49), lo = -0.63, hi = -0.34)
+
+# for confidence limit closer to null
+evalue(MD(-0.34))
+```
+
+#### sexually experienced
+```{r}
+# for d
+evalue(MD(-0.65), lo = -0.79, hi = -0.52)
+
+# for confidence limit closer to null
+evalue(MD(-0.52))
+```
+
+#### kind-supportive
+```{r}
+# for d
+evalue(MD(-0.40), lo = -0.54, hi = -0.25)
+
+# for confidence limit closer to null
+evalue(MD(-0.25))
+```
+
+#### financially secure-successful
+```{r}
+# for d
+evalue(MD(-0.45), lo = -0.60, hi = -0.31)
+
+# for confidence limit closer to null
+evalue(MD(-0.31))
+```
+
+#### educated-intelligent
+```{r}
+# for d
+evalue(MD(-0.17), lo = -0.31, hi = -0.04)
+
+# for confidence limit closer to null
+evalue(MD(-0.04))
+```
+
+
+### relationship options
+#### interest non-sexual relationships
+```{r}
+# for d
+evalue(MD(1.12), lo = 0.93, hi = 1.32)
+
+# for confidence limit closer to null
+evalue(MD(0.93))
+```
+
+#### interest sexual relationships
+```{r}
+# for d
+evalue(MD(-0.67), lo = -0.83, hi = -0.51)
+
+# for confidence limit closer to null
+evalue(MD(-0.53))
+```
+
+#### interest monogamous relationships
+```{r}
+# for d
+evalue(MD(-0.46), lo = -0.61, hi = -0.31)
+
+# for confidence limit closer to null
+evalue(MD(-0.31))
+```
+
+
+#### interest nonmonogamous relationships
+```{r}
+# for d
+evalue(MD(0.20), lo = 0.05, hi = 0.35)
+
+# for confidence limit closer to null
+evalue(MD(0.05))
+```
+
+#### interest alternative committed relationships
+```{r}
+# for d
+evalue(MD(0.57), lo = 0.41, hi = 0.73)
+
+# for confidence limit closer to null
+evalue(MD(0.41))
+```
+
+#### interest single
+```{r}
+# for d
+evalue(MD(0.61), lo = 0.45, hi = 0.76)
+
+# for confidence limit closer to null
+evalue(MD(0.45))
+```
+
+#### interest parent
+```{r}
+# for d
+evalue(MD(-0.77), lo = -0.94, hi = -0.61)
+
+# for confidence limit closer to null
+evalue(MD(-0.61))
+```
