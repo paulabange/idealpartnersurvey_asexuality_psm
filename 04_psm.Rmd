@@ -150,7 +150,7 @@ love.plot(bal.tab(om_without_country, m.threshold = 0.1, binardy = "std"),
 ```
 Optimal matching results in 27 covariates not being balanced after matching (based on SMDs). 
 
-#### Matching with nearest-neighbor-algortihm without caliper
+#### Matching with nearest-neighbor-algorithm without caliper
 ```{r}
 nnm <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length, method = "nearest", data = data_main_nomiss)
 
