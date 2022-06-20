@@ -175,10 +175,10 @@ chisq_country$observed # observed counts
 round(chisq_country$expected,2) # expected counts
 
 # calculate Cramer's V
-# matrix = as.matrix(table(data_prefs$country, data_prefs$sexual_orientation), header=TRUE,
-#                      row.names=1)
-# 
-# cramerV(matrix, ci = T, conf = 0.95)
+matrix = as.matrix(table(data_prefs$country, data_prefs$sexual_orientation), header=TRUE,
+                     row.names=1)
+cramerV(matrix, ci = T, conf = 0.95)
+
 # ?cramerV
 # 
 # matrix2 = as.matrix(table(data_prefs$country, data_prefs$sexual_orientation))

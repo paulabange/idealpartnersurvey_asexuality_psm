@@ -51,7 +51,6 @@ t.test(interest_nonsexrel ~ sexual_orientation,
        alternative = "greater",
        paired = TRUE)
 
-
 # effect size
 effsize::cohen.d(interest_nonsexrel ~ sexual_orientation, data = data_rel, paired = T)
 ```

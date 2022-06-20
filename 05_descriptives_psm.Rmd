@@ -128,6 +128,24 @@ table(is.na(data_rel$interest_single))
 table(is.na(data_rel$interest_parent))
 ```
 
+#### Zero-order correlations
+```{r}
+correlations_psm_rel = data_rel %>%
+  select(interest_hookups,
+         interest_nonsexrel,
+         interest_monrel,
+         interest_nonmonrel,
+         interest_altrel,
+         interest_single,
+         interest_parent,
+         )
+
+
+# correlations_table_psm_rel = apa.cor.table(correlations_psm_rel, filename = "Table1.doc", table.number = 1)
+# correlations_table_psm_rel
+```
+
+
 
 ### Descriptives by sexual orientation
 #### Demographic data
@@ -324,27 +342,6 @@ ggplot(data_rel, aes(x = interest_parent, fill = sexual_orientation)) +
   geom_histogram(position = "dodge")
 ```
 
-#### Zero-order correlations
-```{r}
-correlations_psm_rel = data_rel %>%
-  select(sexual_orientation,
-         age,
-         relationship_length,
-         interest_hookups,
-         interest_nonsexrel,
-         interest_monrel,
-         interest_nonmonrel,
-         interest_altrel,
-         interest_single,
-         interest_parent,
-         )
-
-
-# correlations_table_psm_rel = apa.cor.table(correlations_psm_rel, filename = "Table2.doc", table.number = 2)
-# 
-# correlations_table_psm_rel
-```
-
 
 ## 2. Partner preferences
 ### Descriptives for whole sample
@@ -412,6 +409,7 @@ mean(data_prefs$relationship_length, na.rm = T)
 sd(data_prefs$relationship_length, na.rm = T)
 ```
 
+
 #### Outcomes: partner preferences
 ```{r}
 # mean
@@ -441,6 +439,21 @@ table(is.na(data_prefs$pref_imp_sexually_experienced))
 ```
 
 
+#### Zero-order correlations
+```{r}
+correlations_psm_prefs = data_prefs %>%
+  select(pref_imp_ca,
+         pref_imp_att,
+         pref_imp_sexually_experienced,
+         pref_imp_ks,
+         pref_imp_fs,
+         pref_imp_ei
+        )
+
+
+# correlations_table_psm_prefs = apa.cor.table(correlations_psm_prefs, filename = "Table2.doc", table.number = 2)
+# correlations_table_psm_prefs
+```
 ### Descriptives by sexual orientation
 #### Demographic data
 ```{r}
@@ -646,27 +659,6 @@ ggplot(data_prefs, aes(x = pref_imp_sexually_experienced, fill = sexual_orientat
   geom_histogram(position = "dodge")
 ```
 
-#### Zero-order correlations
-```{r}
-correlations_psm_prefs = data_prefs %>%
-  select(sexual_orientation,
-         age,
-         relationship_length,
-         pref_imp_ks,
-         pref_imp_att,
-         pref_imp_fs,
-         pref_imp_ca,
-         pref_imp_ei,
-         pref_imp_sexually_experienced,
-        )
-
-
-# correlations_table_psm_prefs = apa.cor.table(correlations_psm_prefs, filename = "Table3.doc", table.number = 1)
- 
-# correlations_table_psm_prefs
-```
-
-
 
 ## 3. Self-ratings
 ### Descriptives for whole sample
@@ -764,6 +756,19 @@ table(is.na(data_self$self_ei))
 table(is.na(data_self$self_sexually_experienced))
 ```
 
+#### Zero-order correlations
+```{r}
+correlations_psm_self = data_self %>%
+  select(self_ca,
+         self_att,
+         self_sexually_experienced,
+         self_ks,
+         self_fs,
+         self_ei)
+
+# correlations_table_psm_self = apa.cor.table(correlations_psm_self, filename = "Table3.doc", table.number = 3)
+# correlations_table_psm_self
+```
 
 ### Descriptives by sexual orientation
 #### Demographic data
@@ -968,22 +973,5 @@ ggplot(data_self, aes(x = self_sexually_experienced, fill = sexual_orientation))
 
 ```
 
-#### Zero-order correlations
-```{r}
-correlations_psm_self = data_self %>%
-  select(sexual_orientation,
-         age,
-         relationship_length,
-         self_ks,
-         self_att,
-         self_fs,
-         self_ca,
-         self_ei,
-         self_sexually_experienced)
-
-# correlations_table_psm_self = apa.cor.table(correlations_psm_self, filename = "Table4.doc", table.number = 4)
-# 
-# correlations_table_psm_self
-```
 
 
