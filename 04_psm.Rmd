@@ -822,34 +822,34 @@ describe.by(nnm_rel_data, nnm_rel_data$sexual_orientation)
 ## save PSM samples as data files
 ```{r}
 # for partner preference psm sample
-# write.csv(nnm_data,
-#         file = "data_prefs.csv")
+write.csv(nnm_data,
+          file = "data/data_prefs.csv")
 
 # for self-ratings psm sample
-# write.csv(nnm_self_data,
-#         file = "data_self.csv")
+write.csv(nnm_self_data,
+          file = "data/data_self.csv")
 
 # for preferred relationship options psm sample
-# write.csv(nnm_rel_data,
-#        file = "data_rel.csv")
+write.csv(nnm_rel_data,
+          file = "data/data_rel.csv")
 ```
 
 ## save unmatched heterosexuals for each psm sample as data files
 ```{r}
 # for partner preference sample
 data_prefs_unmatched = anti_join(data_main_nomiss, nnm_data) # saves only unmatched cases
-# write.csv(data_prefs_unmatched,
-#           file = "data_prefs_unmatched.csv")
+write.csv(data_prefs_unmatched,
+          file = "data/data_prefs_unmatched.csv")
 
 # for self-rating sample
 data_self_unmatched = anti_join(data_main_nomiss_self, nnm_self_data) 
-# write.csv(data_self_unmatched,
-#           file = "data_self_unmatched.csv")
+write.csv(data_self_unmatched,
+          file = "data/data_self_unmatched.csv")
 
 # for preferred relationship optiopns sample
 data_rel_unmatched = anti_join(data_main_nomiss_rel, nnm_rel_data) 
-# write.csv(data_rel_unmatched,
-#           file = "data_rel_unmatched.csv")
+write.csv(data_rel_unmatched,
+          file = "data/data_rel_unmatched.csv")
 ```
 
 ## create plot for methods section
