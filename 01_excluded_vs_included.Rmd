@@ -157,7 +157,7 @@ round(chisq_country$expected,2)
 
 ### Language
 Chinese, Danish, English, French, German, Japanese, Portuguese, Russian, Spanish, Italian
-```{r Language}
+```{r}
 chisq_language = chisq.test(data_exclusion$exclusion, data_exclusion$language) 
 chisq_language
 chisq_language$observed
@@ -167,7 +167,7 @@ round(chisq_language$expected,2)
 ### Sex
 Gender
 Categories: Woman; Genderqueer/Nonbinary; Man; None of the above; Prefer not to say; Other
-```{r Sex}
+```{r}
 chisq_sex = chisq.test(data_exclusion$exclusion, data_exclusion$sex) # macht nicht viel Sinn, da Ausschlusskriterium
 chisq_sex
 chisq_sex$observed
