@@ -27,9 +27,9 @@ data_prefs_unmatched = read.csv(file = "data/data_prefs_unmatched.csv")[,-1]
 data_self_unmatched = read.csv(file = "data/data_self_unmatched.csv")[,-1]
 
 nrow(data_rel_unmatched)
-describe.by(asex_v_umhetero_rel, asex_v_umhetero_rel$sexual_orientation)
+#describeBy(asex_v_umhetero_rel, asex_v_umhetero_rel$sexual_orientation) #@Paula: dataset asex_v_umhetero_rel could not be found
 nrow(data_prefs_unmatched)
-describe.by(asex_v_umhetero_prefs, asex_v_umhetero_prefs$sexual_orientation)
+#describeBy(asex_v_umhetero_prefs, asex_v_umhetero_prefs$sexual_orientation) #@Paula: dataset asex_v_umhetero_rel could not be found
 
 # asexual sample 
 asexuals_rel = data_rel %>% filter(sexual_orientation == "Asexual")
@@ -84,8 +84,9 @@ nrow(matrix_asex_v_umhetero_country) * 2 # number of cells
 round(table(matrix_asex_v_umhetero_country<5)/(nrow(matrix_asex_v_umhetero_country)*2),2) # 64% of cells have counts less than 5 
 
 # running Fisher's exact test
-fisher_test_asex_v_umhetero_country = fisher.test(matrix_asex_v_umhetero_country)
-fisher_test_country$p.value
+fisher_test_asex_v_umhetero_country = fisher.test(matrix_asex_v_umhetero_country, simulate.p.value = TRUE) #@Paula: inserting simulate.p.value = TRUE fixes problem with fishers z test
+fisher_test_asex_v_umhetero_country
+fisher_test_asex_v_umhetero_country$p.value #@Paula: wrong dataset
 ```
 @Problem Fehlermeldung bei Fisher exact test. N wahrscheinlich zu groß. 
 
@@ -96,7 +97,7 @@ chisq_country
 
 # calculate Cramer V
 cramerV(matrix_asex_v_umhetero_country) #without CI
-cramerV(matrix_asex_v_umhetero_country, ci = T) # with CI
-?cramerV
+#install.packages("confintr")
+library(confintr)
+ci_cramersv(matrix_asex_v_umhetero_country, type = "chi-squared") #@Paula: you can get the CI with the function ci_cramersv from the package confintr
 ```
-@Problem Fehlermeldung wenn Cramer V mit KI berechnet werden soll
