@@ -213,7 +213,7 @@ love.plot(bal.tab(nnm_without_country, m.threshold = 0.1),
 # Using alternate variable names
 v <- data.frame(old = c("distance", "language_chinese", "language_japanese", "language_german","language_english", "language_italian", "language_danish", "language_spanish", "language_russian", "language_portuguese", "language_french", "age", "relationship_status_Long-term", "relationship_status_No relationship", "relationship_status_Short-term",
                         "relationship_length"),
-                new = c("Propensity scores", "Chinese", "Japanese", "German", "English", "Italian", "Danish", "Spanish", "Russian", "Portuguese", "French", "Long-term relationship", "No relationship", "Dating/Sexual Relationship","Age",  "Relationship length"))
+                new = c("Propensity score", "Chinese", "Japanese", "German", "English", "Italian", "Danish", "Spanish", "Russian", "Portuguese", "French", "Long-term relationship", "No relationship", "Dating/Sexual Relationship","Age",  "Relationship length"))
 
 love.plot(bal.tab(nnm_without_country, m.threshold = 0.1, binary = "std"),
           stat = "mean.diffs",
@@ -221,8 +221,8 @@ love.plot(bal.tab(nnm_without_country, m.threshold = 0.1, binary = "std"),
           stars = "raw",
           abs = F,
           sample.names = c("Before Matching", "After Matching"),
-          var.names = v) 
-
+          var.names = v)
+?love.plot
 ```
 
 
@@ -532,7 +532,7 @@ covariates: language, age, country, relationship status, relationship length
 ```{r}
 # MatchIt does not allow missing values
 data_main_nomiss_self <- data_main %>% select(id, language, age, sex, country, relationship_status, relationship_length, sexual_orientation,
-                                         self_ks, self_att, self_fs,self_ca, self_ei, self_sexually_experienced) %>%
+                                         self_ks, self_att, self_fs,self_ca, self_ei, self_sexually_experienced ) %>%
                                   na.omit()
 
 table(is.na(data_main_nomiss_self)) # no more NAs in data set

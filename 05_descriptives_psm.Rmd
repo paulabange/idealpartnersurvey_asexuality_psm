@@ -454,6 +454,8 @@ correlations_psm_prefs = data_prefs %>%
 # correlations_table_psm_prefs = apa.cor.table(correlations_psm_prefs, filename = "Table2.doc", table.number = 2)
 # correlations_table_psm_prefs
 ```
+
+
 ### Descriptives by sexual orientation
 #### Demographic data
 ```{r}

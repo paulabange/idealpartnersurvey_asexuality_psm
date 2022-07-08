@@ -19,6 +19,7 @@ library(formr)
 library(ggplot2)
 library(psych)
 library(rcompanion) # for Cramer's V
+library(confintr)
 ```
 
 ## Load data
@@ -37,6 +38,8 @@ nrow(data_rel_unmatched)
 describe.by(asex_v_umhetero_rel, asex_v_umhetero_rel$sexual_orientation)
 nrow(data_prefs_unmatched)
 describe.by(asex_v_umhetero_prefs, asex_v_umhetero_prefs$sexual_orientation)
+nrow(data_self_unmatched)
+describe.by(asex_v_umhetero_self, asex_v_umhetero_prefs$sexual_orientation)
 
 # asexual sample 
 asexuals_rel = data_rel %>% filter(sexual_orientation == "Asexual")
@@ -158,14 +161,14 @@ data_self = data_self %>%
 #### Country
 ```{r}
 # assumptions not met for chi square test: some cells contain less than 5 observations; therefore a Fisher's exact test ist calculated
-matrix = as.matrix(table(data_prefs$country, data_prefs$sexual_orientation), header=TRUE, row.names=1)
-table(matrix < 5) # absolute number of cells containing less than 5 counts
-nrow(matrix) * 2 # number of cells
+matrix_country = as.matrix(table(data_prefs$country, data_prefs$sexual_orientation), header=TRUE, row.names=1)
+table(d < 5) # absolute number of cells containing less than 5 counts
+nrow(matrix_country) * 2 # number of cells
 
-table(matrix<5)/(nrow(matrix)*2) # 53% of cells have counts less than 5 
+round(table(matrix_country<5)/(nrow(matrix_country)*2),2) # 53% of cells have counts less than 5 
 
 # running Fisher's exact test
-fisher_test_country = fisher.test(matrix)
+fisher_test_country = fisher.test(matrix_country, simulate.p.value = TRUE)
 fisher_test_country$p.value
 
 # chi square test
@@ -174,25 +177,9 @@ chisq_country
 chisq_country$observed # observed counts
 round(chisq_country$expected,2) # expected counts
 
+
 # calculate Cramer's V
-matrix = as.matrix(table(data_prefs$country, data_prefs$sexual_orientation), header=TRUE,
-                     row.names=1)
-cramerV(matrix, ci = T, conf = 0.95)
-
-# ?cramerV
-# 
-# matrix2 = as.matrix(table(data_prefs$country, data_prefs$sexual_orientation))
-# 
-# matrix
-# 
-# library(DescTools)
-# CramerV(matrix, conf.level = 0.95)
-# ?CramerV
-# 
-# library(lsr)
-# cramersV(matrix)
-
-
+ci_cramersv(chisq_country, type = "chi-squared")
 ```
 
 #### Language
@@ -206,7 +193,6 @@ round(chisq_language$expected,2)
 matrix_language = as.matrix(table(data_prefs$language, data_prefs$sexual_orientation), header=TRUE,
                      row.names=1)
 round(cramerV(matrix_language, ci = T),2)
-
 ```
 
 #### Age
@@ -257,27 +243,21 @@ matrix_asex_v_umhetero_country = as.matrix(table(asex_v_umhetero_prefs$country, 
 table(matrix_asex_v_umhetero_country < 5) # absolute number of cells containing less than 5 counts
 nrow(matrix_asex_v_umhetero_country) * 2 # number of cells
 
-table(matrix_asex_v_umhetero_country<5)/(nrow(matrix_asex_v_umhetero_country)*2) # 64% of cells have counts less than 5 
+round(table(matrix_asex_v_umhetero_country<5)/(nrow(matrix_asex_v_umhetero_country)*2),2) # 64% of cells have counts less than 5 
 
 # running Fisher's exact test
-fisher_test_asex_v_umhetero_country = fisher.test(matrix_asex_v_umhetero_country)
-fisher_test_country$p.value
+fisher_test_asex_v_umhetero_country = fisher.test(matrix_asex_v_umhetero_country, simulate.p.value = TRUE)
+fisher_test_asex_v_umhetero_country$p.value
 
 # chi square test
-chisq_country = chisq.test(asex_v_umhetero_prefs$sexual_orientation, asex_v_umhetero_prefs$country) 
-chisq_country 
-chisq_country$observed # observed counts
-round(chisq_country$expected,2) # expected counts
+chisq_asex_v_umhetero_country = chisq.test(asex_v_umhetero_prefs$sexual_orientation, asex_v_umhetero_prefs$country) 
+chisq_asex_v_umhetero_country
+chisq_asex_v_umhetero_country$observed # observed counts
+round(chisq_asex_v_umhetero_country$expected,2) # expected counts
 
-
-
-country_asex_v_umhetero = chisq.test(asex_v_umhetero$sexual_orientation, asex_v_umhetero$country)
-country_asex_v_umhetero
-country_asex_v_umhetero$observed
-round(country_asex_v_umhetero$expected,2)
 
 # calculate Cramer's V
-
+ci_cramersv(chisq_asex_v_umhetero_country, type = "chi-squared")
 ```
 
 #### Language
@@ -589,22 +569,22 @@ matrix_hetero_v_umhetero_country = as.matrix(table(hetero_v_umhetero_prefs$count
 table(matrix_hetero_v_umhetero_country < 5) # absolute number of cells containing less than 5 counts
 nrow(matrix_hetero_v_umhetero_country) * 2 # number of cells
 
-table(matrix_hetero_v_umhetero_country<5)/(nrow(matrix_hetero_v_umhetero_country)*2) # 64 % of cells have counts less than 5 
+round(table(matrix_hetero_v_umhetero_country<5)/(nrow(matrix_hetero_v_umhetero_country)*2),2) # 64 % of cells have counts less than 5 
 
 # running Fisher's exact test
-fisher_test_hetero_v_umhetero_country = fisher.test(matrix_hetero_v_umhetero_country)
-fisher_test_country$p.value
+fisher.test(matrix_hetero_v_umhetero_country, simulate.p.value = TRUE)
+
+# chi square test
+chisq_hetero_v_umhetero_country = chisq.test(matrix_hetero_v_umhetero_country)
+chisq_hetero_v_umhetero_country
+chisq_hetero_v_umhetero_country$observed # observed counts
+round(chisq_hetero_v_umhetero_country$expected,2) # expected counts
 
 
-
-
-
-country_hetero_v_umhetero = chisq.test(hetero_v_umhetero_prefs$country)
-country_hetero_v_umhetero
-country_hetero_v_umhetero$observed
-round(country_hetero_v_umhetero$expected,2)
+# calculate Cramer's V
+ci_cramersv(chisq_hetero_v_umhetero_country, type = "chi-squared")
 ```
-@Problem 
+
 
 #### Language
 ```{r}

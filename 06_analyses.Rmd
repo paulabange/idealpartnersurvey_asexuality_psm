@@ -296,6 +296,10 @@ library("gridExtra")
 # load data_main
 data_main = read.csv(file = "data/data_main.csv")[,-1]
 
+colnames(data_main)
+colnames(data_prefs)
+colnames(data_prefs_itemlevel)
+
 # for partner preferences:
 # select item level variables for partner preferences
 data_main_pref_items = data_main %>% select(id, pref_imp_confident, pref_imp_assertive, 
@@ -319,7 +323,6 @@ data_main_self_items = data_main %>% select(id, self_confident, self_assertive,
 # create new data set by adding item level variables to data_prefs
 data_self_itemlevel = left_join(data_self, data_main_self_items, by = "id")
 ```
-
 
 ### overview
 ### for partner preferences
@@ -404,18 +407,29 @@ data_self_itemlevel %>% group_by(sexual_orientation) %>%
                  "self_sexually_experienced"), max, na.rm = T)
 ```
 
+### creates subsamples for sexual orientation
+```{r}
+# for partner preferences
+asex_data_prefs_itemlevel = data_prefs_itemlevel %>% filter(sexual_orientation == "Asexual") %>% arrange(subclass)
+hetero_data_prefs_itemlevel = data_prefs_itemlevel %>% filter(sexual_orientation == "Straight/Heterosexual") %>% arrange(subclass)
+
+# for self-ratings
+asex_data_self_itemlevel = data_self_itemlevel %>% filter(sexual_orientation == "Asexual") %>% arrange(subclass)
+hetero_data_self_itemlevel = data_self_itemlevel %>% filter(sexual_orientation == "Straight/Heterosexual") %>% arrange(subclass)
+
+```
 
 ### Partner preferences
 ### confident-assertive
 ```{r}
 # compare distributions
 prefs_confident = ggplot(data_prefs_itemlevel, aes(x = pref_imp_confident, fill = sexual_orientation)) + 
-  geom_histogram(position = "dodge") +
+  geom_histogram(position = "dodge", binwidth = 0.5) +
   ylim(0,150) +
   ggtitle("Confident")
 
 prefs_assertive = ggplot(data_prefs_itemlevel, aes(x = pref_imp_assertive, fill = sexual_orientation)) + 
-  geom_histogram(position = "dodge") +
+  geom_histogram(position = "dodge",  binwidth = 0.5) +
   ylim(0,150) +
   ggtitle("Assertive")
 
@@ -433,14 +447,15 @@ data_prefs_itemlevel %>%
             max(pref_imp_confident, na.rm = T))
 
 # compute t-test
-t.test(pref_imp_confident ~ sexual_orientation, 
-       data = data_prefs_itemlevel,
+t.test(asex_data_prefs_itemlevel$pref_imp_confident, hetero_data_prefs_itemlevel$pref_imp_confident,
        alternative = "less",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(pref_imp_confident ~ sexual_orientation, data = data_prefs_itemlevel, paired = T)
+effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_confident, hetero_data_prefs_itemlevel$pref_imp_confident,
+       alternative = "less",
+       paired = TRUE)
 ```
 
 #### assertive
@@ -454,32 +469,28 @@ data_prefs_itemlevel %>%
             max(pref_imp_assertive, na.rm = T))
 
 
-t.test(pref_imp_assertive ~ sexual_orientation, 
-       data = data_prefs_itemlevel,
+t.test(asex_data_prefs_itemlevel$pref_imp_assertive, hetero_data_prefs_itemlevel$pref_imp_assertive, 
        alternative = "less",
-       paired = TRUE,
-       na.action = na.omit) 
-?t.test
-getOption("na.action")
-table(is.na(data_prefs_itemlevel$pref_imp_assertive))
-weird = data_prefs_itemlevel %>%  filter(is.na(pref_imp_assertive))
+       paired = TRUE) 
 
 # effect size
-effsize::cohen.d(pref_imp_confident ~ sexual_orientation, data = data_prefs_itemlevel, paired = T)
+effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_assertive, hetero_data_prefs_itemlevel$pref_imp_assertive, 
+       alternative = "less",
+       paired = TRUE,
+       na.rm = T)
 ```
-@Problem: there seems to be one participant that only answered confident item, NA for assertive item. How to deal with it?
 
 
 ### attractive
 ```{r}
 # compare distributions
 prefs_attractive_body = ggplot(data_prefs_itemlevel, aes(x = pref_imp_attractive_body, fill = sexual_orientation)) + 
-  geom_histogram(position = "dodge") +
+  geom_histogram(position = "dodge", binwidth = 0.5) +
   ylim(0,150) +
   ggtitle("Attractive body") 
 
 prefs_attractive_face = ggplot(data_prefs_itemlevel, aes(x = pref_imp_attractive_face, fill = sexual_orientation)) + 
-  geom_histogram(position = "dodge") +
+  geom_histogram(position = "dodge", binwidth = 0.5) +
   ylim(0,150) +
   ggtitle("Attractive face")
 
@@ -503,14 +514,16 @@ data_prefs_itemlevel %>%
             max(pref_imp_attractive_body, na.rm = T))
 
 # compute t-test
-t.test(pref_imp_attractive_body ~ sexual_orientation, 
-       data = data_prefs_itemlevel,
+t.test(asex_data_prefs_itemlevel$pref_imp_attractive_body, hetero_data_prefs_itemlevel$pref_imp_attractive_body,
        alternative = "less",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(pref_imp_attractive_body ~ sexual_orientation, data = data_prefs_itemlevel, paired = T)
+effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_attractive_body, hetero_data_prefs_itemlevel$pref_imp_attractive_body,
+       alternative = "less",
+       paired = TRUE,
+       na.rm = T)
 ```
 
 #### attractive face
@@ -524,20 +537,20 @@ data_prefs_itemlevel %>%
             max(pref_imp_attractive_face, na.rm = T))
 
 # compute t-test
-t.test(pref_imp_attractive_face ~ sexual_orientation, 
+t.test(asex_data_prefs_itemlevel$pref_imp_attractive_face, hetero_data_prefs_itemlevel$pref_imp_attractive_face,
        data = data_prefs_itemlevel,
        alternative = "less",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(pref_imp_attractive_face ~ sexual_orientation, data = data_prefs_itemlevel, paired = T)
-
-
-table(is.na(data_prefs_itemlevel$pref_imp_attractive_face))
-
+effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_attractive_face, hetero_data_prefs_itemlevel$pref_imp_attractive_face,
+       data = data_prefs_itemlevel,
+       alternative = "less",
+       paired = TRUE,
+       na.rm = T)
 ```
-@Problem
+
 
 
 ### kind-supportive
@@ -567,16 +580,18 @@ data_prefs_itemlevel %>%
             max(pref_imp_kind, na.rm = T))
 
 # compute t-test
-t.test(pref_imp_kind ~ sexual_orientation, 
-       data = data_prefs_itemlevel,
+t.test(asex_data_prefs_itemlevel$pref_imp_kind, hetero_data_prefs_itemlevel$pref_imp_kind,
        alternative = "two.sided",
-       paired = F)
+       paired = T)
 
 
 # effect size
-effsize::cohen.d(pref_imp_kind ~ sexual_orientation, data = data_prefs_itemlevel, paired = F)
+effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_kind, hetero_data_prefs_itemlevel$pref_imp_kind,
+       alternative = "two.sided",
+       paired = T,
+       na.rm = T)
 ```
-@Problem
+
 
 #### supportive
 ```{r}
@@ -589,16 +604,18 @@ data_prefs_itemlevel %>%
             max(pref_imp_supportive, na.rm = T))
 
 # compute t-test
-t.test(pref_imp_supportive ~ sexual_orientation, 
-       data = data_prefs_itemlevel,
+t.test(asex_data_prefs_itemlevel$pref_imp_supportive, hetero_data_prefs_itemlevel$pref_imp_supportive,
        alternative = "two.sided",
-       paired = FALSE)
+       paired = T)
 
 
 # effect size
-effsize::cohen.d(pref_imp_supportive ~ sexual_orientation, data = data_prefs_itemlevel, paired = F)
+effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_supportive, hetero_data_prefs_itemlevel$pref_imp_supportive,
+       alternative = "two.sided",
+       paired = T,
+       na.rm = T)
 ```
-@Problem
+
 
 ### financially-secure/successfull
 ```{r}
@@ -627,16 +644,20 @@ data_prefs_itemlevel %>%
             max(pref_imp_financially_secure, na.rm = T))
 
 # compute t-test
-t.test(pref_imp_financially_secure ~ sexual_orientation, 
+t.test(asex_data_prefs_itemlevel$pref_imp_financially_secure,hetero_data_prefs_itemlevel$pref_imp_financially_secure,
        data = data_prefs_itemlevel,
        alternative = "two.sided",
-       paired = FALSE)
+       paired = T)
 
 
 # effect size
-effsize::cohen.d(pref_imp_financially_secure ~ sexual_orientation, data = data_prefs_itemlevel, paired = F)
+effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_financially_secure,hetero_data_prefs_itemlevel$pref_imp_financially_secure,
+       data = data_prefs_itemlevel,
+       alternative = "two.sided",
+       paired = T,
+       na.rm = T)
 ```
-@Problem
+
 
 #### successful ambitious
 ```{r}
@@ -649,14 +670,16 @@ data_prefs_itemlevel %>%
             max(pref_imp_successful_ambitous, na.rm = T))
 
 # compute t-test
-t.test(pref_imp_successful_ambitous ~ sexual_orientation, 
-       data = data_prefs_itemlevel,
+t.test(asex_data_prefs_itemlevel$pref_imp_successful_ambitous, hetero_data_prefs_itemlevel$pref_imp_successful_ambitous,
        alternative = "two.sided",
        paired = T)
 
 
 # effect size
-effsize::cohen.d(pref_imp_successful_ambitous ~ sexual_orientation, data = data_prefs_itemlevel, paired = T)
+effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_successful_ambitous, hetero_data_prefs_itemlevel$pref_imp_successful_ambitous,
+       alternative = "two.sided",
+       paired = T,
+       na.rm = T)
 ```
 
 ### educated-intelligent
@@ -686,16 +709,17 @@ data_prefs_itemlevel %>%
             max(pref_imp_educated, na.rm = T))
 
 # compute t-test
-t.test(pref_imp_educated ~ sexual_orientation, 
-       data = data_prefs_itemlevel,
+t.test(asex_data_prefs_itemlevel$pref_imp_educated,hetero_data_prefs_itemlevel$pref_imp_educated,
        alternative = "two.sided",
-       paired = FALSE)
+       paired = T)
 
 
 # effect size
-effsize::cohen.d(pref_imp_educated ~ sexual_orientation, data = data_prefs_itemlevel, paired = F)
+effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_educated,hetero_data_prefs_itemlevel$pref_imp_educated,
+       alternative = "two.sided",
+       paired = T,
+       na.rm = T)
 ```
-@Problem
 
 #### intelligent
 ```{r}
@@ -708,14 +732,16 @@ data_prefs_itemlevel %>%
             max(pref_imp_intelligence, na.rm = T))
 
 # compute t-test
-t.test(pref_imp_intelligence~ sexual_orientation, 
-       data = data_prefs_itemlevel,
+t.test(asex_data_prefs_itemlevel$pref_imp_intelligence, hetero_data_prefs_itemlevel$pref_imp_intelligence,
        alternative = "two.sided",
        paired = T)
 
 
 # effect size
-effsize::cohen.d(pref_imp_intelligence ~ sexual_orientation, data = data_prefs_itemlevel, paired = T)
+effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_intelligence, hetero_data_prefs_itemlevel$pref_imp_intelligence,
+       alternative = "two.sided",
+       paired = T,
+       na.rm = T)
 ```
 
 
@@ -725,12 +751,12 @@ effsize::cohen.d(pref_imp_intelligence ~ sexual_orientation, data = data_prefs_i
 # compute t-test
 # compare distributions
 self_confident = ggplot(data_self_itemlevel, aes(x = self_confident, fill = sexual_orientation)) + 
-  geom_histogram(position = "dodge") +
+  geom_histogram(position = "dodge", binwidth = 0.5) +
   ylim(0,150) +
   ggtitle("Confident")
 
 self_assertive = ggplot(data_self_itemlevel, aes(x = self_assertive, fill = sexual_orientation)) + 
-  geom_histogram(position = "dodge") +
+  geom_histogram(position = "dodge", binwidth = 0.5) +
   ylim(0,150) +
   ggtitle("Assertive")
 
@@ -748,16 +774,18 @@ data_self_itemlevel %>%
             max(self_confident, na.rm = T))
 
 # compute t-test
-t.test(self_confident ~ sexual_orientation, 
-       data = data_self_itemlevel,
+t.test(asex_data_self_itemlevel$self_confident, hetero_data_self_itemlevel$self_confident,
        alternative = "less",
-       paired = F)
+       paired = T)
 
 
 # effect size
-effsize::cohen.d(self_confident ~ sexual_orientation, data = data_self_itemlevel, paired = F)
+effsize::cohen.d(asex_data_self_itemlevel$self_confident, hetero_data_self_itemlevel$self_confident,
+       alternative = "less",
+       paired = T,
+       na.rm = T)
 ```
-@Problem
+
 
 #### assertive
 ```{r}
@@ -770,27 +798,28 @@ data_self_itemlevel %>%
             max(self_assertive, na.rm = T))
 
 # compute t-test
-t.test(self_assertive ~ sexual_orientation, 
-       data = data_self_itemlevel,
+t.test(asex_data_self_itemlevel$self_assertive, hetero_data_self_itemlevel$self_assertive,
        alternative = "less",
-       paired = F) 
+       paired = T) 
 
 # effect size
-effsize::cohen.d(self_confident ~ sexual_orientation, data = data_self_itemlevel, paired = F)
+effsize::cohen.d(asex_data_self_itemlevel$self_assertive, hetero_data_self_itemlevel$self_assertive,
+       alternative = "less",
+       paired = T,
+       na.rm = T)
 ```
-@Problem: there seems to be one participant that only answered confident item, NA for assertive item. How to deal with it?
 
 
 ### attractive
 ```{r}
 # compare distributions
 self_attractive_body = ggplot(data_self_itemlevel, aes(x = self_attractive_body, fill = sexual_orientation)) + 
-  geom_histogram(position = "dodge") +
+  geom_histogram(position = "dodge", binwidth = 0.5) +
   ylim(0,150) +
   ggtitle("Attractive body") 
 
 self_attractive_face = ggplot(data_self_itemlevel, aes(x = self_attractive_face, fill = sexual_orientation)) + 
-  geom_histogram(position = "dodge") +
+  geom_histogram(position = "dodge", binwidth = 0.5) +
   ylim(0,150) +
   ggtitle("Attractive face")
 
@@ -813,16 +842,18 @@ data_self_itemlevel %>%
             max(self_attractive_body, na.rm = T))
 
 # compute t-test
-t.test(self_attractive_body ~ sexual_orientation, 
-       data = data_self_itemlevel,
+t.test(asex_data_self_itemlevel$self_attractive_body, hetero_data_self_itemlevel$self_attractive_body,
        alternative = "less",
-       paired = F)
+       paired = T)
 
 
 # effect size
-effsize::cohen.d(self_attractive_body ~ sexual_orientation, data = data_self_itemlevel, paired = F)
+effsize::cohen.d(asex_data_self_itemlevel$self_attractive_body, hetero_data_self_itemlevel$self_attractive_body,
+       alternative = "less",
+       paired = T,
+       na.rm = T)
 ```
-@Problem
+
 
 #### attractive face
 ```{r}
@@ -835,18 +866,16 @@ data_self_itemlevel %>%
             max(self_attractive_face, na.rm = T))
 
 # compute t-test
-t.test(self_attractive_face ~ sexual_orientation, 
-       data = data_self_itemlevel,
+t.test(asex_data_self_itemlevel$self_attractive_face, hetero_data_self_itemlevel$self_attractive_face,
        alternative = "less",
-       paired = TRUE)
+       paired = T)
 
 
 # effect size
-effsize::cohen.d(self_attractive_face ~ sexual_orientation, data = data_self_itemlevel, paired = T)
-
-
-table(is.na(data_self_itemlevel$self_attractive_face))
-
+effsize::cohen.d(asex_data_self_itemlevel$self_attractive_face, hetero_data_self_itemlevel$self_attractive_face,
+       alternative = "less",
+       paired = T,
+       na.rm = T)
 ```
 
 ### kind-supportive
@@ -876,16 +905,17 @@ data_self_itemlevel %>%
             max(self_kind, na.rm = T))
 
 # compute t-test
-t.test(self_kind ~ sexual_orientation, 
-       data = data_self_itemlevel,
+t.test(asex_data_self_itemlevel$self_kind, hetero_data_self_itemlevel$self_kind,
        alternative = "two.sided",
        paired = T)
 
 
 # effect size
-effsize::cohen.d(self_kind ~ sexual_orientation, data = data_self_itemlevel, paired = F)
+effsize::cohen.d(asex_data_self_itemlevel$self_kind, hetero_data_self_itemlevel$self_kind,
+       alternative = "two.sided",
+       paired = T,
+       na.rm = T)
 ```
-@Problem
 
 #### supportive
 ```{r}
@@ -898,16 +928,17 @@ data_self_itemlevel %>%
             max(self_supportive, na.rm = T))
 
 # compute t-test
-t.test(self_supportive ~ sexual_orientation, 
-       data = data_self_itemlevel,
+t.test(asex_data_self_itemlevel$self_supportive,hetero_data_self_itemlevel$self_supportive,
        alternative = "two.sided",
        paired = T)
 
 
 # effect size
-effsize::cohen.d(self_supportive ~ sexual_orientation, data = data_self_itemlevel, paired = F)
+effsize::cohen.d(asex_data_self_itemlevel$self_supportive,hetero_data_self_itemlevel$self_supportive,
+       alternative = "two.sided",
+       paired = T,
+       na.rm = T)
 ```
-@Problem
 
 ### financially-secure/successfull
 ```{r}
@@ -936,16 +967,18 @@ data_self_itemlevel %>%
             max(self_financially_secure, na.rm = T))
 
 # compute t-test
-t.test(self_financially_secure ~ sexual_orientation, 
-       data = data_self_itemlevel,
+t.test(asex_data_self_itemlevel$self_financially_secure,hetero_data_self_itemlevel$self_financially_secure,
        alternative = "two.sided",
        paired = T)
 
 
 # effect size
-effsize::cohen.d(self_financially_secure ~ sexual_orientation, data = data_self_itemlevel, paired = F)
+effsize::cohen.d(asex_data_self_itemlevel$self_financially_secure,hetero_data_self_itemlevel$self_financially_secure,
+       alternative = "two.sided",
+       paired = T,
+       na.rm = T)
 ```
-@Problem
+
 
 #### successful ambitious
 ```{r}
@@ -958,16 +991,18 @@ data_self_itemlevel %>%
             max(self_successful_ambitous, na.rm = T))
 
 # compute t-test
-t.test(self_successful_ambitous ~ sexual_orientation, 
-       data = data_self_itemlevel,
+t.test(asex_data_self_itemlevel$self_successful_ambitous,hetero_data_self_itemlevel$self_successful_ambitous,
        alternative = "two.sided",
        paired = T)
 
 
 # effect size
-effsize::cohen.d(self_successful_ambitous ~ sexual_orientation, data = data_self_itemlevel, paired = T)
+effsize::cohen.d(asex_data_self_itemlevel$self_successful_ambitous,hetero_data_self_itemlevel$self_successful_ambitous,
+       alternative = "two.sided",
+       paired = T,
+       na.rm = T)
 ```
-@Problem
+
 
 ### educated-intelligent
 ```{r}
@@ -996,16 +1031,18 @@ data_self_itemlevel %>%
             max(self_educated, na.rm = T))
 
 # compute t-test
-t.test(self_educated ~ sexual_orientation, 
-       data = data_self_itemlevel,
+t.test(asex_data_self_itemlevel$self_educated,hetero_data_self_itemlevel$self_educated,
        alternative = "two.sided",
        paired = T)
 
 
 # effect size
-effsize::cohen.d(self_educated ~ sexual_orientation, data = data_self_itemlevel, paired = F)
+effsize::cohen.d(asex_data_self_itemlevel$self_educated,hetero_data_self_itemlevel$self_educated,
+       alternative = "two.sided",
+       paired = T,
+       na.rm = T)
 ```
-@Problem
+
 
 #### intelligent
 ```{r}
@@ -1018,28 +1055,16 @@ data_self_itemlevel %>%
             max(self_intelligence, na.rm = T))
 
 # compute t-test
-t.test(self_intelligence~ sexual_orientation, 
-       data = data_self_itemlevel,
+t.test(asex_data_self_itemlevel$self_intelligence,hetero_data_self_itemlevel$self_intelligence,
        alternative = "two.sided",
        paired = T)
 
 
 # effect size
-effsize::cohen.d(self_intelligence ~ sexual_orientation, data = data_self_itemlevel, paired = T)
+effsize::cohen.d(asex_data_self_itemlevel$self_intelligence,hetero_data_self_itemlevel$self_intelligence,
+       alternative = "two.sided",
+       paired = T,
+       na.rm = T)
 ```
-@Problem. 
 
-
-
-```{r}
-ca =data_prefs %>% filter(sexual_orientation == "Straight/Heterosexual") %>% 
-  select(pref_imp_ca) 
-ca_asex = data_prefs %>% filter(sexual_orientation == "Asexual") %>% 
-  select(pref_imp_ca) 
-
-mean(ca$pref_imp_ca, na.rm = T)
-mean(ca_asex$pref_imp_ca, na.rm = T)
-mean(data_prefs$pref_imp_ca, na.rm = T)
-
-```
 
