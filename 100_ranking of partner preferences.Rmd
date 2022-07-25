@@ -1,0 +1,86 @@
+---
+title: "100_ranking of partner preferences"
+output: html_document
+date: '2022-06-28'
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Ranking partner preferences
+## Library
+```{r}
+library(dplyr)
+library(formr)
+library(ggplot2)
+library(psych)
+library(effsize)
+```
+
+## Load data
+```{r}
+data_rel = read.csv(file = "data/data_rel.csv")[,-1]
+data_prefs = read.csv(file = "data/data_prefs.csv")[,-1]
+data_self = read.csv(file = "data/data_self.csv")[,-1]
+```
+
+## sort data by subclass number within sexual_orientation
+```{r}
+data_rel = data_rel %>% 
+        group_by(sexual_orientation) %>%
+        arrange(subclass, .by_group = TRUE)
+
+data_prefs = data_prefs %>% 
+        group_by(sexual_orientation) %>%
+        arrange(subclass, .by_group = TRUE)
+
+data_self = data_self %>% 
+        group_by(sexual_orientation) %>%
+        arrange(subclass, .by_group = TRUE)
+```
+
+
+
+```{r}
+# mean
+data_prefs %>% group_by(sexual_orientation) %>%  
+  summarise_at(c("pref_imp_ks",
+                 "pref_imp_att",
+                 "pref_imp_fs",
+                 "pref_imp_ca",
+                 "pref_imp_ei",
+                 "pref_imp_sexually_experienced"), mean, na.rm = T) 
+
+ranking_asexuals = ranking_asexuals[,2:6] 
+sort(ranking_asexuals)
+
+
+# standard deviation
+data_prefs %>% group_by(sexual_orientation) %>% 
+  summarise_at(c("pref_imp_ks",
+                 "pref_imp_att",
+                 "pref_imp_fs",
+                 "pref_imp_ca",
+                 "pref_imp_ei",
+                 "pref_imp_sexually_experienced"), sd, na.rm = T)
+# min
+data_prefs %>% group_by(sexual_orientation) %>% 
+  summarise_at(c("pref_imp_ks",
+                 "pref_imp_att",
+                 "pref_imp_fs",
+                 "pref_imp_ca",
+                 "pref_imp_ei",
+                 "pref_imp_sexually_experienced"), min, na.rm = T)
+# max
+data_prefs %>% group_by(sexual_orientation) %>% 
+  summarise_at(c("pref_imp_ks",
+                 "pref_imp_att",
+                 "pref_imp_fs",
+                 "pref_imp_ca",
+                 "pref_imp_ei",
+                 "pref_imp_sexually_experienced"), max, na.rm = T)
+```
+
