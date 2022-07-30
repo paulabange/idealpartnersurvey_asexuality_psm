@@ -1,24 +1,14 @@
----
-title: "Notes"
-output: html_document
-date: '2022-05-20'
-editor_options: 
-  chunk_output_type: console
----
-
-```{r setup, include=FALSE}
+## ----setup, include=FALSE--------------------------------------------------------------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
-```
 
-## Library
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 library(ggplot2)
 library(dplyr)
 library(effsize)
-```
 
-## Lifetime sexual partners
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # load data_prefs and data_self
 data_rel = read.csv(file = "data/data_rel.csv")[,-1]
 data_prefs = read.csv(file = "data/data_prefs.csv")[,-1]
@@ -36,11 +26,9 @@ sexual_partner$id = 1:94738
 data_rel_plus_sexual_partner_variable = left_join(data_rel, sexual_partner)
 data_prefs_plus_sexual_partner_variable = left_join(data_prefs, sexual_partner) # joined by id variable
 data_self_plus_sexual_partner_variable = left_join(data_self, sexual_partner) # joined by id variable
-```
 
 
-### Partner preferences: look at sexual partners variables
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_prefs_plus_sexual_partner_variable %>% group_by(sexual_orientation) %>%
   summarise_at(c("total_sex_partners", "total_sex_partners2"), mean, na.rm = T)
@@ -70,30 +58,24 @@ table(data_prefs_plus_sexual_partner_variable$total_sex_partners)
 table(data_prefs_plus_sexual_partner_variable$total_sex_partners2)
 
 # correlation
+cor(data_prefs_plus_sexual_partner_variable$total_sex_partners, data_prefs_plus_sexual_partner_variable$total_sex_partners2, method = "pearson", na.rm = TRUE) # funktioniert nicht --> warum?
 cor.test(data_prefs_plus_sexual_partner_variable$total_sex_partners, data_prefs_plus_sexual_partner_variable$total_sex_partners2, method = "pearson", na.rm = T)
-```
-Both variables are highly correlated (r = 0.99) - as expected. total_sex_partners_2 will be used for the following analysis.
 
 
-#### Correlation between number of total sex partners and preference for a sexually experienced partner
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 cor.test(data_prefs_plus_sexual_partner_variable$total_sex_partners2, data_prefs_plus_sexual_partner_variable$pref_imp_sexually_experienced, method = "pearson", na.rm = T)
-```
-r = 0.26
 
-#### t-test difference between asexuals and heterosexuals in total number of sex partners
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(total_sex_partners2 ~ sexual_orientation, data = data_prefs_plus_sexual_partner_variable,
        alternative = "two.sided",
        paired = F)
 
 effsize::cohen.d(total_sex_partners2 ~ sexual_orientation, data = data_prefs_plus_sexual_partner_variable,
        paired = F)
-```
 
 
-### Self-ratings: look at sexual partners variables
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_self_plus_sexual_partner_variable %>% group_by(sexual_orientation) %>%
   summarise_at(c("total_sex_partners", "total_sex_partners2"), mean, na.rm = T)
@@ -123,35 +105,31 @@ table(data_self_plus_sexual_partner_variable$total_sex_partners)
 table(data_self_plus_sexual_partner_variable$total_sex_partners2)
 
 # correlation
+cor(data_self_plus_sexual_partner_variable$total_sex_partners, data_self_plus_sexual_partner_variable$total_sex_partners2, method = "pearson", na.rm = TRUE) # funktioniert nicht --> warum?
 cor.test(data_self_plus_sexual_partner_variable$total_sex_partners, data_self_plus_sexual_partner_variable$total_sex_partners2, method = "pearson", na.rm = T)
-```
-Both variables are highly correlated (r = 0.99).
 
-#### Correlation between total number of sex partners and being sexually experienced 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 cor.test(data_self_plus_sexual_partner_variable$total_sex_partners2, data_self_plus_sexual_partner_variable$self_sexually_experienced, method = "pearson", na.rm = T)
-```
 
-#### t-test difference between asexuals and heterosexuals in total number of sex partners
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(total_sex_partners2 ~ sexual_orientation, data = data_self_plus_sexual_partner_variable,
        alternative = "two.sided",
        paired = F)
 
 effsize::cohen.d(total_sex_partners2 ~ sexual_orientation, data = data_self_plus_sexual_partner_variable,
        paired = F)
-```
 
-#### Plot total number of sex partners and sexual experience againts each other
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 b <- ggplot(data_self_plus_sexual_partner_variable, aes(x = total_sex_partners2, y = self_sexually_experienced))
 # Scatter plot with regression line
 b + geom_point()+
   geom_smooth(method = "lm") 
-```
 
-### Relationship options: look at sexual partners variables
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_rel_plus_sexual_partner_variable %>% group_by(sexual_orientation) %>%
   summarise_at(c("total_sex_partners", "total_sex_partners2"), mean, na.rm = T)
@@ -179,24 +157,33 @@ data_rel_plus_sexual_partner_variable %>% group_by(sexual_orientation) %>%
 # counts
 table(data_rel_plus_sexual_partner_variable$total_sex_partners)
 table(data_rel_plus_sexual_partner_variable$total_sex_partners2)
-```
 
 
-
-### Lifetime sexual partners in unmatched heterosexuals sample
-#### Load data
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 data_prefs_unmatched = read.csv(file = "data/data_prefs_unmatched.csv")[,-1]
 data_self_unmatched = read.csv(file = "data/data_prefs_unmatched.csv")[,-1]
 
 # add sex partner variable to data
 data_prefs_unmatched_plus_sexual_partner_variable = left_join(data_prefs_unmatched, sexual_partner)
 data_self_unmatched_plus_sexual_partner_variable = left_join(data_self_unmatched, sexual_partner)
-```
 
-#### Partner preferences
-##### Total number of sex partners
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
+data_rel_unmatched = read.csv(file = "data/data_rel_unmatched.csv")[,-1]
+mean(data_rel_unmatched$interest_parent)
+sd(data_rel_unmatched$interest_parent)
+
+mean(data_prefs_unmatched$pref_imp_fs)
+
+
+
+mean(data_rel_unmatched$interest_hookups)
+sd(data_rel_unmatched$interest_hookups)
+
+
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_prefs_unmatched_plus_sexual_partner_variable %>% group_by(sexual_orientation) %>%
   summarise_at(c("total_sex_partners", "total_sex_partners2"), mean, na.rm = T)
@@ -224,13 +211,9 @@ data_prefs_unmatched_plus_sexual_partner_variable %>% group_by(sexual_orientatio
 # counts
 table(data_prefs_unmatched_plus_sexual_partner_variable$total_sex_partners)
 table(data_prefs_unmatched_plus_sexual_partner_variable$total_sex_partners2)
-```
-Using variable total_sex_partners as total_sex_partners2 seems to have unreasonably high values.
-Mean number of lifetime sexual partners in unmatched heterosexual sample is 6.23. 
 
-#### Self-ratings
-##### Total number of sex partners
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_self_unmatched_plus_sexual_partner_variable %>% group_by(sexual_orientation) %>%
   summarise_at(c("total_sex_partners", "total_sex_partners2"), mean, na.rm = T)
@@ -258,14 +241,10 @@ data_self_unmatched_plus_sexual_partner_variable %>% group_by(sexual_orientation
 # counts
 table(data_self_unmatched_plus_sexual_partner_variable$total_sex_partners)
 table(data_self_unmatched_plus_sexual_partner_variable$total_sex_partners2)
-```
-Using variable total_sex_partners as total_sex_partners2 seems to have unreasonably high values.
-Mean number of lifetime sexual partners in unmatched heterosexual sample is 6.23. 
 
 
-## Longest relationship variable
-```{r}
-# load data with longest relationship variable
+## --------------------------------------------------------------------------------------------------------------------------------
+# load data with lifetime sexual partners variable
 fulldata_selected_plus_longest_rel_variable = read.csv(file = "data/fulldata_selected_plus_sexual_partner_variable.csv")[,-1]
 names(fulldata_selected_plus_longest_rel_variable)
 longest_rel = fulldata_selected_plus_longest_rel_variable %>% select("longest_relationship")
@@ -276,10 +255,9 @@ longest_rel$id = 1:94738
 # add variables to data
 data_prefs_plus_longest_rel_variable = left_join(data_prefs, longest_rel) # joined by id variable
 data_self_plus_longest_rel_variable = left_join(data_self, longest_rel) # joined by id variable
-```
 
-### Partner preferences: look at longest relationship variable
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # turn longest relationship variable into a factor
 data_prefs_plus_longest_rel_variable$longest_relationship = as.factor(data_prefs_plus_longest_rel_variable$longest_relationship) # convert to factor
 levels(data_prefs_plus_longest_rel_variable$longest_relationship) # check levels of factor
@@ -290,17 +268,13 @@ levels(data_prefs_plus_longest_rel_variable$longest_relationship) # check factor
 
 # counts
 table(data_prefs_plus_longest_rel_variable$longest_relationship)
-```
 
 
-#### correlation between longest relationship and preference for sexual experience 
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 cor.test(data_prefs_plus_sexual_partner_variable$total_sex_partners2, data_prefs_plus_sexual_partner_variable$pref_imp_sexually_experienced, method = "pearson", na.rm = T)
-```
-r = 0.26
 
-### Self-ratings: look at longest relationship variable
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # turn longest relationship variable into a factor
 data_self_plus_longest_rel_variable$longest_relationship = as.factor(data_self_plus_longest_rel_variable$longest_relationship) # convert to factor
 levels(data_self_plus_longest_rel_variable$longest_relationship) # check levels of factor
@@ -315,19 +289,15 @@ table(data_self_plus_longest_rel_variable$longest_relationship)
 # counts by sexual orientation
 data_self_plus_longest_rel_variable %>% group_by(sexual_orientation,longest_relationship) %>% 
   summarise(Count = n())
-```
 
 
-#### plot longest relationship against sexual experience by sexual orientazion
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 ggplot(data_self_plus_longest_rel_variable, aes(x = longest_relationship, y = self_sexually_experienced, fill = sexual_orientation)) + 
   stat_summary(fun = "mean", geom = "bar", position = "dodge") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust= 1, margin = margin()))+
   ggtitle("Longest relationship in relation to self-rated sexual experience by sexual orientation")
-```
 
-#### Fisher's exact test: longest_relationship difference between asexuals and hetersexuals
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 fisher.test(data_self_plus_longest_rel_variable$sexual_orientation, data_self_plus_longest_rel_variable$longest_relationship, simulate.p.value = TRUE)
-```
-Not significant. Independent.
+

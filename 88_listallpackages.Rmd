@@ -1,0 +1,153 @@
+---
+title: "xx"
+output: html_document
+date: '2022-07-26'
+editor_options: 
+  chunk_output_type: console
+---
+
+# Which file used which packages?
+# load package NCmisc
+```{r}
+library(NCmisc)
+```
+
+## 00_data_wrangling
+```{r}
+# knitr::purl("00_data_wrangling.Rmd")
+list.functions.in.file("00_data_wrangling.R")
+```
+base, utils, stats
+dplyr, formr
+
+## 01_exclusion
+```{r}
+# knitr::purl("01_exclusion.Rmd")
+list.functions.in.file("01_exclusion.R")
+```
+base, utils, stats, dplyr, tidyr
+
+## 01_excluded_vs_included
+```{r}
+# knitr::purl("01_excluded_vs_included.Rmd")
+list.functions.in.file("01_excluded_vs_included.R")
+```
+base, utils, stats, graphics, dplyr, effsize/psych
+
+## 02_codebook
+```{r}
+# knitr::purl("02_codebook.Rmd")
+list.functions.in.file("02_codebook.R")
+```
+base, utils, dplyr, ggplot2
+
+## 03_codebook_robustness
+```{r}
+# knitr::purl("03_codebook_robustness.Rmd")
+list.functions.in.file("03_codebook_robustness.R")
+```
+base, utils, dplyr, ggplot2
+
+## 04_descriptives_before_matching
+```{r}
+# knitr::purl("04_descriptives_before_matching.Rmd")
+list.functions.in.file("04_descriptives_before_matching.R")
+```
+base, utils, stats, graphics, dplyr, psych, ggplot2
+
+## 05_psm
+```{r}
+# knitr::purl("05_psm.Rmd")
+list.functions.in.file("05_psm.R")
+```
+base, utils, stats, graphics, psych, dplyr, 
+Matchit
+cobalt
+
+## 06_robustness_psm
+```{r}
+knitr::purl("06_robustness_psm.Rmd")
+list.functions.in.file("06_robustness_psm.R")
+```
+base, utils, stats, graphics, psych, dplyr, 
+Matchit
+cobalt
+
+## 07_
+
+## 08_descriptives_psm
+```{r}
+# knitr::purl("08_descriptives_psm.Rmd")
+list.functions.in.file("08_descriptives_psm.R")
+```
+base, stats, utils, graphics
+apaTables
+dplyr, psych ggplot2
+
+## 09_
+
+## 10_analyses
+```{r}
+# knitr::purl("10_analyses.Rmd")
+list.functions.in.file("10_analyses.R")
+```
+base, utils, stats
+dplyr, ggplot2, psych
+gridExtra
+
+## 11_comparison_matched_unmatched
+```{r}
+# knitr::purl("11_comparison_matched_unmatched.Rmd")
+list.functions.in.file("11_comparison_matched_unmatched.R")
+```
+base, utils, stats
+psych, effsize, dplyr, ggplot2, 
+rcompanion, confintr
+
+## 12_robustness_analyses
+```{r}
+# knitr::purl("12_robustness_analyses.Rmd")
+list.functions.in.file("12_robustness_analyses.R")
+```
+base, stats, graphics, 
+dplyr, psych, effsize
+?bal.tab --> cobalt package nicht geladen???
+
+# 13_sensitivity_analyses
+```{r}
+knitr::purl("13_sensitivity_analyses.Rmd")
+list.functions.in.file("13_sensitivity_analyses.R")
+```
+base, stats, utils, 
+dplyr, effsize/psych
+MatchIt
+EValue
+rbounds
+
+# 14_analyses_additional
+```{r}
+knitr::purl("14_analyses_additional.Rmd")
+list.functions.in.file("14_analyses_additional.R")
+```
+base, graphics, utils, stats
+ggplot2, grid, dplyr, effsize, psych
+forestplot
+cobalt
+MatchIt
+
+# 15_lifetime_sexual_partners
+```{r}
+knitr::purl("15_lifetime_sexual_partners.Rmd")
+list.functions.in.file("15_lifetime_sexual_partners.R")
+```
+base, stats, utils
+effsize, psych, dplyr, ggplot2
+
+
+# 16_forest_plot
+```{r}
+knitr::purl("16_forest_plot.Rmd")
+list.functions.in.file("16_forest_plot.R")
+```
+@Problem
+

@@ -76,7 +76,7 @@ hetero_v_umhetero_self = full_join(heterosexuals_self, data_self_unmatched)
 ## Asexuals v. unmatched heterosexuals
 ### Country
 ```{r}
-# assumptions not met for chi square test: some cells contain less than 5 observations; therefore a Fisher's exact test ist calculated
+# assumptions not met for chi square test: some cells contain less than 5 observations; therefore a Fisher's exact test is calculated
 matrix_asex_v_umhetero_country = as.matrix(table(asex_v_umhetero_prefs$country, asex_v_umhetero_prefs$sexual_orientation), header=TRUE, row.names=1)
 table(matrix_asex_v_umhetero_country < 5) # absolute number of cells containing less than 5 counts
 nrow(matrix_asex_v_umhetero_country) * 2 # number of cells

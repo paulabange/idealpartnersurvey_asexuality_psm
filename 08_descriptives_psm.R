@@ -1,60 +1,40 @@
----
-title: "05_descriptives_psm"
-output: html_document
-date: '2022-04-19'
-editor_options: 
-  chunk_output_type: console
----
-
-```{r setup, include=FALSE}
+## ----setup, include=FALSE--------------------------------------------------------------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
-```
 
-## Descriptives for propensity-score-matched samples
 
-## Library
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 library(dplyr)
-#library(formr)
+library(formr)
 library(ggplot2)
 library(psych)
 library(apaTables)
-```
 
-## Load data
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 data_rel = read.csv(file = "data/data_rel.csv")[,-1]
 data_prefs = read.csv(file = "data/data_prefs.csv")[,-1]
 data_self = read.csv(file = "data/data_self.csv")[,-1]
-```
 
-## 1. Relationship options
-### Descriptives for whole sample
-#### Demographic data
-##### Sexual orientation
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_rel$sexual_orientation) # sexual orientation in absolute numbers
 round(table(data_rel$sexual_orientation)/sum(table(data_rel$sexual_orientation)),4)*100 # sexual orientation in percent
 table(is.na(data_rel$sexual_orientation)) # no NAs 
-```
 
-##### Country
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_rel$country) # country in absolute numbers
 round(table(data_rel$country)/sum(table(data_rel$country)),4)*100 # country in percent
 table(is.na(data_rel$country)) # no NAs 
-```
 
-##### Language
-Chinese, Danish, English, French, German, Japanese, Portuguese, Russian, Spanish, Italian
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_rel$language) # language in absolute numbers
 round(table(data_rel$language)/sum(table(data_rel$language)),4)*100 # country in percent
 table(is.na(data_rel$language)) #no NAs
-```
 
-##### Age
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_rel$age)
 range(data_rel$age, na.rm = T) # range
 table(is.na(data_rel$age)) # NAs
@@ -68,24 +48,21 @@ round(sd(data_rel$age, na.rm = T),2)
 
 # median
 median(data_rel$age)
-```
 
-##### Sex 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_rel$sex) # in absolute numbers
 round(table(data_rel$sex)/sum(table(data_rel$sex)),4)*100 # in percent
 table(is.na(data_rel$sex))
-```
 
-##### Relationship status
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_rel$relationship_status) # in absolute numbers
 round(table(data_rel$relationship_status)/sum(table(data_rel$relationship_status)),4)*100 # in percent
 table(is.na(data_rel$relationship_status)) # NAs
-```
 
-##### Relationship length 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_rel$relationship_length)
 range(data_rel$relationship_length, na.rm = T) # range
 table(is.na(data_rel$relationship_length)) # NAs
@@ -95,10 +72,9 @@ hist(data_rel$relationship_length)
 # mean, sd
 mean(data_rel$relationship_length, na.rm = T)
 sd(data_rel$relationship_length, na.rm = T)
-```
 
-#### Outcomes: Relationship options
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_rel %>%
   select(interest_hookups,
@@ -126,10 +102,9 @@ table(is.na(data_rel$interest_nonmonrel))
 table(is.na(data_rel$interest_altrel))
 table(is.na(data_rel$interest_single))
 table(is.na(data_rel$interest_parent))
-```
 
-#### Zero-order correlations
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 correlations_psm_rel = data_rel %>%
   select(interest_hookups,
          interest_nonsexrel,
@@ -143,23 +118,18 @@ correlations_psm_rel = data_rel %>%
 
 # correlations_table_psm_rel = apa.cor.table(correlations_psm_rel, filename = "Table1.doc", table.number = 1)
 # correlations_table_psm_rel
-```
 
 
-
-### Descriptives by sexual orientation
-#### Demographic data
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # quick overview 
 describe.by(data_rel, data_rel$sexual_orientation)
 
 # split data set by sexual orientation
 asexuals_rel = data_rel %>% filter(sexual_orientation == "Asexual")
 heteros_rel = data_rel %>% filter(sexual_orientation == "Straight/Heterosexual")
-```
 
-##### Country
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # for asexuals
 sort(table(asexuals_rel$country), decreasing = T) # absolute numbers
 sort(round(table(asexuals_rel$country)/sum(table(asexuals_rel$country)),4)*100, decreasing = T) # in percent
@@ -172,10 +142,9 @@ sort(round(table(heteros_rel$country)/sum(table(heteros_rel$country)),4)*100, de
 # check for NAs
 table(is.na(asexuals_rel_rel$country))
 table(is.na(heteros_rel$country))
-```
 
-##### Language
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # for asexuals_rel_rel
 sort(table(asexuals_rel$language), decreasing = T) # absolute numbers
 sort(round(table(asexuals_rel$language)/sum(table(asexuals_rel$language)),4)*100, decreasing = T) # in percent
@@ -189,10 +158,9 @@ sort(round(table(heteros_rel$language)/sum(table(heteros_rel$language)),4)*100, 
 table(is.na(asexuals_rel$language))
 table(is.na(heteros_rel$language))
 
-```
 
-##### Age
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_rel %>%
   group_by(sexual_orientation) %>%
@@ -211,10 +179,9 @@ ggplot(data_rel, aes(x = age, fill = sexual_orientation)) +
 data_rel %>% 
   group_by(sexual_orientation) %>% 
   summarise(sum(is.na(age)))
-```
 
-##### Relationship status
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # for asexuals_rel
 sort(table(asexuals_rel$relationship_status), decreasing = T) # absolute numbers
 sort(round(table(asexuals_rel$relationship_status)/sum(table(asexuals_rel$relationship_status)),4)*100, decreasing = T) # in percent
@@ -227,10 +194,9 @@ sort(round(table(heteros_rel$relationship_status)/sum(table(heteros_rel$relation
 # check for NAs
 table(is.na(asexuals_rel$relationship_status))
 table(is.na(heteros_rel$relationship_status))
-```
 
-##### Relationship length 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_rel %>%
   group_by(sexual_orientation) %>%
@@ -249,10 +215,9 @@ ggplot(data_rel, aes(x = relationship_length, fill = sexual_orientation)) +
 data_rel %>% 
   group_by(sexual_orientation) %>% 
   summarise(sum(is.na(relationship_length)))
-```
 
-#### Outcomes: Relationship options
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_rel %>% group_by(sexual_orientation) %>% 
   summarise_at(c("interest_hookups", "interest_nonsexrel", "interest_monrel",
@@ -340,89 +305,27 @@ ggplot(data_rel, aes(x = interest_single, fill = sexual_orientation)) +
 # parent
 ggplot(data_rel, aes(x = interest_parent, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge")
-```
-
-#### Country and language agreement in matched pairs 
-##### Create subsamples
-```{r}
-# create subsamples based on sexual orientation
-asexual_nnm_rel = data_rel %>% filter(sexual_orientation == "Asexual")
-heterosex_nnm_rel = data_rel %>%  filter(sexual_orientation =="Straight/Heterosexual")
-
-# match subsamples based on assigned subclass (propensity-score matched pairs will be matched)
-matched_rel = inner_join(asexual_nnm_rel, heterosex_nnm_rel, by = "subclass")
-```
 
 
-##### Country
-```{r}
-# create variable indicating whether pair comes from same country, if so country is printed
-matched_rel$same_country = ifelse(matched_rel$country.x == matched_rel$country.y, matched_rel$country.x, "no")
-
-# how many pairs per country
-table(matched_rel$same_country) 
-
-# countries of pairs from differing countries
-matched_rel$country_1 = ifelse(matched_rel$country.x != matched_rel$country.y, matched_rel$country.x, "no")
-matched_rel$country_2 = ifelse(matched_rel$country.x != matched_rel$country.y, matched_rel$country.y, "no")
-
-# table 
-xtabs(~country_1 + country_2, matched_rel) 
-
-# how many pairs share same country?
-sum(matched_rel$same_country != "no") # 293
-sum(matched_rel$same_country != "no")/nrow(matched_rel) # 90%
-```
-
-##### Language
-```{r}
-# create variable indicating whether pair answered survey in same language, if so that language is printed
-matched_rel$same_language = ifelse(matched_rel$language.x == matched_rel$language.y, matched_rel$language.x, "no")
-
-
-# how many pairs per language
-table(matched_rel$same_language) 
-
-# countries of pairs with different languages
-matched_rel$language_1 = ifelse(matched_rel$language.x != matched_rel$language.y, matched_rel$language.x, "no")
-matched_rel$language_2 = ifelse(matched_rel$language.x != matched_rel$language.y, matched_rel$language.y, "no")
-
-# table 
-xtabs(~language_1 + language_2, matched_rel) 
-
-# how many pairs share same language?
-sum(matched_rel$same_language != "no") # 308
-sum(matched_rel$same_language != "no")/nrow(matched_rel) # 94%
-```
-
-
-## 2. Partner preferences
-### Descriptives for whole sample
-#### Demographic data
-##### Sexual orientation
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_prefs$sexual_orientation) # sexual orientation in absolute numbers
 round(table(data_prefs$sexual_orientation)/sum(table(data_prefs$sexual_orientation)),4)*100 # sexual orientation in percent
 table(is.na(data_prefs$sexual_orientation)) # no NAs 
-```
 
-##### Country
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_prefs$country) # country in absolute numbers
 round(table(data_prefs$country)/sum(table(data_prefs$country)),4)*100 # country in percent
 table(is.na(data_prefs$country)) # no NAs 
-```
 
-##### Language
-Chinese, Danish, English, French, German, Japanese, Portuguese, Russian, Spanish, Italian
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_prefs$language) # language in absolute numbers
 round(table(data_prefs$country)/sum(table(data_prefs$country)),4)*100 # country in percent
 table(is.na(data_prefs$language)) #no NAs
-```
 
-##### Age
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_prefs$age)
 range(data_prefs$age, na.rm = T) # range
 table(is.na(data_prefs$age)) # NAs
@@ -433,24 +336,21 @@ hist(data_prefs$age)
 # mean, sd
 mean(data_prefs$age, na.rm = T)
 sd(data_prefs$age, na.rm = T)
-```
 
-##### Sex 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_prefs$sex) # in absolute numbers
 round(table(data_prefs$sex)/sum(table(data_prefs$sex)),4)*100 # in percent
 table(is.na(data_prefs$sex))
-```
 
-##### Relationship status
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_prefs$relationship_status) # in absolute numbers
 round(table(data_prefs$relationship_status)/sum(table(data_prefs$relationship_status)),4)*100 # in percent
 table(is.na(data_prefs$relationship_status)) # NAs
-```
 
-##### Relationship length 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_prefs$relationship_length)
 range(data_prefs$relationship_length, na.rm = T) # range
 table(is.na(data_prefs$relationship_length)) # NAs
@@ -460,11 +360,9 @@ hist(data_prefs$relationship_length)
 # mean, sd
 mean(data_prefs$relationship_length, na.rm = T)
 sd(data_prefs$relationship_length, na.rm = T)
-```
 
 
-#### Outcomes: partner preferences
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_prefs %>% select(pref_imp_ks,
                      pref_imp_att,
@@ -489,11 +387,9 @@ table(is.na(data_prefs$pref_imp_fs))
 table(is.na(data_prefs$pref_imp_ca))
 table(is.na(data_prefs$pref_imp_ei))
 table(is.na(data_prefs$pref_imp_sexually_experienced))
-```
 
 
-#### Zero-order correlations
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 correlations_psm_prefs = data_prefs %>%
   select(pref_imp_ca,
          pref_imp_att,
@@ -506,22 +402,18 @@ correlations_psm_prefs = data_prefs %>%
 
 # correlations_table_psm_prefs = apa.cor.table(correlations_psm_prefs, filename = "Table2.doc", table.number = 2)
 # correlations_table_psm_prefs
-```
 
 
-### Descriptives by sexual orientation
-#### Demographic data
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # quick overview 
 describe.by(data_prefs, data_prefs$sexual_orientation)
 
 # split data set by sexual orientation
 asexuals_prefs = data_prefs %>% filter(sexual_orientation == "Asexual")
 heteros_prefs = data_prefs %>% filter(sexual_orientation == "Straight/Heterosexual")
-```
 
-##### Country
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # for asexuals
 sort(table(asexuals_prefs$country), decreasing = T) # absolute numbers
 sort(round(table(asexuals_prefs$country)/sum(table(asexuals_prefs$country)),4)*100, decreasing = T) # in percent
@@ -534,10 +426,9 @@ sort(round(table(heteros_prefs$country)/sum(table(heteros_prefs$country)),4)*100
 # check for NAs
 table(is.na(asexuals_prefs_rel$country))
 table(is.na(heteros_prefs$country))
-```
 
-##### Language
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # for asexuals
 sort(table(asexuals_prefs$language), decreasing = T) # absolute numbers
 sort(round(table(asexuals_prefs$language)/sum(table(asexuals_prefs$language)),4)*100, decreasing = T) # in percent
@@ -551,10 +442,9 @@ sort(round(table(heteros_prefs$language)/sum(table(heteros_prefs$language)),4)*1
 table(is.na(asexuals_prefs$language))
 table(is.na(heteros_prefs$language))
 
-```
 
-##### Age
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_prefs %>%
   group_by(sexual_orientation) %>%
@@ -573,10 +463,9 @@ ggplot(data_prefs, aes(x = age, fill = sexual_orientation)) +
 data_prefs %>% 
   group_by(sexual_orientation) %>% 
   summarise(sum(is.na(age)))
-```
 
-##### Relationship status
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # for asexuals_prefs
 sort(table(asexuals_prefs$relationship_status), decreasing = T) # absolute numbers
 sort(round(table(asexuals_prefs$relationship_status)/sum(table(asexuals_prefs$relationship_status)),4)*100, decreasing = T) # in percent
@@ -589,10 +478,9 @@ sort(round(table(heteros_prefs$relationship_status)/sum(table(heteros_prefs$rela
 # check for NAs
 table(is.na(asexuals_prefs$relationship_status))
 table(is.na(heteros_prefs$relationship_status))
-```
 
-##### Relationship length 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_prefs %>%
   group_by(sexual_orientation) %>%
@@ -611,10 +499,9 @@ ggplot(data_prefs, aes(x = relationship_length, fill = sexual_orientation)) +
 data_prefs %>% 
   group_by(sexual_orientation) %>% 
   summarise(sum(is.na(relationship_length)))
-```
 
-#### Outcomes: partner preferences
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_prefs %>% group_by(sexual_orientation) %>% 
   summarise_at(c("pref_imp_ks",
@@ -712,88 +599,27 @@ ggplot(data_prefs, aes(x = pref_imp_ei, fill = sexual_orientation)) +
 # sexually experienced
 ggplot(data_prefs, aes(x = pref_imp_sexually_experienced, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge")
-```
 
 
-#### Country and Language agreement in matched pairs
-##### Create subsamples
-```{r}
-# create subsamples based on sexual orientation
-asexual_nnm = data_prefs %>% filter(sexual_orientation == "Asexual")
-heterosex_nnm = data_prefs %>%  filter(sexual_orientation =="Straight/Heterosexual")
-
-# match subsamples based on assigned subclass (propensity-score matched pairs will be matched)
-matched = inner_join(asexual_nnm, heterosex_nnm, by = "subclass")
-```
-
-##### Country
-```{r}
-# create variable indicating whether pair comes from same country, if that is the case country is printed
-matched$same_country = ifelse(matched$country.x == matched$country.y, matched$country.x, "no")
-
-# how many pairs per country
-table(matched$same_country) 
-
-# countries of pairs from differing countries
-matched$country_1 = ifelse(matched$country.x != matched$country.y, matched$country.x, "no")
-matched$country_2 = ifelse(matched$country.x != matched$country.y, matched$country.y, "no")
-
-# table 
-xtabs(~country_1 + country_2, matched) 
-
-# how many pairs share same country?
-sum(matched$same_country != "no") # 358
-sum(matched$same_country != "no")/nrow(matched) # 92%
-```
-
-##### Language
-```{r}
-# create variable indicating whether pair answered survey in same language, if that is the case that language is printed
-matched$same_language = ifelse(matched$language.x == matched$language.y, matched$language.x, "no")
-
-# how many pairs per language
-table(matched$same_language) 
-
-# countries of pairs with different languages
-matched$language_1 = ifelse(matched$language.x != matched$language.y, matched$language.x, "no")
-matched$language_2 = ifelse(matched$language.x != matched$language.y, matched$language.y, "no")
-
-# table 
-xtabs(~language_1 + language_2, matched) 
-
-# how many pairs share same language?
-sum(matched$same_language != "no") # 376
-sum(matched$same_language != "no")/nrow(matched) # 96%
-```
-
-
-## 3. Self-ratings
-### Descriptives for whole sample
-#### Demographic data
-##### Sexual orientation
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_self$sexual_orientation) # sexual orientation in absolute numbers
 round(table(data_self$sexual_orientation)/sum(table(data_self$sexual_orientation)),4)*100 # sexual orientation in percent
 table(is.na(data_self$sexual_orientation)) # no NAs 
-```
 
-##### Country
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_self$country) # country in absolute numbers
 round(table(data_self$country)/sum(table(data_self$country)),4)*100 # country in percent
 table(is.na(data_self$country)) # no NAs 
-```
 
-##### Language
-Chinese, Danish, English, French, German, Japanese, Portuguese, Russian, Spanish, Italian
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_self$language) # language in absolute numbers
 round(table(data_self$country)/sum(table(data_self$country)),4)*100 # country in percent
 table(is.na(data_self$language)) #no NAs
-```
 
-##### Age
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_self$age)
 range(data_self$age, na.rm = T) # range
 table(is.na(data_self$age)) # NAs
@@ -804,24 +630,21 @@ hist(data_self$age)
 # mean, sd
 mean(data_self$age, na.rm = T)
 sd(data_self$age, na.rm = T)
-```
 
-##### Sex 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_self$sex) # in absolute numbers
 round(table(data_self$sex)/sum(table(data_self$sex)),4)*100 # in percent
 table(is.na(data_self$sex))
-```
 
-##### Relationship status
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_self$relationship_status) # in absolute numbers
 round(table(data_self$relationship_status)/sum(table(data_self$relationship_status)),4)*100 # in percent
 table(is.na(data_self$relationship_status)) # NAs
-```
 
-##### Relationship length 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_self$relationship_length)
 range(data_self$relationship_length, na.rm = T) # range
 table(is.na(data_self$relationship_length)) # NAs
@@ -831,10 +654,9 @@ hist(data_self$relationship_length)
 # mean, sd
 mean(data_self$relationship_length, na.rm = T)
 sd(data_self$relationship_length, na.rm = T)
-```
 
-#### Outcomes: self-ratings
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_self %>% select(self_ks,
                      self_att,
@@ -861,10 +683,9 @@ table(is.na(data_self$self_fs))
 table(is.na(data_self$self_ca))
 table(is.na(data_self$self_ei))
 table(is.na(data_self$self_sexually_experienced))
-```
 
-#### Zero-order correlations
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 correlations_psm_self = data_self %>%
   select(self_ca,
          self_att,
@@ -875,21 +696,18 @@ correlations_psm_self = data_self %>%
 
 # correlations_table_psm_self = apa.cor.table(correlations_psm_self, filename = "Table3.doc", table.number = 3)
 # correlations_table_psm_self
-```
 
-### Descriptives by sexual orientation
-#### Demographic data
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # quick overview 
 describe.by(data_self, data_self$sexual_orientation)
 
 # split data set by sexual orientation
 asexuals_self = data_self %>% filter(sexual_orientation == "Asexual")
 heteros_self = data_self %>% filter(sexual_orientation == "Straight/Heterosexual")
-```
 
-##### Country
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # for asexuals
 sort(table(asexuals_self$country), decreasing = T) # absolute numbers
 sort(round(table(asexuals_self$country)/sum(table(asexuals_self$country)),4)*100, decreasing = T) # in percent
@@ -902,10 +720,9 @@ sort(round(table(heteros_self$country)/sum(table(heteros_self$country)),4)*100, 
 # check for NAs
 table(is.na(asexuals_self$country))
 table(is.na(heteros_self$country))
-```
 
-##### Language
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # for asexuals
 sort(table(asexuals_self$language), decreasing = T) # absolute numbers
 sort(round(table(asexuals_self$language)/sum(table(asexuals_self$language)),4)*100, decreasing = T) # in percent
@@ -919,10 +736,9 @@ sort(round(table(heteros_self$language)/sum(table(heteros_self$language)),4)*100
 table(is.na(asexuals_self$language))
 table(is.na(heteros_self$language))
 
-```
 
-##### Age
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_self %>%
   group_by(sexual_orientation) %>%
@@ -941,10 +757,9 @@ ggplot(data_self, aes(x = age, fill = sexual_orientation)) +
 data_self %>% 
   group_by(sexual_orientation) %>% 
   summarise(sum(is.na(age)))
-```
 
-##### Relationship status
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # for asexuals_self
 sort(table(asexuals_self$relationship_status), decreasing = T) # absolute numbers
 sort(round(table(asexuals_self$relationship_status)/sum(table(asexuals_self$relationship_status)),4)*100, decreasing = T) # in percent
@@ -957,10 +772,9 @@ sort(round(table(heteros_self$relationship_status)/sum(table(heteros_self$relati
 # check for NAs
 table(is.na(asexuals_self$relationship_status))
 table(is.na(heteros_self$relationship_status))
-```
 
-##### Relationship length 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_self %>%
   group_by(sexual_orientation) %>%
@@ -979,10 +793,9 @@ ggplot(data_self, aes(x = relationship_length, fill = sexual_orientation)) +
 data_self %>% 
   group_by(sexual_orientation) %>% 
   summarise(sum(is.na(relationship_length)))
-```
 
-#### Outcomes: self-ratings
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_self %>% group_by(sexual_orientation) %>% 
   summarise_at(c("self_ks",
@@ -1078,65 +891,9 @@ ggplot(data_self, aes(x = self_ei, fill = sexual_orientation)) +
 ggplot(data_self, aes(x = self_sexually_experienced, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge")
 
-```
-
-#### Country and language agreement in matched pairs
-##### Create subsamples
-```{r}
-# create subsamples based on sexual orientation
-asexual_nnm_self = data_self %>% filter(sexual_orientation == "Asexual")
-heterosex_nnm_self = data_self %>%  filter(sexual_orientation =="Straight/Heterosexual")
-
-# match subsamples based on assigned subclass (propensity-score matched pairs will be matched)
-matched_self = inner_join(asexual_nnm_self, heterosex_nnm_self, by = "subclass")
-```
 
 
-##### Country
-```{r}
-# create variable indicating whether pair comes from same country, if so country is printed
-matched_self$same_country = ifelse(matched_self$country.x == matched_self$country.y, matched_self$country.x, "no")
-
-# how many pairs per country
-table(matched_self$same_country) 
-
-# countries of pairs from differing countries
-matched_self$country_1 = ifelse(matched_self$country.x != matched_self$country.y, matched_self$country.x, "no")
-matched_self$country_2 = ifelse(matched_self$country.x != matched_self$country.y, matched_self$country.y, "no")
-
-# table 
-xtabs(~country_1 + country_2, matched_self) 
-
-# how many pairs share same country?
-sum(matched_self$same_country != "no") # 351
-sum(matched_self$same_country != "no")/nrow(matched_self) # 91%
-```
-
-##### Language
-```{r}
-# create variable indicating whether pair asnwered survey in same language, if so that language is printed
-matched_self$same_language = ifelse(matched_self$language.x == matched_self$language.y, matched_self$language.x, "no")
-
-
-# how many pairs per language
-table(matched_self$same_language) 
-
-# countries of pairs with different languages
-matched_self$language_1 = ifelse(matched_self$language.x != matched_self$language.y, matched_self$language.x, "no")
-matched_self$language_2 = ifelse(matched_self$language.x != matched_self$language.y, matched_self$language.y, "no")
-
-# table 
-xtabs(~language_1 + language_2, matched_self) 
-
-# how many pairs share same language?
-sum(matched_self$same_language != "no") # 368
-sum(matched_self$same_language != "no")/nrow(matched_self) # 95%
-```
-
-
-# 4. Zero-order correlations of all outcomes
-merge data sets of the outcome sections by id, sexual orientation and all covariates
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 data = full_join(data_rel, data_prefs, by = c("id", "sex", "age", "relationship_status", "relationship_length", "sexual_orientation", "language"))
 data_all_outcomes = full_join(data, data_self, by = c("id", "sex", "age", "relationship_status", "relationship_length", "sexual_orientation", "language"))
 
@@ -1170,5 +927,4 @@ correlations_table_all_outcomes
 nrow(correlations_all_outcomes)
 complete = correlations_all_outcomes %>% na.omit()
 nrow(complete)
-```
 

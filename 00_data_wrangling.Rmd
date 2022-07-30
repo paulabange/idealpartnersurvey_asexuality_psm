@@ -44,7 +44,6 @@ table(is.na(fulldata_selected_wrangled$sexual_orientation))
 ```
 
 ### Country
-
 #### Problem with South Korea / Korea, South and Congo
 ```{r}
 fulldata_selected_wrangled = fulldata_selected_wrangled %>%
@@ -74,9 +73,8 @@ Participants younger than 18 were able to insert age but the survey was ended fo
 ```{r}
 table(fulldata_selected_wrangled$age)
 ```
-
 @PROBLEM: Variable age was not restricted to a reasonable number, thus numbers larger than 100 were possible. To deal with this we will set all numbers > 100 as missing. This was not mentioned in any preregistration.
-```{r Age 2}
+```{r}
 sum(fulldata_selected_wrangled$age > 100)
 # This means that age is set as missing for 15 people
 
@@ -89,9 +87,7 @@ table(fulldata_selected_wrangled$age < 18)
 # 26638 people were not allowed to participate in the survey because they were younger than 18
 ```
 
-
-### Sex 
-Gender
+### Gender 
 Categories: Woman; Genderqueer/Nonbinary; Man; None of the above; Prefer not to say; Other
 ```{r}
 table(fulldata_selected_wrangled$sex)
@@ -174,7 +170,6 @@ fulldata_selected_wrangled = fulldata_selected_wrangled %>%
                                       relationship_length))
 table(fulldata_selected_wrangled$relationship_length)
 ```
-
 
 ### Marital Status
 ```{r}
@@ -268,7 +263,7 @@ fulldata_selected_wrangled = fulldata_selected_wrangled %>% rename(interest_pare
 
 ### Partner Preferences
 All partner preference items should range from 0 to 6
-```{r Partner preferences}
+```{r}
 fulldata_selected_wrangled %>%
   select(starts_with("pref_")) %>%
   lapply(table)
@@ -279,9 +274,9 @@ fulldata_selected_wrangled %>%
   miss_frac()
 ```
 
-### Self ratings
+### Self Ratings
 All self rating items should range from 0 to 6
-```{r Self ratings}
+```{r}
 fulldata_selected_wrangled %>%
   select(starts_with("self_")) %>%
   lapply(table)
@@ -294,7 +289,7 @@ fulldata_selected_wrangled %>%
 
 ### Answer Accuracy
 I took the survey seriously; please use my information in the study.; I did not answer seriously, please disregard my information; I choose not to answer
-```{r Answer Accuracy}
+```{r}
 table(fulldata_selected_wrangled$answer_accuracy)
 
 # Set missing values as NA
@@ -314,9 +309,9 @@ fulldata_selected_wrangled %>%
 @PROBLEM: We have 7051 missings here, that did answer the rest of the survey. We did not mention in the preregistration what to do with these cases. NAs seem to caused by a technical bug, therefore all NAs will be included for the analyses.
 
 
-## Scales
+## Transformations and Creating Scales
 ### Categories for relationship status
-```{r Categories for relationship status}
+```{r}
 fulldata_selected_wrangled$relationship_status= ifelse(grepl("Long-term", fulldata_selected_wrangled$relationship), "Long-term",
                                                        ifelse(grepl("Ongoing", fulldata_selected_wrangled$relationship), "Long-term", 
                                                               ifelse(grepl("Short-term", fulldata_selected_wrangled$relationship), "Short-term",
@@ -324,17 +319,19 @@ fulldata_selected_wrangled$relationship_status= ifelse(grepl("Long-term", fullda
                                                                             ifelse(grepl("No romantic", fulldata_selected_wrangled$relationship), "No relationship",
                                                                                    NA)))))
 
-# fulldata_selected_wrangled$other = ifelse(grepl("Other", fulldata_selected_wrangled$relationship), "Other", "No")
-# other = fulldata_selected_wrangled %>% filter(other == "Other")
-# table(other$relationship_status)
-# sum(is.na(other$relationship_status))
+# check whether there were cases in which only the option "Other" was selected 
+fulldata_selected_wrangled$other = ifelse(grepl("Other", fulldata_selected_wrangled$relationship), "Other", "No")
+other = fulldata_selected_wrangled %>% filter(other == "Other")
+table(other$relationship_status)
+sum(is.na(other$relationship_status))
 # looks like there is no case in which only "Other" was selected
+# delete other column
+fulldata_selected_wrangled$other <- NULL
 ```
 
 ### Creating dimensions for partner preference and self rating items
 #### Partner preferences
-```{r Partner preference dimensions}
-
+```{r}
 # Kind-supportive
 fulldata_selected_wrangled$pref_imp_ks = fulldata_selected_wrangled %>% 
   select(pref_imp_kind, pref_imp_supportive) %>% 
@@ -362,8 +359,7 @@ fulldata_selected_wrangled$pref_imp_ei = fulldata_selected_wrangled %>%
 ```
 
 #### Self ratings
-```{r Self rating dimensions}
-
+```{r}
 # Kind-supportive
 fulldata_selected_wrangled$self_ks = fulldata_selected_wrangled %>% 
   select(self_kind, self_supportive) %>%
@@ -391,7 +387,7 @@ fulldata_selected_wrangled$self_ei = fulldata_selected_wrangled %>%
 ```
 
 ## Save wrangled data
-```{r Save data}
-write.csv(fulldata_selected_wrangled,
-           file = "data/data_wrangled.csv")
+```{r}
+# write.csv(fulldata_selected_wrangled,
+#            file = "data/data_wrangled.csv")
 ```

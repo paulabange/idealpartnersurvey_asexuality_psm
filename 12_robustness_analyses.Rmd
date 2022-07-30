@@ -2,6 +2,8 @@
 title: "09_robustness_analyses"
 output: html_document
 date: '2022-07-14'
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -13,65 +15,71 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Library
 ```{r}
 library(dplyr)
-library(formr)
 library(ggplot2)
 library(psych)
 library(effsize)
+#library(cobalt) #only when exact matching is left in markdown
+#library(MatchIt) #see above
 ```
 
-## sort data by subclass number within sexual_orientation
+## Load data 
 ```{r}
-data_robust_rel = nnm_robust_data_rel %>% 
+data_robustness_rel = read.csv(file = "data/data_robustness_rel.csv")[,-1]
+data_robustness_prefs = read.csv(file = "data/data_robustness_prefs.csv")[,-1]
+data_robustness_self = read.csv(file = "data/data_robustness_self.csv")[,-1]
+```
+
+
+## Sort data by subclass number within sexual_orientation
+```{r}
+data_robustness_rel = data_robustness_rel %>% 
         group_by(sexual_orientation) %>%
         arrange(subclass, .by_group = TRUE)
 
-data_robust_prefs = nnm_robust_data_prefs%>% 
+data_robustness_prefs = data_robustness_prefs %>% 
         group_by(sexual_orientation) %>%
         arrange(subclass, .by_group = TRUE)
 
-data_robust_self = nnm_robust_data_self %>% 
+data_robustness_self = data_robustness_self %>% 
         group_by(sexual_orientation) %>%
         arrange(subclass, .by_group = TRUE)
 
 # check variable type of sexual_orientation
-typeof(data_robust_rel$sexual_orientation)
-typeof(data_robust_prefs$sexual_orientation)
-typeof(data_robust_self$sexual_orientation)
+typeof(data_robustness_rel$sexual_orientation)
+typeof(data_robustness_prefs$sexual_orientation)
+typeof(data_robustness_self$sexual_orientation)
 
-# check factor levels
-levels(data_robust_rel$sexual_orientation)
-levels(data_robust_prefs$sexual_orientation)
-levels(data_robust_self$sexual_orientation)
+# convert to factor
+data_robustness_rel$sexual_orientation = factor(data_robustness_rel$sexual_orientation)
+data_robustness_prefs$sexual_orientation = factor(data_robustness_prefs$sexual_orientation)
+data_robustness_self$sexual_orientation = factor(data_robustness_self$sexual_orientation)
 
-# for analyses, I reverse the factor levels so that 0 = Asexuals and 1 = Straight/Heterosexual 
-data_robust_rel$sexual_orientation =  factor(data_robust_rel$sexual_orientation,
-                                             levels=rev(levels(data_robust_rel$sexual_orientation)))
-data_robust_prefs$sexual_orientation =  factor(data_robust_prefs$sexual_orientation,
-                                             levels=rev(levels(data_robust_prefs$sexual_orientation)))
-data_robust_self$sexual_orientation =  factor(data_robust_self$sexual_orientation,
-                                             levels=rev(levels(data_robust_self$sexual_orientation)))
+# check factor levels (for analyses factor levels should be 0 = Asexuals and 1 = Straight/Heterosexual)
+levels(data_robustness_rel$sexual_orientation)
+levels(data_robustness_prefs$sexual_orientation)
+levels(data_robustness_self$sexual_orientation)
 ```
 
 ### Relationship options
 #### descriptives
 ```{r}
-describeBy(data_robust_rel, data_robust_rel$sexual_orientation)
+describeBy(data_robustness_rel, data_robustness_rel$sexual_orientation)
 
 # mean
-data_robust_rel %>% group_by(sexual_orientation) %>% 
+data_robustness_rel %>% group_by(sexual_orientation) %>% 
   summarise_at(c("interest_nonsexrel", "interest_hookups", "interest_nonmonrel", "interest_altrel", "interest_single",
                "interest_monrel", "interest_parent"), mean, na.rm = T) 
 
 # standard deviation
-data_robust_rel %>% group_by(sexual_orientation) %>% 
+data_robustness_rel %>% group_by(sexual_orientation) %>% 
   summarise_at(c("interest_nonsexrel", "interest_hookups", "interest_nonmonrel", "interest_altrel", "interest_single",
                "interest_monrel", "interest_parent"), sd, na.rm = T)
 # min
-data_robust_rel %>% group_by(sexual_orientation) %>% 
+data_robustness_rel %>% group_by(sexual_orientation) %>% 
   summarise_at(c("interest_nonsexrel", "interest_hookups", "interest_nonmonrel", "interest_altrel", "interest_single",
                "interest_monrel", "interest_parent"), min, na.rm = T)
 # max
-data_robust_rel %>% group_by(sexual_orientation) %>% 
+data_robustness_rel %>% group_by(sexual_orientation) %>% 
   summarise_at(c("interest_nonsexrel", "interest_hookups", "interest_nonmonrel", "interest_altrel", "interest_single",
                "interest_monrel", "interest_parent"), max, na.rm = T)
 ```
@@ -80,109 +88,108 @@ data_robust_rel %>% group_by(sexual_orientation) %>%
 #### interest non-sexual relationships
 ```{r}
 t.test(interest_nonsexrel ~ sexual_orientation, 
-       data = data_robust_rel,
+       data = data_robustness_rel,
        alternative = "greater",
        paired = TRUE) 
 
 # effect size
-effsize::cohen.d(interest_nonsexrel ~ sexual_orientation, data = data_robust_rel, paired = T) 
-
+effsize::cohen.d(interest_nonsexrel ~ sexual_orientation, data = data_robustness_rel, paired = T) 
 ```
 
 #### interest sexual relationships
 ```{r}
 t.test(interest_hookups ~ sexual_orientation, 
-       data = data_robust_rel,
+       data = data_robustness_rel,
        alternative = "less",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(interest_hookups ~ sexual_orientation, data = data_robust_rel, paired = T)
+effsize::cohen.d(interest_hookups ~ sexual_orientation, data = data_robustness_rel, paired = T)
 ```
 
 #### interest non-monogamous relationships
 ```{r}
 t.test(interest_nonmonrel ~ sexual_orientation, 
-       data = data_robust_rel,
+       data = data_robustness_rel,
        alternative = "greater",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(interest_nonmonrel ~ sexual_orientation, data = data_robust_rel, paired = T)
+effsize::cohen.d(interest_nonmonrel ~ sexual_orientation, data = data_robustness_rel, paired = T)
 ```
 
 #### interest alternativ committed relationships
 ```{r}
 t.test(interest_altrel ~ sexual_orientation, 
-       data = data_robust_rel,
+       data = data_robustness_rel,
        alternative = "greater",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(interest_altrel ~ sexual_orientation, data = data_robust_rel, paired = T)
+effsize::cohen.d(interest_altrel ~ sexual_orientation, data = data_robustness_rel, paired = T)
 ```
 
 #### interest single
 ```{r}
 t.test(interest_single ~ sexual_orientation, 
-       data = data_robust_rel,
+       data = data_robustness_rel,
        alternative = "greater",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(interest_single ~ sexual_orientation, data = data_robust_rel, paired = T)
+effsize::cohen.d(interest_single ~ sexual_orientation, data = data_robustness_rel, paired = T)
 ```
 
 #### Exploratory analyses
 ##### interest monogamous relationships
 ```{r}
 t.test(interest_monrel ~ sexual_orientation, 
-       data = data_robust_rel,
+       data = data_robustness_rel,
        alternative = "two.sided",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(interest_monrel ~ sexual_orientation, data = data_robust_rel, paired = T)
+effsize::cohen.d(interest_monrel ~ sexual_orientation, data = data_robustness_rel, paired = T)
 ```
 
 ##### interest parent 
 ```{r}
 t.test(interest_parent ~ sexual_orientation, 
-       data = data_robust_rel,
+       data = data_robustness_rel,
        alternative = "two.sided",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(interest_parent ~ sexual_orientation, data = data_robust_rel, paired = T)
+effsize::cohen.d(interest_parent ~ sexual_orientation, data = data_robustness_rel, paired = T)
 ```
 
 
 ### Partner preferences
 #### descriptives
 ```{r}
-describeBy(data_robust_prefs, data_robust_prefs$sexual_orientation)
+describeBy(data_robustness_prefs, data_robustness_prefs$sexual_orientation)
 
 # mean
-data_robust_prefs %>% group_by(sexual_orientation) %>% 
+data_robustness_prefs %>% group_by(sexual_orientation) %>% 
   summarise_at(c("pref_imp_ks", "pref_imp_att", "pref_imp_fs", "pref_imp_ca",
                                          "pref_imp_ei", "pref_imp_sexually_experienced"), mean, na.rm = T) 
 
 # standard deviation
-data_robust_prefs %>% group_by(sexual_orientation) %>% 
+data_robustness_prefs %>% group_by(sexual_orientation) %>% 
   summarise_at(c("pref_imp_ks", "pref_imp_att", "pref_imp_fs", "pref_imp_ca",
                                          "pref_imp_ei", "pref_imp_sexually_experienced"), sd, na.rm = T)
 # min
-data_robust_prefs %>% group_by(sexual_orientation) %>% 
+data_robustness_prefs %>% group_by(sexual_orientation) %>% 
   summarise_at(c("pref_imp_ks", "pref_imp_att", "pref_imp_fs", "pref_imp_ca",
                                          "pref_imp_ei", "pref_imp_sexually_experienced"), min, na.rm = T)
 # max
-data_robust_prefs %>% group_by(sexual_orientation) %>% 
+data_robustness_prefs %>% group_by(sexual_orientation) %>% 
   summarise_at(c("pref_imp_ks", "pref_imp_att", "pref_imp_fs", "pref_imp_ca",
                                          "pref_imp_ei", "pref_imp_sexually_experienced"), max, na.rm = T)
 ```
@@ -190,99 +197,99 @@ data_robust_prefs %>% group_by(sexual_orientation) %>%
 #### confident-assertive
 ```{r}
 t.test(pref_imp_ca ~ sexual_orientation, 
-       data = data_robust_prefs,
+       data = data_robustness_prefs,
        alternative = "less",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(pref_imp_ca ~ sexual_orientation, data = data_robust_prefs, paired = T)
+effsize::cohen.d(pref_imp_ca ~ sexual_orientation, data = data_robustness_prefs, paired = T)
 ```
 
 #### attractive
 ```{r}
 t.test(pref_imp_att ~ sexual_orientation, 
-       data = data_robust_prefs,
+       data = data_robustness_prefs,
        alternative = "less",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(pref_imp_att ~ sexual_orientation, data = data_robust_prefs, paired = T)
+effsize::cohen.d(pref_imp_att ~ sexual_orientation, data = data_robustness_prefs, paired = T)
 ```
 
 #### sexually experienced
 ```{r}
 t.test(pref_imp_sexually_experienced ~ sexual_orientation, 
-       data = data_robust_prefs,
+       data = data_robustness_prefs,
        alternative = "less",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(pref_imp_sexually_experienced ~ sexual_orientation, data = data_robust_prefs, paired = T)
+effsize::cohen.d(pref_imp_sexually_experienced ~ sexual_orientation, data = data_robustness_prefs, paired = T)
 ```
 
 #### Exploratory analyses
 ##### kind-supportive
 ```{r}
 t.test(pref_imp_ks ~ sexual_orientation, 
-       data = data_robust_prefs,
+       data = data_robustness_prefs,
        alternative = "two.sided",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(pref_imp_ks ~ sexual_orientation, data = data_robust_prefs, paired = T)
+effsize::cohen.d(pref_imp_ks ~ sexual_orientation, data = data_robustness_prefs, paired = T)
 ```
 
 
 ##### financially-secure/successful
 ```{r}
 t.test(pref_imp_fs ~ sexual_orientation, 
-       data = data_robust_prefs,
+       data = data_robustness_prefs,
        alternative = "two.sided",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(pref_imp_fs ~ sexual_orientation, data = data_robust_prefs, paired = T)
+effsize::cohen.d(pref_imp_fs ~ sexual_orientation, data = data_robustness_prefs, paired = T)
 ```
 
 
 #### educated-intelligent
 ```{r}
 t.test(pref_imp_ei ~ sexual_orientation, 
-       data = data_robust_prefs,
+       data = data_robustness_prefs,
        alternative = "two.sided",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(pref_imp_ei ~ sexual_orientation, data = data_robust_prefs, paired = T)
+effsize::cohen.d(pref_imp_ei ~ sexual_orientation, data = data_robustness_prefs, paired = T)
 ```
 
 
 
 ### Self-ratings
 ```{r}
-describeBy(data_robust_self, data_robust_self$sexual_orientation)
+describeBy(data_robustness_self, data_robustness_self$sexual_orientation)
 
 # mean
-data_robust_self %>% group_by(sexual_orientation) %>% 
+data_robustness_self %>% group_by(sexual_orientation) %>% 
   summarise_at(c("self_ks", "self_att", "self_fs", "self_ca",
                                          "self_ei", "self_sexually_experienced"), mean, na.rm = T) 
 
 # standard deviation
-data_robust_self %>% group_by(sexual_orientation) %>% 
+data_robustness_self %>% group_by(sexual_orientation) %>% 
   summarise_at(c("self_ks", "self_att", "self_fs", "self_ca",
                                          "self_ei", "self_sexually_experienced"), sd, na.rm = T) 
 # min
-data_robust_self %>% group_by(sexual_orientation) %>% 
+data_robustness_self %>% group_by(sexual_orientation) %>% 
   summarise_at(c("self_ks", "self_att", "self_fs", "self_ca",
                                          "self_ei", "self_sexually_experienced"), min, na.rm = T)
 # max
-data_robust_self %>% group_by(sexual_orientation) %>% 
+data_robustness_self %>% group_by(sexual_orientation) %>% 
   summarise_at(c("self_ks", "self_att", "self_fs", "self_ca",
                                          "self_ei", "self_sexually_experienced"), max, na.rm = T)
 ```
@@ -290,89 +297,87 @@ data_robust_self %>% group_by(sexual_orientation) %>%
 #### confident-assertive
 ```{r}
 t.test(self_ca ~ sexual_orientation, 
-       data = data_robust_self,
+       data = data_robustness_self,
        alternative = "less",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(self_ca ~ sexual_orientation, data = data_robust_self, paired = T)
+effsize::cohen.d(self_ca ~ sexual_orientation, data = data_robustness_self, paired = T)
 ```
 
 #### attractive
 ```{r}
 t.test(self_att ~ sexual_orientation, 
-       data = data_robust_self,
+       data = data_robustness_self,
        alternative = "less",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(self_att ~ sexual_orientation, data = data_robust_self, paired = T)
+effsize::cohen.d(self_att ~ sexual_orientation, data = data_robustness_self, paired = T)
 ```
 
 #### sexually experienced
 ```{r}
 t.test(self_sexually_experienced ~ sexual_orientation, 
-       data = data_robust_self,
+       data = data_robustness_self,
        alternative = "less",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(self_sexually_experienced ~ sexual_orientation, data = data_robust_self, paired = T)
+effsize::cohen.d(self_sexually_experienced ~ sexual_orientation, data = data_robustness_self, paired = T)
 ```
 
 #### Exploratory analyses
 ##### kind-supportive
 ```{r}
 t.test(self_ks ~ sexual_orientation, 
-       data = data_robust_self,
+       data = data_robustness_self,
        alternative = "two.sided",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(self_ks ~ sexual_orientation, data = data_robust_self, paired = T)
+effsize::cohen.d(self_ks ~ sexual_orientation, data = data_robustness_self, paired = T)
 ```
 
 
 ##### financially-secure/successful
 ```{r}
 t.test(self_fs ~ sexual_orientation, 
-       data = data_robust_self,
+       data = data_robustness_self,
        alternative = "two.sided",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(self_fs ~ sexual_orientation, data = data_robust_self, paired = T)
+effsize::cohen.d(self_fs ~ sexual_orientation, data = data_robustness_self, paired = T)
 ```
 
 ### educated-intelligent
 ```{r}
 t.test(self_ei ~ sexual_orientation, 
-       data = data_robust_self,
+       data = data_robustness_self,
        alternative = "two.sided",
        paired = TRUE)
 
 
 # effect size
-d=effsize::cohen.d(self_ei ~ sexual_orientation, data = data_robust_self, paired = T)
-d$estimate %>%round(2)
-d$conf.int %>% round(2)
+effsize::cohen.d(self_ei ~ sexual_orientation, data = data_robustness_self, paired = T)
 ```
 
 ## Total number of participants per sample
 ```{r}
 # relationship sample
-nrow(nnm_robust_data_rel) 
+nrow(data_robustness_rel) 
 
 # preference sample
-nrow(nnm_robust_data_prefs) 
+nrow(data_robustness_prefs) 
 
 # self-rating sample
-nrow(nnm_robust_data_self) 
+nrow(data_robustness_self) 
 ```
 N = 758 for the relationship sample. N = 920 for the preference sample. N = 902 for the self-rating sample.
 
@@ -380,22 +385,22 @@ N = 758 for the relationship sample. N = 920 for the preference sample. N = 902 
 ## Number of participants by gender
 ```{r}
 # relationship sample
-table(nnm_robust_data_rel$sex) # absolute numbers
-round(table(nnm_robust_data_rel$sex)/nrow(nnm_robust_data_rel),3) # percentages 
+table(data_robustness_rel$sex) # absolute numbers
+round(table(data_robustness_rel$sex)/nrow(data_robustness_rel),3) # percentages 
 # preference sample
-table(nnm_robust_data_prefs$sex) # absolute numbers
-round(table(nnm_robust_data_prefs$sex)/nrow(nnm_robust_data_prefs),3) # percentages 
+table(data_robustness_prefs$sex) # absolute numbers
+round(table(data_robustness_prefs$sex)/nrow(data_robustness_prefs),3) # percentages 
 
 # self-rating sample
-table(nnm_robust_data_self$sex) # absolute numbers
-round(table(nnm_robust_data_self$sex)/nrow(nnm_robust_data_self),3) # percentages
+table(data_robustness_self$sex) # absolute numbers
+round(table(data_robustness_self$sex)/nrow(data_robustness_self),3) # percentages
 ```
 
-## checking matching of gender 
+## Checking matching of gender 
 ```{r}
 # for partner preference sample (because it is the largest out of the three)
-gender_asexual = nnm_robust_data_prefs %>% filter(sexual_orientation == "Asexual")
-gender_heterosexual = nnm_robust_data_prefs %>% filter(sexual_orientation == "Straight/Heterosexual")
+gender_asexual = data_robustness_prefs %>% filter(sexual_orientation == "Asexual")
+gender_heterosexual = data_robustness_prefs %>% filter(sexual_orientation == "Straight/Heterosexual")
 
 # sort by subclass
 gender_asexual = gender_asexual %>% 
@@ -417,7 +422,7 @@ different_gender_heterosexual = gender_heterosexual %>% select(sex, subclass) %>
 
 different_gender_both = left_join(different_gender_asexual, different_gender_heterosexual, by = "subclass")
 nrow(different_gender_both) # total number of pairs with non-corresponding genders
-round(nrow(different_gender_both)/(nrow(nnm_robust_data_prefs)/2),2) # percentage of pairs with non-corresponding gender
+round(nrow(different_gender_both)/(nrow(data_robustness_prefs)/2),2) # percentage of pairs with non-corresponding gender
 
 table(different_gender_both$gender_asexual, different_gender_both$gender_heterosexual)
 
@@ -441,6 +446,33 @@ One asexual that is genderqueer/nonbinary was matched with a heterosexual man.
 
 ## Exact matching with gender 
 ### for the partner preference sample
+Load robustness data
+```{r}
+data_robustness = read.csv(file = "data/data_robustness.csv")[,-1]
+```
+
+### Check for missings in covariates to be matched
+```{r}
+# MatchIt does not allow missing values
+data_robust_nomiss_prefs <- data_robustness %>% select(id, sex, language, age, sex, country, relationship_status, relationship_length, sexual_orientation,
+                                         pref_imp_ks, pref_imp_att, pref_imp_fs, pref_imp_ca,
+                                         pref_imp_ei, pref_imp_sexually_experienced) %>%
+                                  na.omit()
+
+table(is.na(data_robust_nomiss_prefs)) # no more NAs in data set
+```
+
+### Check if correct variable type 
+```{r}
+typeof(data_robust_nomiss_prefs$sexual_orientation) # is variable of type character, but for PSM it needs to be a factor
+data_robust_nomiss_prefs$sexual_orientation = as.factor(data_robust_nomiss_prefs$sexual_orientation) # convert to factor
+levels(data_robust_nomiss_prefs$sexual_orientation) # check levels of factor
+data_robust_nomiss_prefs$sexual_orientation = factor(data_robust_nomiss_prefs$sexual_orientation,
+                                             levels=rev(levels(data_robust_nomiss_prefs$sexual_orientation))) # reverse order of factor levels 
+levels(data_robust_nomiss_prefs$sexual_orientation) # check factor level order
+```
+
+### Run nearest-neighbor matching with exact matching on gender
 ```{r}
 nnm_robust_prefs_gender <- matchit(sexual_orientation ~  language + age + country + relationship_status + relationship_length, method = "nearest", exact = "sex", data = data_robust_nomiss_prefs)
 
@@ -464,7 +496,6 @@ bal.tab(nnm_robust_prefs_gender, v.threshold = 2, un = T) #vr (can only be calcu
 29 asexuals could not be matched. 
 Based on smds 1 variable not balanced (country_France).
 Based on variance ratios, the variable relationship_length is not balanced. 
-
 
 #### Visualize
 ```{r}
@@ -503,44 +534,44 @@ love.plot(bal.tab(nnm_robust_without_country_prefs_gender, m.threshold = 0.1, bi
           binary = "std") 
 ```
 
-### Analyses with exact matched sample
-#### sort data by subclass
+### Analyses with exact matched sample for partner preferences
+#### Sort data by subclass
 ```{r}
-data_robust_prefs_gender = nnm_robust_data_prefs_gender%>% 
+data_robustness_prefs_gender = nnm_robust_data_prefs_gender%>% 
         group_by(sexual_orientation) %>%
         arrange(subclass, .by_group = TRUE)
 
 # check variable type of sexual_orientation
-typeof(data_robust_prefs_gender$sexual_orientation)
+typeof(data_robustness_prefs_gender$sexual_orientation)
 
 # check factor levels
-levels(data_robust_prefs_gender$sexual_orientation)
+levels(data_robustness_prefs_gender$sexual_orientation)
 
 # for analyses, I reverse the factor levels so that 0 = Asexuals and 1 = Straight/Heterosexual 
-data_robust_prefs_gender$sexual_orientation =  factor(data_robust_prefs_gender$sexual_orientation,
-                                             levels=rev(levels(data_robust_prefs_gender$sexual_orientation)))
+data_robustness_prefs_gender$sexual_orientation =  factor(data_robustness_prefs_gender$sexual_orientation,
+                                             levels=rev(levels(data_robustness_prefs_gender$sexual_orientation)))
 ```
 
 
 #### descriptives
 ```{r}
-describeBy(data_robust_prefs_gender, data_robust_prefs_gender$sexual_orientation)
+describeBy(data_robustness_prefs_gender, data_robustness_prefs_gender$sexual_orientation)
 
 # mean
-data_robust_prefs_gender %>% group_by(sexual_orientation) %>% 
+data_robustness_prefs_gender %>% group_by(sexual_orientation) %>% 
   summarise_at(c("pref_imp_ks", "pref_imp_att", "pref_imp_fs", "pref_imp_ca",
                                          "pref_imp_ei", "pref_imp_sexually_experienced"), mean, na.rm = T) 
 
 # standard deviation
-data_robust_prefs_gender %>% group_by(sexual_orientation) %>% 
+data_robustness_prefs_gender %>% group_by(sexual_orientation) %>% 
   summarise_at(c("pref_imp_ks", "pref_imp_att", "pref_imp_fs", "pref_imp_ca",
                                          "pref_imp_ei", "pref_imp_sexually_experienced"), sd, na.rm = T)
 # min
-data_robust_prefs_gender %>% group_by(sexual_orientation) %>% 
+data_robustness_prefs_gender %>% group_by(sexual_orientation) %>% 
   summarise_at(c("pref_imp_ks", "pref_imp_att", "pref_imp_fs", "pref_imp_ca",
                                          "pref_imp_ei", "pref_imp_sexually_experienced"), min, na.rm = T)
 # max
-data_robust_prefs_gender %>% group_by(sexual_orientation) %>% 
+data_robustness_prefs_gender %>% group_by(sexual_orientation) %>% 
   summarise_at(c("pref_imp_ks", "pref_imp_att", "pref_imp_fs", "pref_imp_ca",
                                          "pref_imp_ei", "pref_imp_sexually_experienced"), max, na.rm = T)
 ```
@@ -548,75 +579,75 @@ data_robust_prefs_gender %>% group_by(sexual_orientation) %>%
 #### confident-assertive
 ```{r}
 t.test(pref_imp_ca ~ sexual_orientation, 
-       data = data_robust_prefs_gender,
+       data = data_robustness_prefs_gender,
        alternative = "less",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(pref_imp_ca ~ sexual_orientation, data = data_robust_prefs_gender, paired = T)
+effsize::cohen.d(pref_imp_ca ~ sexual_orientation, data = data_robustness_prefs_gender, paired = T)
 ```
 
 #### attractive
 ```{r}
 t.test(pref_imp_att ~ sexual_orientation, 
-       data = data_robust_prefs_gender,
+       data = data_robustness_prefs_gender,
        alternative = "less",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(pref_imp_att ~ sexual_orientation, data = data_robust_prefs_gender, paired = T)
+effsize::cohen.d(pref_imp_att ~ sexual_orientation, data = data_robustness_prefs_gender, paired = T)
 ```
 
 #### sexually experienced
 ```{r}
 t.test(pref_imp_sexually_experienced ~ sexual_orientation, 
-       data = data_robust_prefs_gender,
+       data = data_robustness_prefs_gender,
        alternative = "less",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(pref_imp_sexually_experienced ~ sexual_orientation, data = data_robust_prefs_gender, paired = T)
+effsize::cohen.d(pref_imp_sexually_experienced ~ sexual_orientation, data = data_robustness_prefs_gender, paired = T)
 ```
 
 #### Exploratory analyses
 ##### kind-supportive
 ```{r}
 t.test(pref_imp_ks ~ sexual_orientation, 
-       data = data_robust_prefs_gender,
+       data = data_robustness_prefs_gender,
        alternative = "two.sided",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(pref_imp_ks ~ sexual_orientation, data = data_robust_prefs_gender, paired = T)
+effsize::cohen.d(pref_imp_ks ~ sexual_orientation, data = data_robustness_prefs_gender, paired = T)
 ```
 
 
 ##### financially-secure/successful
 ```{r}
 t.test(pref_imp_fs ~ sexual_orientation, 
-       data = data_robust_prefs_gender,
+       data = data_robustness_prefs_gender,
        alternative = "two.sided",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(pref_imp_fs ~ sexual_orientation, data = data_robust_prefs_gender, paired = T)
+effsize::cohen.d(pref_imp_fs ~ sexual_orientation, data = data_robustness_prefs_gender, paired = T)
 ```
 
 
 #### educated-intelligent
 ```{r}
 t.test(pref_imp_ei ~ sexual_orientation, 
-       data = data_robust_prefs_gender,
+       data = data_robustness_prefs_gender,
        alternative = "two.sided",
        paired = TRUE)
 
 
 # effect size
-effsize::cohen.d(pref_imp_ei ~ sexual_orientation, data = data_robust_prefs_gender, paired = T)
+effsize::cohen.d(pref_imp_ei ~ sexual_orientation, data = data_robustness_prefs_gender, paired = T)
 ```
 

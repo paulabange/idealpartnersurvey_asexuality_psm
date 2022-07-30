@@ -1,23 +1,13 @@
----
-title: "06_analyses_additional"
-output: html_document
-date: '2022-06-20'
-editor_options: 
-  chunk_output_type: console
----
-
-
-```{r setup, include=FALSE}
+## ----setup, include=FALSE--------------------------------------------------------------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
-```
 
-# Additional Analyses
 
-## Library
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 library(dplyr)
+library(formr)
 library(ggplot2)
 library(MatchIt)
+library(optmatch)
 library(cobalt)
 library(psych)
 library(effsize)
@@ -25,20 +15,13 @@ library(forestplot)
 
 ## set options for bal.tab function in cobalt package
 set.cobalt.options(binary = "std") # for binary covariates used in the matching procedure the bal.tab function will now display standardized mean differences instead of the raw difference
-```
 
 
-## Load data
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 data_main = read.csv(file = "data/data_main.csv")[,-1]
-```
 
-## 1.   PSM for partner preferences
-### Check for missings in covariates to be matched
-psm cannot handle missings
-covariates: language, age, country, relationship status, relationship length
-additionally match for: interest_nonsexrel, interest_monrel, interest_single
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # MatchIt does not allow missing values
 data_main_nomiss_add <- data_main %>% select(id, language, age, sex, country, relationship_status, relationship_length, sexual_orientation,
                                          pref_imp_ks, pref_imp_att, pref_imp_fs, pref_imp_ca,
@@ -47,21 +30,18 @@ data_main_nomiss_add <- data_main %>% select(id, language, age, sex, country, re
                                   na.omit()
 
 table(is.na(data_main_nomiss_add)) # no more NAs in data set
-```
 
-### Check if correct variable type 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 typeof(data_main_nomiss_add$sexual_orientation) # is variable of type character, but for PSM it needs to be a factor
 data_main_nomiss_add$sexual_orientation = as.factor(data_main_nomiss_add$sexual_orientation) # convert to factor
 levels(data_main_nomiss_add$sexual_orientation) # check levels of factor
 data_main_nomiss_add$sexual_orientation = factor(data_main_nomiss_add$sexual_orientation,
                                              levels=rev(levels(data_main_nomiss_add$sexual_orientation))) # reverse order of factor levels 
 levels(data_main_nomiss_add$sexual_orientation) # check factor level order
-```
 
 
-### Matching with NNM
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 nnm_add <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length + interest_nonsexrel + interest_monrel + interest_single, method = "nearest", data = data_main_nomiss_add)
 
 nnm_add_data <- match.data(nnm_add)
@@ -69,20 +49,17 @@ nnm_add_data <- match.data(nnm_add)
 nrow(nnm_add_data) # 636 observations
 table(nnm_add_data$subclass) # data includes only pairs of two observations
 dim(nnm_add_data) # 636 observations and 20 variables
-```
 
-##### Check balance
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 summary_nnm_add = summary(nnm_add, standardize = T)
 print(summary_nnm_add)
 
 bal.tab(nnm_add, m.threshold = 0.1, un = T, binary = "std") #smd
 bal.tab(nnm_add, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
-```
-No asexual unmatched and all variables balanced.
 
-##### Visualize
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # Q-Q plot
 plot(nnm_add, type = "qq", interactive = FALSE, which.xs = c("age", "relationship_length", "interest_nonsexrel", "interest_monrel", "interest_single"))
 # looks better after matching
@@ -127,12 +104,9 @@ love.plot(bal.tab(nnm_add_without_country, m.threshold = 0.1, binary = "std"),
           abs = F,
           sample.names = c("Before Matching", "After Matching"),
           var.names = v) 
-```
 
 
-### Recalculate t-test for differences in partner preferences based on this psm sample controlling for having no interest in any long-term relationship
-#### Sort data by subclass number within sexual_orientation (so that all asexual participants appear first sorted by subclass)
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 data_add = nnm_add_data %>% 
         group_by(sexual_orientation) %>%
         arrange(subclass, .by_group = TRUE) 
@@ -143,11 +117,9 @@ levels(data_add$sexual_orientation) # check factor level order
 data_add$sexual_orientation =  factor(data_add$sexual_orientation,
                                              levels=rev(levels(data_add$sexual_orientation))) # reverse order of factor levels 
 levels(data_add$sexual_orientation) # check factor level order
-```
 
 
-#### quick overview
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_add %>% group_by(sexual_orientation) %>% 
   summarise_at(c("pref_imp_ca", 
@@ -190,10 +162,9 @@ ggplot(data_add, aes(x = pref_imp_fs, fill = sexual_orientation)) +
 # educated-intelligent
 ggplot(data_add, aes(x = pref_imp_ei, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge")
-```
 
-### confident-assertive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ca ~ sexual_orientation, 
        data = data_add,
        alternative = "less",
@@ -202,10 +173,9 @@ t.test(pref_imp_ca ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_ca ~ sexual_orientation, data = data_add, paired = T)
-```
 
-### attractive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_att ~ sexual_orientation, 
        data = data_add,
        alternative = "less",
@@ -214,10 +184,9 @@ t.test(pref_imp_att ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_att ~ sexual_orientation, data = data_add, paired = T)
-```
 
-### sexually experienced
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_sexually_experienced ~ sexual_orientation, 
        data = data_add,
        alternative = "less",
@@ -226,11 +195,9 @@ t.test(pref_imp_sexually_experienced ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_sexually_experienced ~ sexual_orientation, data = data_add, paired = T)
-```
 
-## Exploratory analyses
-### kind-supportive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ks ~ sexual_orientation, 
        data = data_add,
        alternative = "two.sided",
@@ -239,11 +206,9 @@ t.test(pref_imp_ks ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_ks ~ sexual_orientation, data = data_add, paired = T)
-```
 
 
-### financially-secure/successfull
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_fs ~ sexual_orientation, 
        data = data_add,
        alternative = "two.sided",
@@ -252,11 +217,9 @@ t.test(pref_imp_fs ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_fs ~ sexual_orientation, data = data_add, paired = T)
-```
 
 
-### educated-intelligent
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ei ~ sexual_orientation, 
        data = data_add,
        alternative = "two.sided",
@@ -266,11 +229,9 @@ t.test(pref_imp_ei ~ sexual_orientation,
 # effect size
 effsize::cohen.d(pref_imp_ei ~ sexual_orientation, data = data_add, paired = T)
 round(d$conf.int,2)
-```
 
 
-## Create forest plot
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 base_data_add <- tibble(mean  = c(-0.45, -0.49, -0.61, -0.14, -0.50, 0.03), 
                     lower = c(-0.61, -0.66, -0.77, -0.30, -0.66, -0.12),
                     upper = c(-0.30, -0.32, -0.46, 0.02, -0.33, 0.19),
@@ -303,15 +264,9 @@ partner_preferences_add %>%
                             summary = "royalblue"),
              title = "Controlling for disinterest in long-term relationships (N = 636)",
              graphwidth = unit(150, "mm"))
-```
 
 
-## 2.  PSM including interest_hookups
-### Check for missings in covariates to be matched
-psm cannot handle missings
-covariates: language, age, country, relationship status, relationship length
-additionally match for: interest_nonsexrel, interest_monrel, interest_single & interest_hookups
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # MatchIt does not allow missing values
 data_main_nomiss_add2 <- data_main %>% select(id, language, age, sex, country, relationship_status, relationship_length, sexual_orientation,
                                          pref_imp_ks, pref_imp_att, pref_imp_fs, pref_imp_ca,
@@ -321,21 +276,18 @@ data_main_nomiss_add2 <- data_main %>% select(id, language, age, sex, country, r
                                   na.omit()
 
 table(is.na(data_main_nomiss_add2)) # no more NAs in data set
-```
 
-### Check if correct variable type 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 typeof(data_main_nomiss_add2$sexual_orientation) # is variable of type character, but for PSM it needs to be a factor
 data_main_nomiss_add2$sexual_orientation = as.factor(data_main_nomiss_add2$sexual_orientation) # convert to factor
 levels(data_main_nomiss_add2$sexual_orientation) # check levels of factor
 data_main_nomiss_add2$sexual_orientation = factor(data_main_nomiss_add2$sexual_orientation,
                                              levels=rev(levels(data_main_nomiss_add2$sexual_orientation))) # reverse order of factor levels 
 levels(data_main_nomiss_add2$sexual_orientation) # check factor level order
-```
 
 
-### Matching with NNM
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 nnm_add2 <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length + interest_nonsexrel + interest_monrel + interest_single + interest_hookups, method = "nearest", data = data_main_nomiss_add2)
 
 nnm_add2_data <- match.data(nnm_add2)
@@ -343,21 +295,18 @@ nnm_add2_data <- match.data(nnm_add2)
 nrow(nnm_add2_data) # 636 observations
 table(nnm_add2_data$subclass) # data includes only pairs of two observations
 dim(nnm_add2_data) # 636 observations and 21 variables
-```
 
-##### Check balance
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 summary_nnm_add2 = summary(nnm_add2, standardize = T)
 print(summary_nnm_add2)
 tail(summary_nnm_add2$sum.matched) #look at balance properties for interest variables
 
 bal.tab(nnm_add2, m.threshold = 0.1, un = T, binary = "std") #smd
 bal.tab(nnm_add2, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
-```
-No asexual unmatched. Based on smds 5 covariates not balanced (country_Singapore, country_Japan, country_France, country_Argentina, language_japanese). Based on vr, all continuous covariates balanced. 
 
-##### Visualize
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # Q-Q plot
 plot(nnm_add2, type = "qq", interactive = FALSE, which.xs = c("age", "relationship_length", "interest_nonsexrel", "interest_monrel", "interest_single"))
 # looks better after matching
@@ -403,11 +352,9 @@ love.plot(bal.tab(nnm_add2_without_country, m.threshold = 0.1, binary = "std"),
           abs = F,
           sample.names = c("Before Matching", "After Matching"),
           var.names = v) 
-```
 
-### Recalculate t-test for differences in partner preferences based on this psm sample controlling for having no interest in any long-term relationship
-#### Sort data by subclass number within sexual_orientation
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 data_add2 = nnm_add2_data %>% 
         group_by(sexual_orientation) %>%
         arrange(subclass, .by_group = TRUE)
@@ -418,10 +365,9 @@ data_add2$sexual_orientation =  factor(data_add2$sexual_orientation,
                                              levels=rev(levels(data_add2$sexual_orientation))) # reverse order of factor levels 
 levels(data_add2$sexual_orientation) # check factor level order
 
-```
 
-#### Quick overview
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_add2 %>% group_by(sexual_orientation) %>% 
   summarise_at(c("pref_imp_ca", 
@@ -464,10 +410,9 @@ ggplot(data_add2, aes(x = pref_imp_fs, fill = sexual_orientation)) +
 # educated-intelligent
 ggplot(data_add2, aes(x = pref_imp_ei, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge")
-```
 
-#### confident-assertive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ca ~ sexual_orientation, 
        data = data_add2,
        alternative = "less",
@@ -476,10 +421,9 @@ t.test(pref_imp_ca ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_ca ~ sexual_orientation, data = data_add2, paired = T)
-```
 
-#### attractive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_att ~ sexual_orientation, 
        data = data_add2,
        alternative = "less",
@@ -488,10 +432,9 @@ t.test(pref_imp_att ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_att ~ sexual_orientation, data = data_add2, paired = T)
-```
 
-#### sexually experienced
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_sexually_experienced ~ sexual_orientation, 
        data = data_add2,
        alternative = "less",
@@ -500,11 +443,9 @@ t.test(pref_imp_sexually_experienced ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_sexually_experienced ~ sexual_orientation, data = data_add2, paired = T)
-```
 
-### Exploratory analyses
-#### kind-supportive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ks ~ sexual_orientation, 
        data = data_add2,
        alternative = "two.sided",
@@ -513,11 +454,9 @@ t.test(pref_imp_ks ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_ks ~ sexual_orientation, data = data_add2, paired = T)
-```
 
 
-#### financially-secure/successfull
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_fs ~ sexual_orientation, 
        data = data_add2,
        alternative = "two.sided",
@@ -526,11 +465,9 @@ t.test(pref_imp_fs ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_fs ~ sexual_orientation, data = data_add2, paired = T)
-```
 
 
-#### educated-intelligent
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ei ~ sexual_orientation, 
        data = data_add2,
        alternative = "two.sided",
@@ -539,10 +476,9 @@ t.test(pref_imp_ei ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_ei ~ sexual_orientation, data = data_add2, paired = T)
-```
 
-### Create forest plot
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 base_data_add2 <- tibble(mean  = c(-0.49, -0.43, -0.37, -0.23, -0.44, -0.04), 
                     lower = c(-0.65, -0.60, -0.52, -0.38, -0.60, -0.19),
                     upper = c(-0.33, -0.27, -0.22, -0.08, -0.28, 0.11),
@@ -575,14 +511,9 @@ partner_preferences_add2 %>%
                             summary = "royalblue"),
              title = "+ Interest in purely sexual relationships (N = 636)",
              graphwidth = unit(150, "mm"))
-```
 
-## 3. PSM with parent desire
-### Check for missings in covariates to be matched
-psm cannot handle missings
-covariates: language, age, country, relationship status, relationship length
-additionally match for: interest_nonsexrel, interest_monrel, interest_single & interest_hookups
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # MatchIt does not allow missing values
 data_main_nomiss_add3 <- data_main %>% select(id, language, age, sex, country, relationship_status, relationship_length, sexual_orientation,
                                          pref_imp_ks, pref_imp_att, pref_imp_fs, pref_imp_ca,
@@ -592,21 +523,18 @@ data_main_nomiss_add3 <- data_main %>% select(id, language, age, sex, country, r
                                   na.omit()
 
 table(is.na(data_main_nomiss_add3)) # no more NAs in data set
-```
 
-### Check if correct variable type 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 typeof(data_main_nomiss_add3$sexual_orientation) # is variable of type character, but for PSM it needs to be a factor
 data_main_nomiss_add3$sexual_orientation = as.factor(data_main_nomiss_add3$sexual_orientation) # convert to factor
 levels(data_main_nomiss_add3$sexual_orientation) # check levels of factor
 data_main_nomiss_add3$sexual_orientation = factor(data_main_nomiss_add3$sexual_orientation,
                                              levels=rev(levels(data_main_nomiss_add3$sexual_orientation))) # reverse order of factor levels 
 levels(data_main_nomiss_add3$sexual_orientation) # check factor level order
-```
 
 
-### Matching with NNM
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 nnm_add3 <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length + interest_nonsexrel + interest_monrel + interest_single + interest_parent, method = "nearest", data = data_main_nomiss_add3)
 
 nnm_add3_data <- match.data(nnm_add3)
@@ -614,21 +542,18 @@ nnm_add3_data <- match.data(nnm_add3)
 nrow(nnm_add3_data) # 634 observations
 table(nnm_add3_data$subclass) # data includes only pairs of two observations
 dim(nnm_add3_data) # 634 observations and 21 variables
-```
 
-#### Check balance
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 summary_nnm_add3 = summary(nnm_add3, standardize = T)
 print(summary_nnm_add3)
 tail(summary_nnm_add3$sum.matched) #look at balance properties for interest variables
 
 bal.tab(nnm_add3, m.threshold = 0.1, un = T, binary = "std") #smd
 bal.tab(nnm_add3, v.threshold = 2, un = T) #vr (can only be calculated for continuous variables)
-```
-No asexual unmatched. Based on smds 2 covariates not balanced (country_Denmark and langugage_danish). Based on vr, relationship_length is not balanced (vr = .29)
 
-#### Visualize
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # Q-Q plot
 plot(nnm_add3, type = "qq", interactive = FALSE, which.xs = c("age", "relationship_length", "interest_nonsexrel", "interest_monrel", "interest_single", "interest_parent"))
 # looks better after matching
@@ -673,10 +598,9 @@ love.plot(bal.tab(nnm_add3_without_country, m.threshold = 0.1, binary = "std"),
           abs = F,
           sample.names = c("Before Matching", "After Matching"),
           var.names = v) 
-```
 
-#### Quick overview
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_add3 %>% group_by(sexual_orientation) %>% 
   summarise_at(c("pref_imp_ca", 
@@ -719,11 +643,9 @@ ggplot(data_add3, aes(x = pref_imp_fs, fill = sexual_orientation)) +
 # educated-intelligent
 ggplot(data_add3, aes(x = pref_imp_ei, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge")
-```
 
-### Recalculate t-test for differences in partner preferences based on this psm sample controlling for having no interest in any long-term relationship
-#### Sort data by subclass number within sexual_orientation
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 data_add3 = nnm_add3_data %>% 
         group_by(sexual_orientation) %>%
         arrange(subclass, .by_group = TRUE)
@@ -734,10 +656,9 @@ data_add3$sexual_orientation =  factor(data_add3$sexual_orientation,
                                              levels=rev(levels(data_add3$sexual_orientation))) # reverse order of factor levels 
 levels(data_add3$sexual_orientation) # check factor level order
 
-```
 
-#### confident-assertive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ca ~ sexual_orientation, 
        data = data_add3,
        alternative = "less",
@@ -746,10 +667,9 @@ t.test(pref_imp_ca ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_ca ~ sexual_orientation, data = data_add3, paired = T)
-```
 
-#### attractive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_att ~ sexual_orientation, 
        data = data_add3,
        alternative = "less",
@@ -758,10 +678,9 @@ t.test(pref_imp_att ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_att ~ sexual_orientation, data = data_add3, paired = T)
-```
 
-#### sexually experienced
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_sexually_experienced ~ sexual_orientation, 
        data = data_add3,
        alternative = "less",
@@ -770,11 +689,9 @@ t.test(pref_imp_sexually_experienced ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_sexually_experienced ~ sexual_orientation, data = data_add3, paired = T)
-```
 
-### Exploratory analyses
-#### kind-supportive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ks ~ sexual_orientation, 
        data = data_add3,
        alternative = "two.sided",
@@ -783,11 +700,9 @@ t.test(pref_imp_ks ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_ks ~ sexual_orientation, data = data_add3, paired = T)
-```
 
 
-#### financially-secure/successfull
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_fs ~ sexual_orientation, 
        data = data_add3,
        alternative = "two.sided",
@@ -796,11 +711,9 @@ t.test(pref_imp_fs ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_fs ~ sexual_orientation, data = data_add3, paired = T)
-```
 
 
-#### educated-intelligent
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ei ~ sexual_orientation, 
        data = data_add3,
        alternative = "two.sided",
@@ -809,10 +722,9 @@ t.test(pref_imp_ei ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_ei ~ sexual_orientation, data = nnm_add3_data, paired = T)
-```
 
-#### Create forest plot
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 base_data_add3 <- tibble(mean  = c(-0.35, -0.43, -0.59, -0.06, -0.33, 0.05), 
                     lower = c(-0.51, -0.59, -0.76, -0.22, -0.49, -0.11),
                     upper = c(-0.20, -0.27, -0.43, 0.10, -0.17, 0.20),
@@ -845,5 +757,123 @@ partner_preferences_add3 %>%
                             summary = "royalblue"),
              title = "+ Parenting interest (N = 634)",
              graphwidth = unit(150, "mm"))
-```
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+# MatchIt does not allow missing values
+data_main_nomiss_add4 <- data_main %>% select(id, language, age, sex, country, relationship_status, relationship_length, sexual_orientation,
+                                         pref_imp_ks, pref_imp_att, pref_imp_fs, pref_imp_ca,
+                                         pref_imp_ei, pref_imp_sexually_experienced,
+                                         interest_parent) %>%
+                                  na.omit()
+
+table(is.na(data_main_nomiss_add4)) # no more NAs in data set
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+typeof(data_main_nomiss_add4$sexual_orientation) # is variable of type character, but for PSM it needs to be a factor
+data_main_nomiss_add4$sexual_orientation = as.factor(data_main_nomiss_add4$sexual_orientation) # convert to factor
+levels(data_main_nomiss_add4$sexual_orientation) # check levels of factor
+data_main_nomiss_add4$sexual_orientation = factor(data_main_nomiss_add4$sexual_orientation,
+                                             levels=rev(levels(data_main_nomiss_add4$sexual_orientation))) # reverse order of factor levels 
+levels(data_main_nomiss_add4$sexual_orientation) # check factor level order
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+nnm_add4 <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length +  interest_parent, method = "nearest", data = data_main_nomiss_add4)
+
+nnm_add4_data <- match.data(nnm_add4)
+
+nrow(nnm_add4_data) # 638 observations
+table(nnm_add4_data$subclass) # data includes only pairs of two observations
+dim(nnm_add4_data) # 638 observations and 18 variables
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+data_add4 = nnm_add4_data %>% 
+        group_by(sexual_orientation) %>%
+        arrange(subclass, .by_group = TRUE) 
+
+typeof(data_add4$sexual_orientation) # sexual_orientation is a factor
+levels(data_add4$sexual_orientation) # check factor level order
+# for analyses, I reverse the factor levels so that 0 = Asexuals and 1 = Straight/Heterosexual 
+data_add$sexual_orientation =  factor(data_add4$sexual_orientation,
+                                             levels=rev(levels(data_add4$sexual_orientation))) # reverse order of factor levels 
+levels(data_add4$sexual_orientation) # check factor level order
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+t.test(pref_imp_fs ~ sexual_orientation, 
+       data = data_add4,
+       alternative = "two.sided",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(pref_imp_fs ~ sexual_orientation, data = data_add4, paired = T)
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+# MatchIt does not allow missing values
+data_main_nomiss_add5 <- data_main %>% select(id, language, age, sex, country, relationship_status, relationship_length, sexual_orientation,
+                                         pref_imp_ks, pref_imp_att, pref_imp_fs, pref_imp_ca,
+                                         pref_imp_ei, pref_imp_sexually_experienced,
+                                         interest_hookups) %>%
+                                  na.omit()
+
+table(is.na(data_main_nomiss_add5)) # no more NAs in data set
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+typeof(data_main_nomiss_add5$sexual_orientation) # is variable of type character, but for PSM it needs to be a factor
+data_main_nomiss_add5$sexual_orientation = as.factor(data_main_nomiss_add5$sexual_orientation) # convert to factor
+levels(data_main_nomiss_add5$sexual_orientation) # check levels of factor
+data_main_nomiss_add5$sexual_orientation = factor(data_main_nomiss_add5$sexual_orientation,
+                                             levels=rev(levels(data_main_nomiss_add5$sexual_orientation))) # reverse order of factor levels 
+levels(data_main_nomiss_add5$sexual_orientation) # check factor level order
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+nnm_add5 <- matchit(sexual_orientation ~ language + age + country + relationship_status + relationship_length +  interest_hookups, method = "nearest", data = data_main_nomiss_add5)
+
+nnm_add5_data <- match.data(nnm_add5)
+
+nrow(nnm_add5_data) # 642 observations
+table(nnm_add5_data$subclass) # data includes only pairs of two observations
+dim(nnm_add5_data) # 642 observations and 18 variables
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+data_add5 = nnm_add5_data %>% 
+        group_by(sexual_orientation) %>%
+        arrange(subclass, .by_group = TRUE) 
+
+typeof(data_add5$sexual_orientation) # sexual_orientation is a factor
+levels(data_add5$sexual_orientation) # check factor level order
+# for analyses, I reverse the factor levels so that 0 = Asexuals and 1 = Straight/Heterosexual 
+data_add5$sexual_orientation =  factor(data_add5$sexual_orientation,
+                                             levels=rev(levels(data_add5$sexual_orientation))) # reverse order of factor levels 
+levels(data_add5$sexual_orientation) # check factor level order
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+t.test(pref_imp_fs ~ sexual_orientation, 
+       data = data_add5,
+       alternative = "two.sided",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(pref_imp_fs ~ sexual_orientation, data = data_add5, paired = T)
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+t.test(pref_imp_sexually_experienced ~ sexual_orientation, 
+       data = data_add5,
+       alternative = "less",
+       paired = TRUE)
+
+
+# effect size
+effsize::cohen.d(pref_imp_sexually_experienced ~ sexual_orientation, data = data_add5, paired = T)
 

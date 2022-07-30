@@ -71,8 +71,7 @@ round(mean(data_excluded$age, na.rm = T),2)
 round(sd(data_excluded$age, na.rm = T),2)
 ```
 
-### Sex 
-Gender
+### Gender
 Categories: Woman; Genderqueer/Nonbinary; Man; None of the above; Prefer not to say; Other
 ```{r Sex}
 table(data_excluded$sex) # in absolute numbers
@@ -103,7 +102,7 @@ round(sd(data_excluded$relationship_length, na.rm = T),2)
 
 
 ## Comparison of exlcuded and included participants
-### Add variabel indicating being excluded or included to each data set
+### Add variable indicating being excluded or included to each data set
 ```{r}
 data_main$exclusion = "Included"
 data_excluded$exclusion = "Excluded"
@@ -141,7 +140,7 @@ effsize::cohen.d(relationship_length ~ exclusion, data = data_exclusion, paired 
 
 ### Sexual orientation
 ```{r}
-chisq_sexor = chisq.test(data_exclusion$exclusion, data_exclusion$sexual_orientation) # macht nicht so viel Sinn, da ja Ausschlusskriterium
+chisq_sexor = chisq.test(data_exclusion$exclusion, data_exclusion$sexual_orientation) 
 chisq_sexor
 chisq_sexor$observed
 round(chisq_sexor$expected,2)
@@ -164,19 +163,19 @@ chisq_language$observed
 round(chisq_language$expected,2)
 ```
 
-### Sex
-Gender
+### Gender
 Categories: Woman; Genderqueer/Nonbinary; Man; None of the above; Prefer not to say; Other
 ```{r}
-chisq_sex = chisq.test(data_exclusion$exclusion, data_exclusion$sex) # macht nicht viel Sinn, da Ausschlusskriterium
+chisq_sex = chisq.test(data_exclusion$exclusion, data_exclusion$sex) 
 chisq_sex
 chisq_sex$observed
 round(chisq_sex$expected,2)
 ```
+Not identifying as female was an exclusion criterion; therefore, included and excluded participants are certain to be different on this variable. 
 
 ### Relationship status
 ```{r}
-chisq_relationship_status = chisq.test(data_exclusion$exclusion, data_exclusion$relationship_status) # macht nicht viel Sinn, da Ausschlusskriterium
+chisq_relationship_status = chisq.test(data_exclusion$exclusion, data_exclusion$relationship_status) 
 chisq_relationship_status
 chisq_relationship_status$observed
 round(chisq_relationship_status$expected,2)

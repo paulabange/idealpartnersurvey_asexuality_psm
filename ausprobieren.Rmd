@@ -1,0 +1,93 @@
+---
+title: "Figures"
+output: html_document
+date: '2022-05-23'
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+```{r}
+labels = c("Distance", "Chinese", "Danish", "English", )
+love.plot(bal.tab(nnm_without_country, m.threshold = 0.1),
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F) +
+  
+
+labels <- c(var1 = "Custom Value 1", var2 = "Custom Value 2", var3 = "Custom Value 3")
+
+ggplot(df, aes(x, val, col = var)) +
+  geom_line() +
+  scale_color_discrete(labels = labels)
+
+```
+
+```{r}
+nnm25_smd = bal.tab(nnm_25, m.threshold = 0.1, un = T) #smd
+nnm25_smd = nnm25_smd$Balance$Diff.Adj
+nnm_sd = bal.tab(nnm, m.threshold = 0.1, un = T) #smd
+nnm_smd = nnm_sd$Balance$Diff.Adj
+
+t.test(nnm_smd, nnm25_smd)
+```
+
+```{r}
+nnm_sd$Balance$Diff.Adj[,]
+```
+
+# love plots
+```{r}
+# Using alternate variable names
+v <- data.frame(old = c("distance", "language_chinese", "language_japanese", "language_german","language_english", "language_italian", "language_danish", "language_spanish", "language_russian", "language_portuguese", "language_french", "age", "relationship_status_Long-term", "relationship_status_No relationship", "relationship_status_Short-term",
+                        "relationship_length"),
+                new = c("Distance", "Chinese", "Japanese", "German", "English", "Italian", "Danish", "Spanish", "Russian", "Portuguese", "French", "Long-term relationship", "No relationship", "Dating/Sexual Relationship","Age",  "Relationship length"))
+
+love.plot(sexual_orientation ~  age + 
+            relationship_status + relationship_length + language,
+          data = data_main_nomiss,
+          stat = "mean.diffs",
+          grid = T,
+          stars = "raw",
+          abs = F,
+          weights = list(w1 = get.w(om),
+                         w2 = get.w(nnm)),
+          thresholds = c(m = .1),
+          sample.names = c("Unmatched", "Optimal Matching", "Nearest-Neighbor-Matching"),
+          var.names = v) 
+```
+
+# crate a table for descrptives for country
+```{r}
+absolut <-table(data_rel$country) # country in absolute numbers
+table1 <- as.table(absolut)
+prozent <- round(table(data_rel$country)/sum(table(data_rel$country)),4)*100 # country in percent
+table(is.na(data_rel$country)) # no NAs 
+table = as.table(prozent)
+table_country = cbind(table1, table)
+table_country2 = cbind(absolut, prozent)
+
+
+write.csv2(table_country2, file = "Table_country.csv")
+```
+
+
+# crate a table for descrptives for language
+```{r}
+absolut_language <- table(data_rel$language) # language in absolute numbers
+percent_language <- round(table(data_rel$language)/sum(table(data_rel$language)),4)*100 # country in percent
+table(is.na(data_rel$language)) #no NAs
+table_language <- cbind(absolut_language, percent_language)
+
+write.csv2(table_language, file = "Table_language.csv")
+```
+
+```{r}
+
+```
+

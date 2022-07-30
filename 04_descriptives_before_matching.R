@@ -1,54 +1,37 @@
----
-title: "03_descriptives"
-output: html_document
-date: '2022-04-01'
-editor_options: 
-  chunk_output_type: console
----
-
-```{r setup, include=FALSE}
+## ----setup, include=FALSE--------------------------------------------------------------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
-```
 
-## Library
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 library(dplyr)
+library(formr)
 library(ggplot2)
 library(psych)
-library(apaTables)
-```
 
-## Load data
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 data_main = read.csv(file = "data/data_main.csv")[,-1]
-```
 
-## Descriptives for whole sample
-### Demographic data
-#### Sexual orientation
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_main$sexual_orientation) # sexual orientation in absolute numbers
 round(table(data_main$sexual_orientation)/sum(table(data_main$sexual_orientation)),3)*100 # sexual orientation in percent
 table(is.na(data_main$sexual_orientation)) # no NAs 
-```
 
-#### Country
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_main$country) # country in absolute numbers
 round(table(data_main$country)/sum(table(data_main$country)),4)*100 # country in percent
 table(is.na(data_main$country)) # no NAs 
-```
 
-#### Language
-Chinese, Danish, English, French, German, Japanese, Portuguese, Russian, Spanish, Italian
-```{r Language}
+
+## ----Language--------------------------------------------------------------------------------------------------------------------
 table(data_main$language) # language in absolute numbers
 round(table(data_main$country)/sum(table(data_main$country)),4)*100 # country in percent
 table(is.na(data_main$language)) #no NAs
-```
 
-#### Age
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_main$age)
 range(data_main$age, na.rm = T) # range
 table(is.na(data_main$age)) # NAs
@@ -59,33 +42,27 @@ hist(data_main$age)
 # mean, sd
 round(mean(data_main$age, na.rm = T),2)
 round(sd(data_main$age, na.rm = T),2)
-```
 
-#### Sex 
-Gender
-Categories: Woman; Genderqueer/Nonbinary; Man; None of the above; Prefer not to say; Other
-```{r Sex}
+
+## ----Sex-------------------------------------------------------------------------------------------------------------------------
 table(data_main$sex) # in absolute numbers
 round(table(data_main$sex)/sum(table(data_main$sex)),4)*100 # in percent
 table(is.na(data_main$sex))
-```
 
-#### Transgender
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_main$transgender) # in absolute numbers
 round(table(data_main$transgender)/sum(table(data_main$transgender)),4)*100 # in percent
 table(is.na(data_main$transgender))
-```
 
-#### Relationship status
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_main$relationship_status) # in absolute numbers
 round(table(data_main$relationship_status)/sum(table(data_main$relationship_status)),3)*100 # in percent
 table(is.na(data_main$relationship_status)) # NAs
-```
 
-#### Relationship length 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_main$relationship_length)
 range(data_main$relationship_length, na.rm = T) # range
 table(is.na(data_main$relationship_length)) # NAs
@@ -95,27 +72,21 @@ hist(data_main$relationship_length)
 # mean, sd
 round(mean(data_main$relationship_length, na.rm = T),2)
 round(sd(data_main$relationship_length, na.rm = T),2)
-```
 
 
-#### Marital Status
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_main$marital_status) # in absolute numbers
 round(table(data_main$marital_status)/sum(table(data_main$marital_status)),4)*100 # in percent
 table(is.na(data_main$marital_status)) # NAs
-```
 
-#### Political Spectrum
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 table(data_main$political_spectrum) # in absolute numbers
 round(table(data_main$political_spectrum)/sum(table(data_main$political_spectrum)),4)*100 # in percent
 table(is.na(data_main$political_spectrum)) # NAs
-```
 
 
-### Outcomes
-#### Relationship options
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_main %>%
   select(interest_hookups,
@@ -143,10 +114,9 @@ table(is.na(data_main$interest_nonmonrel))
 table(is.na(data_main$interest_altrel))
 table(is.na(data_main$interest_single))
 table(is.na(data_main$interest_parent))
-```
 
-#### Partner preferences
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_main %>% select(pref_imp_ks,
                      pref_imp_att,
@@ -171,10 +141,9 @@ table(is.na(data_main$pref_imp_fs))
 table(is.na(data_main$pref_imp_ca))
 table(is.na(data_main$pref_imp_ei))
 table(is.na(data_main$pref_imp_sexually_experienced))
-```
 
-#### Self ratings
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_main %>% select(self_ks,
                      self_att,
@@ -201,22 +170,18 @@ table(is.na(data_main$self_fs))
 table(is.na(data_main$self_ca))
 table(is.na(data_main$self_ei))
 table(is.na(data_main$self_sexually_experienced))
-```
 
 
-## Descriptives by sexual orientation
-### Demographics
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # quick overview 
 describe.by(data_main, data_main$sexual_orientation)
 
 # split data set by sexual orientation
 asexuals = data_main %>% filter(sexual_orientation == "Asexual")
 heteros = data_main %>% filter(sexual_orientation == "Straight/Heterosexual")
-```
 
-#### Country
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # for asexuals
 sort(table(asexuals$country), decreasing = T) # absolute numbers
 sort(round(table(asexuals$country)/sum(table(asexuals$country)),4)*100, decreasing = T) # in percent
@@ -229,10 +194,9 @@ sort(round(table(heteros$country)/sum(table(heteros$country)),4)*100, decreasing
 # check for NAs
 table(is.na(asexuals$country))
 table(is.na(heteros$country))
-```
 
-#### Language
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # for asexuals
 sort(table(asexuals$language), decreasing = T) # absolute numbers
 sort(round(table(asexuals$language)/sum(table(asexuals$language)),4)*100, decreasing = T) # in percent
@@ -246,10 +210,9 @@ sort(round(table(heteros$language)/sum(table(heteros$language)),4)*100, decreasi
 table(is.na(asexuals$language))
 table(is.na(heteros$language))
 
-```
 
-#### Age
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_main %>%
   group_by(sexual_orientation) %>%
@@ -268,10 +231,9 @@ ggplot(data_main, aes(x = age, fill = sexual_orientation)) +
 data_main %>% 
   group_by(sexual_orientation) %>% 
   summarise(sum(is.na(age)))
-```
 
-#### Transgender
-```{r Transgender}
+
+## ----Transgender-----------------------------------------------------------------------------------------------------------------
 # for asexuals
 sort(table(asexuals$transgender), decreasing = T) # absolute numbers
 sort(round(table(asexuals$transgender)/sum(table(asexuals$transgender)),4)*100, decreasing = T) # in percent
@@ -284,10 +246,9 @@ sort(round(table(heteros$transgender)/sum(table(heteros$transgender)),4)*100, de
 # check for NAs
 table(is.na(asexuals$transgender))
 table(is.na(heteros$transgender))
-```
 
-#### Relationship status
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # for asexuals
 sort(table(asexuals$relationship_status), decreasing = T) # absolute numbers
 sort(round(table(asexuals$relationship_status)/sum(table(asexuals$relationship_status)),4)*100, decreasing = T) # in percent
@@ -300,10 +261,9 @@ sort(round(table(heteros$relationship_status)/sum(table(heteros$relationship_sta
 # check for NAs
 table(is.na(asexuals$relationship_status))
 table(is.na(heteros$relationship_status))
-```
 
-#### Relationship length 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_main %>%
   group_by(sexual_orientation) %>%
@@ -322,11 +282,9 @@ ggplot(data_main, aes(x = relationship_length, fill = sexual_orientation)) +
 data_main %>% 
   group_by(sexual_orientation) %>% 
   summarise(sum(is.na(relationship_length)))
-```
 
 
-#### Marital Status
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # for asexuals
 sort(table(asexuals$marital_status), decreasing = T) # absolute numbers
 sort(round(table(asexuals$marital_status)/sum(table(asexuals$marital_status)),4)*100, decreasing = T) # in percent
@@ -339,10 +297,9 @@ sort(round(table(heteros$marital_status)/sum(table(heteros$marital_status)),4)*1
 # check for NAs
 table(is.na(asexuals$marital_status))
 table(is.na(heteros$marital_status))
-```
 
-#### Political Spectrum
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 ## categorical
 # for asexuals
 sort(table(asexuals$political_spectrum), decreasing = T) # absolute numbers
@@ -377,12 +334,9 @@ data_main %>%
 table(is.na(asexuals$political_spectrum))
 table(is.na(heteros$political_spectrum))
 
-```
 
 
-### Outcomes by sexual orientation
-#### Relationship options
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_main %>% group_by(sexual_orientation) %>% 
   summarise_at(c("interest_hookups", "interest_nonsexrel", "interest_monrel",
@@ -450,10 +404,9 @@ data_main %>% group_by(sexual_orientation) %>%
   summarise_at(c("interest_hookups", "interest_nonsexrel", "interest_monrel",
                  "interest_nonmonrel","interest_altrel", "interest_single", "interest_parent"), sum, na.rm = T)
 
-```
 
-#### Partner preferences
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_main %>% group_by(sexual_orientation) %>% 
   summarise_at(c("pref_imp_ks",
@@ -527,10 +480,9 @@ data_main %>% group_by(sexual_orientation) %>%
                  "pref_imp_ei",
                  "pref_imp_sexually_experienced"), sum, na.rm = T)
 
-```
 
-#### Self ratings
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean
 data_main %>% group_by(sexual_orientation) %>% 
   summarise_at(c("self_ks",
@@ -601,10 +553,92 @@ data_main %>% group_by(sexual_orientation) %>%
                  "self_ei",
                  "self_sexually_experienced"), sum, na.rm = T)
 
-```
 
-### Zero-order correlations all outcomes
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
+# library(Hmisc)
+# corr = data_main %>% select(sexual_orientation,
+#                             age,
+#                             relationship_length,
+#                             interest_hookups,
+#                             interest_nonsexrel,
+#                             interest_monrel,
+#                             interest_monrel,
+#                             interest_altrel,
+#                             interest_single,
+#                             interest_parent,
+#                             pref_imp_ks,
+#                             pref_imp_att,
+#                             pref_imp_fs,
+#                             pref_imp_ca,
+#                             pref_imp_ei,
+#                             self_ks,
+#                             self_att,
+#                             self_fs,
+#                             self_ca,
+#                             self_ei) %>% 
+#                     na.omit()
+#                   
+# corr = as.matrix(corr)
+# rcorr(corr)
+# corrtable = rcorr(as.matrix(corr), type = "pearson")
+# 
+# ?rcorr
+# 
+# 
+# #zero order correlations for offspring and parents based on averaged parent scores from per offspring data frame
+# corr_prefs = rcorr(data_main %>% 
+# #
+# #
+# # correlations rounded to 2 decimals
+# round(corr_prefs[[1]],2)
+#
+# # number of observations
+# corr_prefs[[2]]
+#
+# # p-values rounded to 4 decimals
+# round(corr_prefs[[3]],4)
+
+
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+library(apaTables)
+
+correlations = data_main %>%
+  select(sexual_orientation,
+         age,
+         relationship_length,
+         interest_hookups,
+         interest_nonsexrel,
+         interest_monrel,
+         interest_nonmonrel,
+         interest_altrel,
+         interest_single,
+         interest_parent,
+         pref_imp_ks,
+         pref_imp_att,
+         pref_imp_fs,
+         pref_imp_ca,
+         pref_imp_ei,
+         pref_imp_sexually_experienced,
+         self_ks,
+         self_att,
+         self_fs,
+         self_ca,
+         self_ei,
+         self_sexually_experienced)
+
+
+# correlations_table = apa.cor.table(correlations, filename = "Table.doc", table.number = 1)
+
+# correlations_table
+
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+library(apaTables)
+
 correlations_all_outcomes = data_main %>%
   select(interest_hookups,
          interest_nonsexrel,
@@ -630,7 +664,8 @@ correlations_all_outcomes = data_main %>%
 correlations_table_all_outcomes = apa.cor.table(correlations_all_outcomes, filename = "Table_all_outcomes.doc", table.number = 1)
 
 correlations_table_all_outcomes
-```
 
-
+nrow(correlations_all_outcomes)
+complete = correlations_all_outcomes %>% na.omit()
+nrow(complete)
 

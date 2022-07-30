@@ -1,36 +1,23 @@
----
-title: "06_analyses"
-output: html_document
-date: '2022-04-19'
-editor_options: 
-  chunk_output_type: console
----
-
-```{r setup, include=FALSE}
+## ----setup, include=FALSE--------------------------------------------------------------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
-```
 
-## Analyses
 
-## Library
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 library(dplyr)
+library(formr)
 library(ggplot2)
 library(psych)
 library(effsize)
 library(gridExtra)  
-```
 
 
-## Load data
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 data_rel = read.csv(file = "data/data_rel.csv")[,-1]
 data_prefs = read.csv(file = "data/data_prefs.csv")[,-1]
 data_self = read.csv(file = "data/data_self.csv")[,-1]
-```
 
-## Sort data by subclass number within sexual orientation
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 data_rel = data_rel %>% 
         group_by(sexual_orientation) %>%
         arrange(subclass, .by_group = TRUE)
@@ -42,11 +29,9 @@ data_prefs = data_prefs %>%
 data_self = data_self %>% 
         group_by(sexual_orientation) %>%
         arrange(subclass, .by_group = TRUE)
-```
 
-## 1. Relationship options
-### interest non-sexual relationships
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_nonsexrel ~ sexual_orientation, 
        data = data_rel,
        alternative = "greater",
@@ -54,10 +39,9 @@ t.test(interest_nonsexrel ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(interest_nonsexrel ~ sexual_orientation, data = data_rel, paired = T)
-```
 
-### interest sexual relationships
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_hookups ~ sexual_orientation, 
        data = data_rel,
        alternative = "less",
@@ -66,10 +50,9 @@ t.test(interest_hookups ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(interest_hookups ~ sexual_orientation, data = data_rel, paired = T)
-```
 
-### interest non-monogamous relationships
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_nonmonrel ~ sexual_orientation, 
        data = data_rel,
        alternative = "greater",
@@ -78,10 +61,9 @@ t.test(interest_nonmonrel ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(interest_nonmonrel ~ sexual_orientation, data = data_rel, paired = T)
-```
 
-### interest alternativ committed relationships
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_altrel ~ sexual_orientation, 
        data = data_rel,
        alternative = "greater",
@@ -90,10 +72,9 @@ t.test(interest_altrel ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(interest_altrel ~ sexual_orientation, data = data_rel, paired = T)
-```
 
-### interest single
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_single ~ sexual_orientation, 
        data = data_rel,
        alternative = "greater",
@@ -102,11 +83,9 @@ t.test(interest_single ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(interest_single ~ sexual_orientation, data = data_rel, paired = T)
-```
 
-### Exploratory analyses
-#### interest monogamous relationships
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_monrel ~ sexual_orientation, 
        data = data_rel,
        alternative = "two.sided",
@@ -115,10 +94,9 @@ t.test(interest_monrel ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(interest_monrel ~ sexual_orientation, data = data_rel, paired = T)
-```
 
-#### interest parent 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_parent ~ sexual_orientation, 
        data = data_rel,
        alternative = "two.sided",
@@ -127,12 +105,9 @@ t.test(interest_parent ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(interest_parent ~ sexual_orientation, data = data_rel, paired = T)
-```
 
 
-## 2. Partner preferences
-### confident-assertive
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ca ~ sexual_orientation, 
        data = data_prefs,
        alternative = "less",
@@ -141,10 +116,9 @@ t.test(pref_imp_ca ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_ca ~ sexual_orientation, data = data_prefs, paired = T)
-```
 
-### attractive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_att ~ sexual_orientation, 
        data = data_prefs,
        alternative = "less",
@@ -153,10 +127,9 @@ t.test(pref_imp_att ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_att ~ sexual_orientation, data = data_prefs, paired = T)
-```
 
-### sexually experienced
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_sexually_experienced ~ sexual_orientation, 
        data = data_prefs,
        alternative = "less",
@@ -165,11 +138,9 @@ t.test(pref_imp_sexually_experienced ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_sexually_experienced ~ sexual_orientation, data = data_prefs, paired = T)
-```
 
-### Exploratory analyses
-#### kind-supportive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ks ~ sexual_orientation, 
        data = data_prefs,
        alternative = "two.sided",
@@ -178,11 +149,9 @@ t.test(pref_imp_ks ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_ks ~ sexual_orientation, data = data_prefs, paired = T)
-```
 
 
-#### financially-secure/successfull
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_fs ~ sexual_orientation, 
        data = data_prefs,
        alternative = "two.sided",
@@ -191,11 +160,9 @@ t.test(pref_imp_fs ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_fs ~ sexual_orientation, data = data_prefs, paired = T)
-```
 
 
-#### educated-intelligent
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ei ~ sexual_orientation, 
        data = data_prefs,
        alternative = "two.sided",
@@ -204,12 +171,9 @@ t.test(pref_imp_ei ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_ei ~ sexual_orientation, data = data_prefs, paired = T)
-```
 
 
-## 3. Self-ratings
-### confident-assertive
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_ca ~ sexual_orientation, 
        data = data_self,
        alternative = "less",
@@ -218,10 +182,9 @@ t.test(self_ca ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(self_ca ~ sexual_orientation, data = data_self, paired = T)
-```
 
-### attractive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_att ~ sexual_orientation, 
        data = data_self,
        alternative = "less",
@@ -230,10 +193,9 @@ t.test(self_att ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(self_att ~ sexual_orientation, data = data_self, paired = T)
-```
 
-### sexually experienced
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_sexually_experienced ~ sexual_orientation, 
        data = data_self,
        alternative = "less",
@@ -242,11 +204,9 @@ t.test(self_sexually_experienced ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(self_sexually_experienced ~ sexual_orientation, data = data_self, paired = T)
-```
 
-### Exploratory analyses
-#### kind-supportive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_ks ~ sexual_orientation, 
        data = data_self,
        alternative = "two.sided",
@@ -255,11 +215,9 @@ t.test(self_ks ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(self_ks ~ sexual_orientation, data = data_self, paired = T)
-```
 
 
-#### financially-secure/successful
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_fs ~ sexual_orientation, 
        data = data_self,
        alternative = "two.sided",
@@ -268,10 +226,9 @@ t.test(self_fs ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(self_fs ~ sexual_orientation, data = data_self, paired = T)
-```
 
-#### educated-intelligent
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_ei ~ sexual_orientation, 
        data = data_self,
        alternative = "two.sided",
@@ -283,12 +240,9 @@ d = effsize::cohen.d(self_ei ~ sexual_orientation, data = data_self, paired = T)
 d$sd
 d$var
 ?effsize::cohen.d
-```
 
 
-## 4. Item-level analyses for partner preferences and self-ratings
-### Add variabes to data set
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # load data_main
 data_main = read.csv(file = "data/data_main.csv")[,-1]
 
@@ -318,11 +272,9 @@ data_main_self_items = data_main %>% select(id, self_confident, self_assertive,
 
 # create new data set by adding item level variables to data_prefs
 data_self_itemlevel = left_join(data_self, data_main_self_items, by = "id")
-```
 
-### Overview
-### For partner preferences
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # quick overview by sexual orientation
 describe.by(data_prefs_itemlevel, data_prefs_itemlevel$sexual_orientation)
 
@@ -360,10 +312,9 @@ data_prefs_itemlevel %>% group_by(sexual_orientation) %>%
                  "pref_imp_financially_secure", "pref_imp_successful_ambitous", 
                  "pref_imp_educated", "pref_imp_intelligence",
                  "pref_imp_sexually_experienced"), max, na.rm = T)
-```
 
-### For self-ratings
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # quick overview by sexual orientation
 describe.by(data_self_itemlevel, data_self_itemlevel$sexual_orientation)
 
@@ -401,10 +352,9 @@ data_self_itemlevel %>% group_by(sexual_orientation) %>%
                  "self_financially_secure", "self_successful_ambitous", 
                  "self_educated", "self_intelligence",
                  "self_sexually_experienced"), max, na.rm = T)
-```
 
-### Creates subsamples for sexual orientation
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # for partner preferences
 asex_data_prefs_itemlevel = data_prefs_itemlevel %>% filter(sexual_orientation == "Asexual") %>% arrange(subclass)
 hetero_data_prefs_itemlevel = data_prefs_itemlevel %>% filter(sexual_orientation == "Straight/Heterosexual") %>% arrange(subclass)
@@ -413,11 +363,9 @@ hetero_data_prefs_itemlevel = data_prefs_itemlevel %>% filter(sexual_orientation
 asex_data_self_itemlevel = data_self_itemlevel %>% filter(sexual_orientation == "Asexual") %>% arrange(subclass)
 hetero_data_self_itemlevel = data_self_itemlevel %>% filter(sexual_orientation == "Straight/Heterosexual") %>% arrange(subclass)
 
-```
 
-### Partner preferences
-#### confident-assertive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # compare distributions
 prefs_confident = ggplot(data_prefs_itemlevel, aes(x = pref_imp_confident, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge", binwidth = 0.5) +
@@ -430,10 +378,9 @@ prefs_assertive = ggplot(data_prefs_itemlevel, aes(x = pref_imp_assertive, fill 
   ggtitle("Assertive")
 
 grid.arrange(prefs_confident, prefs_assertive, ncol = 2)  
-```
 
-##### confident
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_prefs_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -452,10 +399,9 @@ t.test(asex_data_prefs_itemlevel$pref_imp_confident, hetero_data_prefs_itemlevel
 effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_confident, hetero_data_prefs_itemlevel$pref_imp_confident,
        alternative = "less",
        paired = TRUE)
-```
 
-##### assertive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_prefs_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -474,11 +420,9 @@ effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_assertive, hetero_data_prefs
        alternative = "less",
        paired = TRUE,
        na.rm = T)
-```
 
 
-#### attractive
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # compare distributions
 prefs_attractive_body = ggplot(data_prefs_itemlevel, aes(x = pref_imp_attractive_body, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge", binwidth = 0.5) +
@@ -494,13 +438,9 @@ grid.arrange(prefs_attractive_body, prefs_attractive_face, ncol = 2)
 
 # correlation between attractive body and attractive face
 cor.test(data_prefs_itemlevel$pref_imp_attractive_body, data_prefs_itemlevel$pref_imp_attractive_face, method=c("pearson"))
-```
-Correlation between attractive face and body r = .69.
 
 
-
-##### attractive body
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_prefs_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -520,10 +460,9 @@ effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_attractive_body, hetero_data
        alternative = "less",
        paired = TRUE,
        na.rm = T)
-```
 
-##### attractive face
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_prefs_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -545,11 +484,9 @@ effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_attractive_face, hetero_data
        alternative = "less",
        paired = TRUE,
        na.rm = T)
-```
 
 
-#### kind-supportive
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # compare distributions
 prefs_kind = ggplot(data_prefs_itemlevel, aes(x = pref_imp_kind, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge") +
@@ -562,10 +499,9 @@ prefs_supportive = ggplot(data_prefs_itemlevel, aes(x = pref_imp_supportive, fil
   ggtitle("Supportive")
 
 grid.arrange(prefs_kind, prefs_supportive, ncol = 2)  
-```
 
-##### kind
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_prefs_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -585,11 +521,9 @@ effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_kind, hetero_data_prefs_item
        alternative = "two.sided",
        paired = T,
        na.rm = T)
-```
 
 
-##### supportive
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_prefs_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -609,11 +543,9 @@ effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_supportive, hetero_data_pref
        alternative = "two.sided",
        paired = T,
        na.rm = T)
-```
 
 
-#### financially-secure/successfull
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # compare distributions
 prefs_financially_secure = ggplot(data_prefs_itemlevel, aes(x = pref_imp_financially_secure, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge") +
@@ -626,10 +558,9 @@ prefs_successful_ambitious = ggplot(data_prefs_itemlevel, aes(x = pref_imp_succe
   ggtitle("Successful ambitious")
 
 grid.arrange(prefs_financially_secure, prefs_successful_ambitious, ncol = 2)  
-```
 
-##### financially-secure
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_prefs_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -651,11 +582,9 @@ effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_financially_secure,hetero_da
        alternative = "two.sided",
        paired = T,
        na.rm = T)
-```
 
 
-##### successful ambitious
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_prefs_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -675,10 +604,9 @@ effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_successful_ambitous, hetero_
        alternative = "two.sided",
        paired = T,
        na.rm = T)
-```
 
-#### educated-intelligent
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # compare distributions
 prefs_educated = ggplot(data_prefs_itemlevel, aes(x = pref_imp_educated, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge") +
@@ -691,10 +619,9 @@ prefs_intelligent = ggplot(data_prefs_itemlevel, aes(x = pref_imp_intelligence, 
   ggtitle("Intelligent")
 
 grid.arrange(prefs_educated, prefs_intelligent, ncol = 2)  
-```
 
-##### educated
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_prefs_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -714,10 +641,9 @@ effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_educated,hetero_data_prefs_i
        alternative = "two.sided",
        paired = T,
        na.rm = T)
-```
 
-##### intelligent
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_prefs_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -737,12 +663,9 @@ effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_intelligence, hetero_data_pr
        alternative = "two.sided",
        paired = T,
        na.rm = T)
-```
 
 
-### Self-ratings
-#### confident-assertive
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # compute t-test
 # compare distributions
 self_confident = ggplot(data_self_itemlevel, aes(x = self_confident, fill = sexual_orientation)) + 
@@ -756,10 +679,9 @@ self_assertive = ggplot(data_self_itemlevel, aes(x = self_assertive, fill = sexu
   ggtitle("Assertive")
 
 grid.arrange(self_confident, self_assertive, ncol = 2)  
-```
 
-##### confident
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_self_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -779,11 +701,9 @@ effsize::cohen.d(asex_data_self_itemlevel$self_confident, hetero_data_self_iteml
        alternative = "less",
        paired = T,
        na.rm = T)
-```
 
 
-##### assertive
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_self_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -802,11 +722,9 @@ effsize::cohen.d(asex_data_self_itemlevel$self_assertive, hetero_data_self_iteml
        alternative = "less",
        paired = T,
        na.rm = T)
-```
 
 
-#### attractive
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # compare distributions
 self_attractive_body = ggplot(data_self_itemlevel, aes(x = self_attractive_body, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge", binwidth = 0.5) +
@@ -822,12 +740,9 @@ grid.arrange(self_attractive_body, self_attractive_face, ncol = 2)
 
 # correlation between attractive body and attractive face
 cor.test(data_self_itemlevel$self_attractive_body, data_self_itemlevel$self_attractive_face, method=c("pearson"))
-```
-Correlation between attractive body and face r = 0.66. 
 
 
-##### attractive body
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_self_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -847,11 +762,9 @@ effsize::cohen.d(asex_data_self_itemlevel$self_attractive_body, hetero_data_self
        alternative = "less",
        paired = T,
        na.rm = T)
-```
 
 
-##### attractive face
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_self_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -871,10 +784,9 @@ effsize::cohen.d(asex_data_self_itemlevel$self_attractive_face, hetero_data_self
        alternative = "less",
        paired = T,
        na.rm = T)
-```
 
-#### kind-supportive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # compare distributions
 self_kind = ggplot(data_self_itemlevel, aes(x = self_kind, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge") +
@@ -887,10 +799,9 @@ self_supportive = ggplot(data_self_itemlevel, aes(x = self_supportive, fill = se
   ggtitle("Supportive")
 
 grid.arrange(self_kind, self_supportive, ncol = 2)  
-```
 
-##### kind
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_self_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -910,10 +821,9 @@ effsize::cohen.d(asex_data_self_itemlevel$self_kind, hetero_data_self_itemlevel$
        alternative = "two.sided",
        paired = T,
        na.rm = T)
-```
 
-##### supportive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_self_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -933,10 +843,9 @@ effsize::cohen.d(asex_data_self_itemlevel$self_supportive,hetero_data_self_iteml
        alternative = "two.sided",
        paired = T,
        na.rm = T)
-```
 
-#### financially-secure/successfull
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # compare distributions
 self_financially_secure = ggplot(data_self_itemlevel, aes(x = self_financially_secure, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge") +
@@ -949,10 +858,9 @@ self_successful_ambitious = ggplot(data_self_itemlevel, aes(x = self_successful_
   ggtitle("Successful ambitious")
 
 grid.arrange(self_financially_secure, self_successful_ambitious, ncol = 2)  
-```
 
-##### financially-secure
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_self_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -972,11 +880,9 @@ effsize::cohen.d(asex_data_self_itemlevel$self_financially_secure,hetero_data_se
        alternative = "two.sided",
        paired = T,
        na.rm = T)
-```
 
 
-##### successful ambitious
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_self_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -996,11 +902,9 @@ effsize::cohen.d(asex_data_self_itemlevel$self_successful_ambitous,hetero_data_s
        alternative = "two.sided",
        paired = T,
        na.rm = T)
-```
 
 
-#### educated-intelligent
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # compare distributions
 self_educated = ggplot(data_self_itemlevel, aes(x = self_educated, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge") +
@@ -1013,10 +917,9 @@ self_intelligent = ggplot(data_self_itemlevel, aes(x = self_intelligence, fill =
   ggtitle("Intelligent")
 
 grid.arrange(self_educated, self_intelligent, ncol = 2)  
-```
 
-##### educated
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_self_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -1036,11 +939,9 @@ effsize::cohen.d(asex_data_self_itemlevel$self_educated,hetero_data_self_itemlev
        alternative = "two.sided",
        paired = T,
        na.rm = T)
-```
 
 
-##### intelligent
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_self_itemlevel %>%
   group_by(sexual_orientation) %>%
@@ -1060,6 +961,4 @@ effsize::cohen.d(asex_data_self_itemlevel$self_intelligence,hetero_data_self_ite
        alternative = "two.sided",
        paired = T,
        na.rm = T)
-```
-
 

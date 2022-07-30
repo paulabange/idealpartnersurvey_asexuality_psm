@@ -1,28 +1,17 @@
----
-title: "05_comparison_all_groups"
-output: html_document
-date: '2022-05-16'
-editor_options: 
-  chunk_output_type: console
----
-
-```{r setup, include=FALSE}
+## ----setup, include=FALSE--------------------------------------------------------------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
-```
 
-## Comparison of Asexuals, matched heterosexuals, and unmatched heterosexuals in all covariates and outcomes
 
-## Library
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 library(dplyr)
+library(formr)
 library(ggplot2)
 library(psych)
-library(rcompanion) 
+library(rcompanion) # for Cramer's V
 library(confintr)
-```
 
-## Load data
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # matched samples
 data_rel = read.csv(file = "data/data_rel.csv")[,-1]
 data_prefs = read.csv(file = "data/data_prefs.csv")[,-1]
@@ -49,11 +38,9 @@ asexuals_self = data_self %>% filter(sexual_orientation == "Asexual")
 heterosexuals_rel = data_rel %>%  filter(sexual_orientation == "Straight/Heterosexual")
 heterosexuals_prefs = data_prefs %>%  filter(sexual_orientation == "Straight/Heterosexual")
 heterosexuals_self = data_self %>%  filter(sexual_orientation == "Straight/Heterosexual")
-```
 
 
-## Create samples for each comparison:
-```{r  }
+## --------------------------------------------------------------------------------------------------------------------------------
 # Asexuals v. matched heterosexuals: 
 asex_v_hetero_rel = data_rel
 asex_v_hetero_prefs = data_prefs
@@ -79,30 +66,24 @@ heterosexuals_self$matched = "matched"
 hetero_v_umhetero_rel = full_join(heterosexuals_rel, data_rel_unmatched)
 hetero_v_umhetero_prefs = full_join(heterosexuals_prefs, data_prefs_unmatched)
 hetero_v_umhetero_self = full_join(heterosexuals_self, data_self_unmatched)
-```
 
 
-## 0. Descriptives for unmatched Heterosexuals (for asexuals and matched heterosexuals descriptives have been computed before - see 05_descriptives_psm.Rmd)
-### Covariates (based on partner preference sample)
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # quick overview 
 describe.by(data_prefs_unmatched)
-```
 
-#### Country
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 sort(table(data_prefs_unmatched$country), decreasing = T) # absolute numbers
 sort(round(table(data_prefs_unmatched$country)/sum(table(data_prefs_unmatched$country)),4)*100, decreasing = T) # in percent
-```
 
-#### Language
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 sort(table(data_prefs_unmatched$language), decreasing = T) # absolute numbers
 sort(round(table(data_prefs_unmatched$language)/sum(table(data_prefs_unmatched$language)),4)*100, decreasing = T) # in percent
-```
 
-#### Age
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_prefs_unmatched %>%
   summarise(mean(age, na.rm = T), 
@@ -114,16 +95,14 @@ data_prefs_unmatched %>%
 # Histogram 
 ggplot(data_prefs_unmatched, aes(x = age, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge")
-```
 
-#### Relationship status
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 sort(table(data_prefs_unmatched$relationship_status), decreasing = T) # absolute numbers
 sort(round(table(data_prefs_unmatched$relationship_status)/sum(table(data_prefs_unmatched$relationship_status)),4)*100, decreasing = T) # in percent
-```
 
-#### Relationship length 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # mean, sd, min, max
 data_prefs_unmatched %>%
   summarise(mean(relationship_length, na.rm = T), 
@@ -135,14 +114,9 @@ data_prefs_unmatched %>%
 # Histogram by group 
 ggplot(data_prefs, aes(x = relationship_length, fill = sexual_orientation)) + 
   geom_histogram(position = "dodge")
-```
 
 
-
-
-## 1. Asexuals v. matched heterosexuals
-### Sort matched data by subclass number within sexual_orientation (for dependent t-test order of observation matters)
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 data_rel = data_rel %>% 
         group_by(sexual_orientation) %>%
         arrange(subclass, .by_group = TRUE)
@@ -154,12 +128,10 @@ data_prefs = data_prefs %>%
 data_self = data_self %>% 
         group_by(sexual_orientation) %>%
         arrange(subclass, .by_group = TRUE)
-```
 
-### Covariates
-#### Country
-```{r}
-# assumptions not met for chi square test: some cells contain less than 5 observations; therefore a Fisher's exact test is calculated
+
+## --------------------------------------------------------------------------------------------------------------------------------
+# assumptions not met for chi square test: some cells contain less than 5 observations; therefore a Fisher's exact test ist calculated
 matrix_country = as.matrix(table(data_prefs$country, data_prefs$sexual_orientation), header=TRUE, row.names=1)
 table(d < 5) # absolute number of cells containing less than 5 counts
 nrow(matrix_country) * 2 # number of cells
@@ -179,10 +151,9 @@ round(chisq_country$expected,2) # expected counts
 
 # calculate Cramer's V
 ci_cramersv(chisq_country, type = "chi-squared")
-```
 
-#### Language
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 chisq_language = chisq.test(data_prefs$sexual_orientation, data_prefs$language) 
 chisq_language
 chisq_language$observed
@@ -192,20 +163,18 @@ round(chisq_language$expected,2)
 matrix_language = as.matrix(table(data_prefs$language, data_prefs$sexual_orientation), header=TRUE,
                      row.names=1)
 round(cramerV(matrix_language, ci = T),2)
-```
 
-#### Age
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(age ~ sexual_orientation, data = data_prefs,
        alternative = "two.sided",
        paired = TRUE)
 
 # effect size
 effsize::cohen.d(age ~ sexual_orientation, data = data_prefs, paired = TRUE)
-```
 
-#### Relationship status
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 chisq_relstat = chisq.test(data_prefs$sexual_orientation, data_prefs$relationship_status) 
 chisq_relstat
 chisq_relstat$observed
@@ -215,25 +184,23 @@ round(chisq_relstat$expected,2)
 matrix_relstat = as.matrix(table(data_prefs$relationship_status, data_prefs$sexual_orientation), header=TRUE,
                      row.names=1)
 round(cramerV(matrix_relstat, ci = T),2)
-```
 
-#### Relationship length
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(relationship_length ~ sexual_orientation, data = data_prefs,
        alternative = "two.sided",
        paired = TRUE)
 
 # effect size
 effsize::cohen.d(relationship_length ~ sexual_orientation, data = data_prefs, paired = TRUE)
-```
 
-### For comparisons of matched pairs see markdown file 10_analyses
 
-## 2. Asexuals vs. unmatched heterosexuals
-### Covariates
-#### Country
-```{r}
-# assumptions not met for chi square test: some cells contain less than 5 observations; therefore a Fisher's exact test is calculated
+## --------------------------------------------------------------------------------------------------------------------------------
+
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+# assumptions not met for chi square test: some cells contain less than 5 observations; therefore a Fisher's exact test ist calculated
 matrix_asex_v_umhetero_country = as.matrix(table(asex_v_umhetero_prefs$country, asex_v_umhetero_prefs$sexual_orientation), header=TRUE, row.names=1)
 table(matrix_asex_v_umhetero_country < 5) # absolute number of cells containing less than 5 counts
 nrow(matrix_asex_v_umhetero_country) * 2 # number of cells
@@ -253,10 +220,9 @@ round(chisq_asex_v_umhetero_country$expected,2) # expected counts
 
 # calculate Cramer's V
 ci_cramersv(chisq_asex_v_umhetero_country, type = "chi-squared")
-```
 
-#### Language
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 language_asex_v_umhetero = chisq.test(asex_v_umhetero_prefs$language, asex_v_umhetero_prefs$sexual_orientation)
 language_asex_v_umhetero
 language_asex_v_umhetero$observed
@@ -266,20 +232,18 @@ round(language_asex_v_umhetero$expected,2)
 matrix_asex_v_umhetero_language = as.matrix(table(asex_v_umhetero_prefs$language, asex_v_umhetero_prefs$sexual_orientation), header=TRUE,
                      row.names=1)
 round(cramerV(matrix_asex_v_umhetero_language, ci = T),2)
-```
 
-#### Age
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(age ~ sexual_orientation, data = asex_v_umhetero_prefs,
        alternative = "two.sided",
        paired = FALSE)
 
 # effect size
 effsize::cohen.d(age ~ sexual_orientation, data = asex_v_umhetero_prefs, paired = FALSE)
-```
 
-#### Relationship status
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 relstat_asex_v_umhetero = chisq.test(asex_v_umhetero_prefs$relationship_status, asex_v_umhetero_prefs$sexual_orientation)
 relstat_asex_v_umhetero
 relstat_asex_v_umhetero$observed
@@ -289,27 +253,23 @@ round(relstat_asex_v_umhetero$expected,2)
 matrix_asex_v_umhetero_relstat = as.matrix(table(asex_v_umhetero_prefs$relationship_status, asex_v_umhetero_prefs$sexual_orientation), header=TRUE,
                      row.names=1)
 round(cramerV(matrix_asex_v_umhetero_relstat, ci = T),2)
-```
 
-#### Relationship length
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(relationship_length ~ sexual_orientation, data = asex_v_umhetero_prefs,
        alternative = "two.sided",
        paired = FALSE)
 
 # effect size
 effsize::cohen.d(relationship_length ~ sexual_orientation, data = asex_v_umhetero_prefs, paired = FALSE)
-```
 
-### Outcomes
-#### Ideal partner preferences
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # quick overview
 describe.by(asex_v_umhetero_prefs, asex_v_umhetero_prefs$sexual_orientation)
-```
 
-##### confident-assertive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ca ~ sexual_orientation, 
        data = asex_v_umhetero_prefs,
        alternative = "two.sided",
@@ -318,10 +278,9 @@ t.test(pref_imp_ca ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_ca ~ sexual_orientation, data = asex_v_umhetero_prefs, paired = FALSE)
-```
 
-##### attractive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_att ~ sexual_orientation, 
        data = asex_v_umhetero_prefs,
        alternative = "two.sided",
@@ -330,10 +289,9 @@ t.test(pref_imp_att ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_att ~ sexual_orientation, data = asex_v_umhetero_prefs, paired = FALSE)
-```
 
-##### sexually experienced
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_sexually_experienced ~ sexual_orientation, 
        data = asex_v_umhetero_prefs,
        alternative = "two.sided",
@@ -342,10 +300,9 @@ t.test(pref_imp_sexually_experienced ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_sexually_experienced ~ sexual_orientation, data = asex_v_umhetero_prefs, paired = FALSE)
-```
 
-##### kind-supportive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ks ~ sexual_orientation, 
        data = asex_v_umhetero_prefs,
        alternative = "two.sided",
@@ -354,11 +311,9 @@ t.test(pref_imp_ks ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_ks ~ sexual_orientation, data = asex_v_umhetero_prefs, paired = FALSE)
-```
 
 
-##### financially-secure/successfull
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_fs ~ sexual_orientation, 
        data = asex_v_umhetero_prefs,
        alternative = "two.sided",
@@ -367,11 +322,9 @@ t.test(pref_imp_fs ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_fs ~ sexual_orientation, data = asex_v_umhetero_prefs, paired = FALSE)
-```
 
 
-##### educated-intelligent
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ei ~ sexual_orientation, 
        data = asex_v_umhetero_prefs,
        alternative = "two.sided",
@@ -380,16 +333,14 @@ t.test(pref_imp_ei ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(pref_imp_ei ~ sexual_orientation, data = asex_v_umhetero_prefs, paired = FALSE)
-```
 
-#### Self-ratings
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # quick overview
 describe.by(asex_v_umhetero_self, asex_v_umhetero_self$sexual_orientation)
-```
 
-##### confident-assertive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_ca ~ sexual_orientation, 
        data = asex_v_umhetero_self,
        alternative = "two.sided",
@@ -398,10 +349,9 @@ t.test(self_ca ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(self_ca ~ sexual_orientation, data = asex_v_umhetero_self, paired = FALSE)
-```
 
-##### attractive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_att ~ sexual_orientation, 
        data = asex_v_umhetero_self,
        alternative = "two.sided",
@@ -410,10 +360,9 @@ t.test(self_att ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(self_att ~ sexual_orientation, data = asex_v_umhetero_self, paired = FALSE)
-```
 
-##### sexually experienced
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_sexually_experienced ~ sexual_orientation, 
        data = asex_v_umhetero_self,
        alternative = "two.sided",
@@ -422,10 +371,9 @@ t.test(self_sexually_experienced ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(self_sexually_experienced ~ sexual_orientation, data = asex_v_umhetero_self, paired = FALSE)
-```
 
-##### kind-supportive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_ks ~ sexual_orientation, 
        data = asex_v_umhetero_self,
        alternative = "two.sided",
@@ -434,11 +382,9 @@ t.test(self_ks ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(self_ks ~ sexual_orientation, data = asex_v_umhetero_self, paired = FALSE)
-```
 
 
-##### financially-secure/successfull
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_fs ~ sexual_orientation, 
        data = asex_v_umhetero_self,
        alternative = "two.sided",
@@ -447,11 +393,9 @@ t.test(self_fs ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(self_fs ~ sexual_orientation, data = asex_v_umhetero_self, paired = FALSE)
-```
 
 
-##### educated-intelligent
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_ei ~ sexual_orientation, 
        data = asex_v_umhetero_self,
        alternative = "two.sided",
@@ -460,17 +404,14 @@ t.test(self_ei ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(self_ei ~ sexual_orientation, data = asex_v_umhetero_self, paired = FALSE)
-```
 
 
-#### Preferred relationship options
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 # quick overview
 describe.by(asex_v_umhetero_rel, asex_v_umhetero_rel$sexual_orientation)
-```
 
-##### interest non-sexual relationships
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_nonsexrel ~ sexual_orientation, 
        data = asex_v_umhetero_rel,
        alternative = "two.sided",
@@ -478,10 +419,9 @@ t.test(interest_nonsexrel ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(interest_nonsexrel ~ sexual_orientation, data = asex_v_umhetero_rel , paired = F)
-```
 
-##### interest sexual relationships
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_hookups ~ sexual_orientation, 
        data = asex_v_umhetero_rel,
        alternative = "two.sided",
@@ -490,10 +430,9 @@ t.test(interest_hookups ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(interest_hookups ~ sexual_orientation, data = data_rel, paired = F)
-```
 
-##### interest non-monogamous relationships
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_nonmonrel ~ sexual_orientation, 
        data = asex_v_umhetero_rel,
        alternative = "two.sided",
@@ -502,10 +441,9 @@ t.test(interest_nonmonrel ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(interest_nonmonrel ~ sexual_orientation, data = asex_v_umhetero_rel, paired = F)
-```
 
-##### interest alternativ committed relationships
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_altrel ~ sexual_orientation, 
        data = asex_v_umhetero_rel,
        alternative = "two.sided",
@@ -514,10 +452,9 @@ t.test(interest_altrel ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(interest_altrel ~ sexual_orientation, data = asex_v_umhetero_rel, paired = F)
-```
 
-##### interest single
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_single ~ sexual_orientation, 
        data = asex_v_umhetero_rel,
        alternative = "two.sided",
@@ -526,10 +463,9 @@ t.test(interest_single ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(interest_single ~ sexual_orientation, data = asex_v_umhetero_rel, paired = F)
-```
 
-##### interest monogamous relationships
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_monrel ~ sexual_orientation, 
        data = asex_v_umhetero_rel,
        alternative = "two.sided",
@@ -538,10 +474,9 @@ t.test(interest_monrel ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(interest_monrel ~ sexual_orientation, data = asex_v_umhetero_rel, paired = F)
-```
 
-##### interest parent 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_parent ~ sexual_orientation, 
        data = asex_v_umhetero_rel,
        alternative = "two.sided",
@@ -550,16 +485,10 @@ t.test(interest_parent ~ sexual_orientation,
 
 # effect size
 effsize::cohen.d(interest_parent ~ sexual_orientation, data = asex_v_umhetero_rel, paired = F)
-```
 
 
-
-
-## 3. Matched heterosexuals v. unmatched heterosexuals
-### Covariates
-#### Country
-```{r}
-# assumptions not met for chi square test: some cells contain less than 5 observations; therefore a Fisher's exact test is calculated
+## --------------------------------------------------------------------------------------------------------------------------------
+# assumptions not met for chi square test: some cells contain less than 5 observations; therefore a Fisher's exact test ist calculated
 matrix_hetero_v_umhetero_country = as.matrix(table(hetero_v_umhetero_prefs$country, hetero_v_umhetero_prefs$matched), header=TRUE, row.names=1)
 table(matrix_hetero_v_umhetero_country < 5) # absolute number of cells containing less than 5 counts
 nrow(matrix_hetero_v_umhetero_country) * 2 # number of cells
@@ -578,11 +507,9 @@ round(chisq_hetero_v_umhetero_country$expected,2) # expected counts
 
 # calculate Cramer's V
 ci_cramersv(chisq_hetero_v_umhetero_country, type = "chi-squared")
-```
 
 
-#### Language
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 language_hetero_v_umhetero = chisq.test(hetero_v_umhetero_prefs$language, hetero_v_umhetero_prefs$matched)
 language_hetero_v_umhetero
 language_hetero_v_umhetero$observed
@@ -592,20 +519,18 @@ round(language_hetero_v_umhetero$expected,2)
 matrix_hetero_v_umhetero_language = as.matrix(table(hetero_v_umhetero_prefs$language, hetero_v_umhetero_prefs$matched), header=TRUE,
                      row.names=1)
 round(cramerV(matrix_hetero_v_umhetero_language, ci = T),2)
-```
 
-#### Age
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(age ~ matched, data = hetero_v_umhetero_prefs,
        alternative = "two.sided",
        paired = FALSE)
 
 # effect size
 effsize::cohen.d(age ~ matched, data = hetero_v_umhetero_prefs, paired = FALSE)
-```
 
-#### Relationship status
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 relstat_hetero_v_umhetero = chisq.test(hetero_v_umhetero_prefs$relationship_status, hetero_v_umhetero_prefs$matched)
 relstat_hetero_v_umhetero
 relstat_hetero_v_umhetero$observed
@@ -615,27 +540,23 @@ round(relstat_hetero_v_umhetero$expected,2)
 matrix_hetero_v_umhetero_relstat = as.matrix(table(hetero_v_umhetero_prefs$relationship_status, hetero_v_umhetero_prefs$matched), header=TRUE,
                      row.names=1)
 round(cramerV(matrix_hetero_v_umhetero_relstat, ci = T),2)
-```
 
-#### Relationship length
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(relationship_length ~ matched, data = hetero_v_umhetero_prefs,
        alternative = "two.sided",
        paired = FALSE)
 
 # effect size
 effsize::cohen.d(relationship_length ~ matched, data = hetero_v_umhetero_prefs, paired = FALSE)
-```
 
-### Outcomes
-#### Ideal partner preferences
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # quick overview
 describe.by(hetero_v_umhetero_prefs, hetero_v_umhetero_prefs$matched) 
-```
 
-##### confident-assertive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ca ~ matched, 
        data = hetero_v_umhetero_prefs,
        alternative = "two.sided",
@@ -644,10 +565,9 @@ t.test(pref_imp_ca ~ matched,
 
 # effect size
 effsize::cohen.d(pref_imp_ca ~ matched, data = hetero_v_umhetero_prefs, paired = FALSE)
-```
 
-##### attractive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_att ~ matched, 
        data = hetero_v_umhetero_prefs,
        alternative = "two.sided",
@@ -656,10 +576,9 @@ t.test(pref_imp_att ~ matched,
 
 # effect size
 effsize::cohen.d(pref_imp_att ~ matched, data = hetero_v_umhetero_prefs, paired = FALSE)
-```
 
-##### sexually experienced
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_sexually_experienced ~ matched, 
        data = hetero_v_umhetero_prefs,
        alternative = "two.sided",
@@ -668,10 +587,9 @@ t.test(pref_imp_sexually_experienced ~ matched,
 
 # effect size
 effsize::cohen.d(pref_imp_sexually_experienced ~ matched, data = hetero_v_umhetero_prefs, paired = FALSE)
-```
 
-##### kind-supportive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ks ~ matched, 
        data = hetero_v_umhetero_prefs,
        alternative = "two.sided",
@@ -680,11 +598,9 @@ t.test(pref_imp_ks ~ matched,
 
 # effect size
 effsize::cohen.d(pref_imp_ks ~ matched, data = hetero_v_umhetero_prefs, paired = FALSE)
-```
 
 
-##### financially-secure/successfull
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_fs ~ matched, 
        data = hetero_v_umhetero_prefs,
        alternative = "two.sided",
@@ -693,11 +609,9 @@ t.test(pref_imp_fs ~ matched,
 
 # effect size
 effsize::cohen.d(pref_imp_fs ~ matched, data = hetero_v_umhetero_prefs, paired = FALSE)
-```
 
 
-##### educated-intelligent
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(pref_imp_ei ~ matched, 
        data = hetero_v_umhetero_prefs,
        alternative = "two.sided",
@@ -706,16 +620,14 @@ t.test(pref_imp_ei ~ matched,
 
 # effect size
 effsize::cohen.d(pref_imp_ei ~ matched, data = hetero_v_umhetero_prefs, paired = FALSE)
-```
 
-#### Self-ratings
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # quick overview
 describe.by(hetero_v_umhetero_self, hetero_v_umhetero_self$matched) 
-```
 
-##### confident-assertive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_ca ~ matched, 
        data = hetero_v_umhetero_self,
        alternative = "two.sided",
@@ -724,10 +636,9 @@ t.test(self_ca ~ matched,
 
 # effect size
 effsize::cohen.d(self_ca ~ matched, data = hetero_v_umhetero_self, paired = FALSE)
-```
 
-##### attractive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_att ~ matched, 
        data = hetero_v_umhetero_self,
        alternative = "two.sided",
@@ -736,10 +647,9 @@ t.test(self_att ~ matched,
 
 # effect size
 effsize::cohen.d(self_att ~ matched, data = hetero_v_umhetero_self, paired = FALSE)
-```
 
-##### sexually experienced
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_sexually_experienced ~ matched, 
        data = hetero_v_umhetero_self,
        alternative = "two.sided",
@@ -748,10 +658,9 @@ t.test(self_sexually_experienced ~ matched,
 
 # effect size
 effsize::cohen.d(self_sexually_experienced ~ matched, data = hetero_v_umhetero_self, paired = FALSE)
-```
 
-##### kind-supportive
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_ks ~ matched, 
        data = hetero_v_umhetero_self,
        alternative = "two.sided",
@@ -760,11 +669,9 @@ t.test(self_ks ~ matched,
 
 # effect size
 effsize::cohen.d(self_ks ~ matched, data = hetero_v_umhetero_self, paired = FALSE)
-```
 
 
-##### financially-secure/successfull
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_fs ~ matched, 
        data = hetero_v_umhetero_self,
        alternative = "two.sided",
@@ -773,11 +680,9 @@ t.test(self_fs ~ matched,
 
 # effect size
 effsize::cohen.d(self_fs ~ matched, data = hetero_v_umhetero_self, paired = FALSE)
-```
 
 
-##### educated-intelligent
-```{r}
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(self_ei ~ matched, 
        data = hetero_v_umhetero_self,
        alternative = "two.sided",
@@ -786,16 +691,14 @@ t.test(self_ei ~ matched,
 
 # effect size
 effsize::cohen.d(self_ei ~ matched, data = hetero_v_umhetero_self, paired = FALSE)
-```
 
-#### Preferred relationship options
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 # quick overview
 describe(hetero_v_umhetero_rel)
-```
 
-##### interest non-sexual relationships
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_nonsexrel ~ matched, 
        data = hetero_v_umhetero_rel,
        alternative = "two.sided",
@@ -803,10 +706,9 @@ t.test(interest_nonsexrel ~ matched,
 
 # effect size
 effsize::cohen.d(interest_nonsexrel ~ matched, data = hetero_v_umhetero_rel , paired = F)
-```
 
-##### interest sexual relationships
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_hookups ~ matched, 
        data = hetero_v_umhetero_rel,
        alternative = "two.sided",
@@ -815,10 +717,9 @@ t.test(interest_hookups ~ matched,
 
 # effect size
 effsize::cohen.d(interest_hookups ~ sexual_orientation, data = data_rel, paired = F)
-```
 
-##### interest non-monogamous relationships
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_nonmonrel ~ matched, 
        data = hetero_v_umhetero_rel,
        alternative = "two.sided",
@@ -827,10 +728,9 @@ t.test(interest_nonmonrel ~ matched,
 
 # effect size
 effsize::cohen.d(interest_nonmonrel ~ matched, data = hetero_v_umhetero_rel, paired = F)
-```
 
-##### interest alternativ committed relationships
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_altrel ~ matched, 
        data = hetero_v_umhetero_rel,
        alternative = "two.sided",
@@ -839,10 +739,9 @@ t.test(interest_altrel ~ matched,
 
 # effect size
 effsize::cohen.d(interest_altrel ~ matched, data = hetero_v_umhetero_rel, paired = F)
-```
 
-##### interest single
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_single ~ matched, 
        data = hetero_v_umhetero_rel,
        alternative = "two.sided",
@@ -851,10 +750,9 @@ t.test(interest_single ~ matched,
 
 # effect size
 effsize::cohen.d(interest_single ~ matched, data = hetero_v_umhetero_rel, paired = F)
-```
 
-##### interest monogamous relationships
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_monrel ~ matched, 
        data = hetero_v_umhetero_rel,
        alternative = "two.sided",
@@ -863,10 +761,9 @@ t.test(interest_monrel ~ matched,
 
 # effect size
 effsize::cohen.d(interest_monrel ~ matched, data = hetero_v_umhetero_rel, paired = F)
-```
 
-##### interest parent 
-```{r}
+
+## --------------------------------------------------------------------------------------------------------------------------------
 t.test(interest_parent ~ matched, 
        data = hetero_v_umhetero_rel,
        alternative = "two.sided",
@@ -875,5 +772,4 @@ t.test(interest_parent ~ matched,
 
 # effect size
 effsize::cohen.d(interest_parent ~ matched, data = hetero_v_umhetero_rel, paired = F)
-```
 
