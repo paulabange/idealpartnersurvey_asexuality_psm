@@ -22,7 +22,6 @@ library(dplyr)
 
 ## Load data
 ```{r}
-# load data
 fulldata_selected = read.csv(file = "data/fulldata_selected.csv")[,-1]
 names(fulldata_selected)
 ```
