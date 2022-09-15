@@ -1,5 +1,5 @@
 ---
-title: "12_analyses_additional"
+title: "Additional Analyses"
 output: 
   html_document:
     toc: true
@@ -14,8 +14,6 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warnings = FALSE)
 ```
-
-# Additional analyses
 
 ## Library
 ```{r}

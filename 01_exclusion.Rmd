@@ -1,5 +1,5 @@
 ---
-title: "01_exclusion"
+title: "Exclusion"
 output: 
   html_document:
     toc: true
@@ -165,13 +165,13 @@ xtabs(~sex+sexual_orientation, data_wrangled_robustness)
 ## Save data
 ### For main analyses
 ```{r}
-# write.csv(data_wrangled_main,
-#           file = "data/data_main.csv")
+write.csv(data_wrangled_main,
+          file = "data/data_main.csv")
 ```
 
 ### For robustness check
 ```{r}
-# write.csv(data_wrangled_robustness,
-#           file = "data/data_robustness.csv")
+write.csv(data_wrangled_robustness,
+          file = "data/data_robustness.csv")
 ```
   

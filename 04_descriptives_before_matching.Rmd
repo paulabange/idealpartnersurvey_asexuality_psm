@@ -1,5 +1,5 @@
 ---
-title: "04_descriptives_before_matching"
+title: "Descriptives Before Matching"
 output: 
   html_document:
     toc: true
@@ -512,7 +512,7 @@ data_main %>% group_by(sexual_orientation) %>%
 
 ```
 
-### Zero-order correlations all outcomes
+## Zero-order correlations between all outcomes
 ```{r}
 correlations_all_outcomes = data_main %>%
   select(interest_hookups,

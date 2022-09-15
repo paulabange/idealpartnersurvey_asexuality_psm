@@ -1,5 +1,5 @@
 ---
-title: "00_data_wrangling"
+title: "Data Wrangling"
 output: 
   html_document:
     toc: true
@@ -350,6 +350,6 @@ fulldata_selected_wrangled$self_ei = fulldata_selected_wrangled %>%
 
 ## Save wrangled data
 ```{r}
-# write.csv(fulldata_selected_wrangled,
-#            file = "data/data_wrangled.csv")
+write.csv(fulldata_selected_wrangled,
+           file = "data/data_wrangled.csv")
 ```

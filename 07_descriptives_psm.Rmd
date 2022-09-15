@@ -1,5 +1,5 @@
 ---
-title: "07_descriptives_psm"
+title: "Descriptives After PSM"
 output: 
   html_document:
     toc: true
@@ -13,8 +13,6 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warnings = FALSE)
 ```
-
-# Descriptives for propensity-score-matched samples
 
 ## Library
 ```{r}

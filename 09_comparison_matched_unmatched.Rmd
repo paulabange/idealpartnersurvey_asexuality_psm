@@ -1,5 +1,5 @@
 ---
-title: "09_comparison_matched_unmatched"
+title: "Comparison Between Matched Asexuals, Matched Heterosexuals, and Unmatched Heterosexuals"
 output: 
   html_document:
     toc: true
@@ -13,8 +13,6 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE)
 ```
-
-## Comparison of Asexuals, matched heterosexuals, and unmatched heterosexuals in all covariates and outcomes
 
 ## Library
 ```{r}

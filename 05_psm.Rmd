@@ -1,5 +1,5 @@
 ---
-title: "05_psm"
+title: "Propensity Score Matching"
 output: 
   html_document:
     toc: true
@@ -13,8 +13,6 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warnings = FALSE)
 ```
-
-# Propensity score matching
 
 ## Library
 ```{r}
@@ -654,7 +652,7 @@ write.csv(nnm_rel_data,
 ```
 
 ## Save unmatched heterosexuals for each psm sample as data files
-```{r}
+```{r, eval = FALSE}
 # for partner preference sample
 data_prefs_unmatched = anti_join(data_main_nomiss, nnm_data) # saves only unmatched cases
 write.csv(data_prefs_unmatched,

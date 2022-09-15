@@ -1,5 +1,5 @@
 ---
-title: "10_robustness_analyses"
+title: "Robustness Analyses"
 output: 
   html_document:
     toc: true
@@ -13,8 +13,6 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE)
 ```
-
-## Robustness Analyses
 
 ## Library
 ```{r}

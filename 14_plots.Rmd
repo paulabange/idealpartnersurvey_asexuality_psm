@@ -1,5 +1,5 @@
 ---
-title: "14_plots"
+title: "Plots"
 output: 
   html_document:
     toc: true
@@ -13,7 +13,6 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE)
 ```
-# Plots
 
 ## Library
 ```{r}
@@ -254,15 +253,6 @@ plot_self_ratings
 nnm_robust_without_country_prefs = nnm_robust_prefs
 nnm_robust_without_country_prefs$X[c("country")] <- NULL 
 
-love.plot(bal.tab(nnm_robust_without_country_prefs, m.threshold = 0.1),
-          stat = "mean.diffs",
-          grid = T,
-          stars = "raw",
-          abs = F,
-          binary = "std") 
-
-
-## love plot using alternate variable names
 # Using alternate variable names
 v <- data.frame(old = c("distance", "language_chinese", "language_japanese", "language_german",
                         "language_english", "language_italian", "language_danish", "language_spanish",

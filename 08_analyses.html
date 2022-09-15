@@ -11,7 +11,7 @@
 
 
 
-<title>06_analyses</title>
+<title>Analyses</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1594,14 +1594,11 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">06_analyses</h1>
+<h1 class="title toc-ignore">Analyses</h1>
 
 </div>
 
 
-<div id="analyses" class="section level2">
-<h2>Analyses</h2>
-</div>
 <div id="library" class="section level2">
 <h2>Library</h2>
 <pre class="r"><code>library(dplyr)</code></pre>
@@ -2015,8 +2012,8 @@ effsize::cohen.d(pref_imp_ks ~ sexual_orientation, data = data_prefs, paired = T
 ##       lower       upper 
 ## -0.30126592 -0.02131916</code></pre>
 </div>
-<div id="financially-secure-successfull" class="section level4">
-<h4>Financially secure-successfull</h4>
+<div id="financially-secure-successful" class="section level4">
+<h4>Financially secure-successful</h4>
 <pre class="r"><code>t.test(pref_imp_fs ~ sexual_orientation, 
        data = data_prefs,
        alternative = &quot;two.sided&quot;,
@@ -2213,7 +2210,7 @@ effsize::cohen.d(self_ks ~ sexual_orientation, data = data_self, paired = T)</co
 ##      lower      upper 
 ## -0.5369527 -0.2541601</code></pre>
 </div>
-<div id="financially-secure-successful" class="section level4">
+<div id="financially-secure-successful-1" class="section level4">
 <h4>Financially secure-successful</h4>
 <pre class="r"><code>t.test(self_fs ~ sexual_orientation, 
        data = data_self,
@@ -3093,8 +3090,8 @@ effsize::cohen.d(asex_data_prefs_itemlevel$pref_imp_supportive, hetero_data_pref
 ## -0.1822396  0.1049164</code></pre>
 </div>
 </div>
-<div id="financially-secure-successfull-1" class="section level4">
-<h4>Financially secure-successfull</h4>
+<div id="financially-secure-successful-2" class="section level4">
+<h4>Financially secure-successful</h4>
 <pre class="r"><code># compare distributions
 prefs_financially_secure = ggplot(data_prefs_itemlevel, aes(x = pref_imp_financially_secure, fill = sexual_orientation)) + 
   geom_histogram(position = &quot;dodge&quot;) +
@@ -3638,8 +3635,8 @@ effsize::cohen.d(asex_data_self_itemlevel$self_supportive,hetero_data_self_iteml
 ## -0.4073612 -0.1263862</code></pre>
 </div>
 </div>
-<div id="financially-secure-successfull-2" class="section level4">
-<h4>Financially secure-successfull</h4>
+<div id="financially-secure-successful-3" class="section level4">
+<h4>Financially secure-successful</h4>
 <pre class="r"><code># compare distributions
 self_financially_secure = ggplot(data_self_itemlevel, aes(x = self_financially_secure, fill = sexual_orientation)) + 
   geom_histogram(position = &quot;dodge&quot;) +

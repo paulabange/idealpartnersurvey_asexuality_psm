@@ -11,7 +11,7 @@
 
 
 
-<title>00_data_wrangling</title>
+<title>Data Wrangling</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1594,7 +1594,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">00_data_wrangling</h1>
+<h1 class="title toc-ignore">Data Wrangling</h1>
 
 </div>
 
@@ -1617,8 +1617,7 @@ library(dplyr)</code></pre>
 </div>
 <div id="load-data" class="section level2">
 <h2>Load data</h2>
-<pre class="r"><code># load data
-fulldata_selected = read.csv(file = &quot;data/fulldata_selected.csv&quot;)[,-1]
+<pre class="r"><code>fulldata_selected = read.csv(file = &quot;data/fulldata_selected.csv&quot;)[,-1]
 names(fulldata_selected)</code></pre>
 <pre><code>##  [1] &quot;sexual_orientation&quot;            &quot;country&quot;                      
 ##  [3] &quot;language&quot;                      &quot;age&quot;                          
@@ -2605,8 +2604,8 @@ fulldata_selected_wrangled$self_ei = fulldata_selected_wrangled %&gt;%
 </div>
 <div id="save-wrangled-data" class="section level2">
 <h2>Save wrangled data</h2>
-<pre class="r"><code># write.csv(fulldata_selected_wrangled,
-#            file = &quot;data/data_wrangled.csv&quot;)</code></pre>
+<pre class="r"><code>write.csv(fulldata_selected_wrangled,
+           file = &quot;data/data_wrangled.csv&quot;)</code></pre>
 </div>
 
 

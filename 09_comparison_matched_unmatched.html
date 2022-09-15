@@ -11,7 +11,7 @@
 
 
 
-<title>05_comparison_all_groups</title>
+<title>Comparison Between Matched Asexuals, Matched Heterosexuals, and Unmatched Heterosexuals</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1594,15 +1594,12 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">05_comparison_all_groups</h1>
+<h1 class="title toc-ignore">Comparison Between Matched Asexuals,
+Matched Heterosexuals, and Unmatched Heterosexuals</h1>
 
 </div>
 
 
-<div id="comparison-of-asexuals-matched-heterosexuals-and-unmatched-heterosexuals-in-all-covariates-and-outcomes" class="section level2">
-<h2>Comparison of Asexuals, matched heterosexuals, and unmatched
-heterosexuals in all covariates and outcomes</h2>
-</div>
 <div id="library" class="section level2">
 <h2>Library</h2>
 <pre class="r"><code>library(dplyr)</code></pre>
@@ -3300,8 +3297,8 @@ effsize::cohen.d(pref_imp_ks ~ sexual_orientation, data = asex_v_umhetero_prefs,
 ##       lower       upper 
 ## -0.14853402  0.05079862</code></pre>
 </div>
-<div id="financially-secure-successfull" class="section level5">
-<h5>Financially secure-successfull</h5>
+<div id="financially-secure-successful" class="section level5">
+<h5>Financially secure-successful</h5>
 <pre class="r"><code>t.test(pref_imp_fs ~ sexual_orientation, 
        data = asex_v_umhetero_prefs,
        alternative = &quot;two.sided&quot;,
@@ -3544,8 +3541,8 @@ effsize::cohen.d(self_ks ~ sexual_orientation, data = asex_v_umhetero_self, pair
 ##      lower      upper 
 ## -0.5092794 -0.3088236</code></pre>
 </div>
-<div id="financially-secure-successfull-1" class="section level5">
-<h5>Financially secure-successfull</h5>
+<div id="financially-secure-successful-1" class="section level5">
+<h5>Financially secure-successful</h5>
 <pre class="r"><code>t.test(self_fs ~ sexual_orientation, 
        data = asex_v_umhetero_self,
        alternative = &quot;two.sided&quot;,
@@ -4564,8 +4561,8 @@ effsize::cohen.d(pref_imp_ks ~ matched, data = hetero_v_umhetero_prefs, paired =
 ##      lower      upper 
 ## 0.01440968 0.21374671</code></pre>
 </div>
-<div id="financially-secure-successfull-2" class="section level5">
-<h5>Financially secure-successfull</h5>
+<div id="financially-secure-successful-2" class="section level5">
+<h5>Financially secure-successful</h5>
 <pre class="r"><code>t.test(pref_imp_fs ~ matched, 
        data = hetero_v_umhetero_prefs,
        alternative = &quot;two.sided&quot;,
@@ -4812,8 +4809,8 @@ effsize::cohen.d(self_ks ~ matched, data = hetero_v_umhetero_self, paired = FALS
 ##       lower       upper 
 ## -0.08234156  0.11804318</code></pre>
 </div>
-<div id="financially-secure-successfull-3" class="section level5">
-<h5>Financially secure-successfull</h5>
+<div id="financially-secure-successful-3" class="section level5">
+<h5>Financially secure-successful</h5>
 <pre class="r"><code>t.test(self_fs ~ matched, 
        data = hetero_v_umhetero_self,
        alternative = &quot;two.sided&quot;,
