@@ -15,6 +15,17 @@ fulldata_selected = read.csv(file = "data/fulldata_selected.csv")[,-1]
 names(fulldata_selected)
 ```
 
+## Divide data
+### Danish data
+In the danish dataset the scale for relationship options ranges from 1 to 7 (which is wrong). The danish data is therefore simulated separately
+```{r}
+fulldata_selected_danish = fulldata_selected %>%
+  filter(language == "danish")
+
+fulldata_selected = fulldata_selected %>%
+  filter(language != "danish")
+```
+
 ## Create synthetic dataset
 The following procedure is based on https://elifesciences.org/articles/53275 (Quintana, 2020) and https://github.com/dsquintana/synthpop-primer (Quintana, 2020)
 
@@ -61,12 +72,15 @@ rnorm_pre <- function (x, mu = 0, sd = 1, r = 0, empirical = FALSE)
 
 ### Select data used for analyses
 ```{r}
-data_selected = fulldata_selected
+example = fulldata_selected
+example_danish = fulldata_selected_danish
 ```
 
 ### Create simulated data
 ```{r}
-example = data_selected
+example_sim_danish = syn(example_danish, seed = 2019,
+                            visit.sequence = c(1, 3:50, 2),
+                            maxfaclevels = 181)
 example_sim = syn(example, seed = 2019,
                   visit.sequence = c(1, 3:50, 2),
                   maxfaclevels = 181)
@@ -76,13 +90,14 @@ example_sim = syn(example, seed = 2019,
 ```{r}
 example_sim_label <- sdc(example_sim, example, 
                           label = "FAKE_DATA") # Adds a "FAKE_DATA" label
+example_sim_label_danish <- sdc(example_sim_danish, example, 
+                          label = "FAKE_DATA") # Adds a "FAKE_DATA" label
 
 example_sim_dat <- example_sim_label$syn
+example_sim_dat_danish <- example_sim_label_danish$syn
 
-save(example_sim, file = "data/simulated.rdata")
-save(example_sim_dat, file = "data/simulated_onlydata.rdata")
-
-save(example_sim_dat, file = "data/FAKE_data_asexuality-clue.rdata")
-write.csv2(example_sim_dat, file = "data/FAKE_data_asexuality-clue.csv")
+example_sim_dat_full <- rbind(example_sim_dat, example_sim_dat_danish)
+save(example_sim_dat_full, file = "data/FAKE_data_asexuality-clue.rdata")
+write.csv2(example_sim_dat_full, file = "data/FAKE_data_asexuality-clue.csv")
 ```
 
