@@ -1,0 +1,75 @@
+## ----setup-----------------------------------------------------------------------------------------------------------------------
+knitr::opts_chunk$set(
+  warning = TRUE, # show warnings during codebook generation
+  message = TRUE, # show messages during codebook generation
+  error = TRUE, # do not interrupt codebook generation in case of errors,
+                # usually better for debugging
+  echo = TRUE  # show R code
+)
+ggplot2::theme_set(ggplot2::theme_bw())
+
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+library(codebook)
+library(future)
+library(dplyr)
+
+
+## ----prepare_codebook------------------------------------------------------------------------------------------------------------
+codebook_data = read.csv(file = "data/data_main.csv")[,-1]
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+# sexual orientation should be a factor
+typeof(codebook_data$sexual_orientation)
+codebook_data$sexual_orientation = as.factor(codebook_data$sexual_orientation)
+
+# country should be a factor
+typeof(codebook_data$country)
+codebook_data$country = as.factor(codebook_data$country)
+
+# language should be a factor
+typeof(codebook_data$language)
+codebook_data$language = as.factor(codebook_data$language)
+
+# transgender should be a factor
+typeof(codebook_data$transgender)
+codebook_data$transgender = as.factor(codebook_data$transgender)
+
+# relationship status should be a factor
+typeof(codebook_data$relationship_status)
+codebook_data$relationship_status = as.factor(codebook_data$relationship_status)
+
+# marital status should be a factor
+typeof(codebook_data$marital_status)
+codebook_data$marital_status = as.factor(codebook_data$marital_status)
+
+
+## --------------------------------------------------------------------------------------------------------------------------------
+codebook = codebook_data %>% select(sexual_orientation, country, language, age, sex, 
+                                    transgender, relationship_status, relationship_length, 
+                                    marital_status, political_spectrum,
+                                    interest_hookups,
+                                    interest_nonsexrel,
+                                    interest_monrel,
+                                    interest_monrel,
+                                    interest_altrel,
+                                    interest_single,
+                                    interest_parent,
+                                    pref_imp_ks,
+                                    pref_imp_att,
+                                    pref_imp_fs,
+                                    pref_imp_ca,
+                                    pref_imp_ei,
+                                    pref_imp_sexually_experienced,
+                                    self_ks,
+                                    self_att,
+                                    self_fs,
+                                    self_ca,
+                                    self_ei,
+                                    self_sexually_experienced)
+                                        
+
+codebook(codebook)
+

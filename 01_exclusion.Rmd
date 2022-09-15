@@ -1,24 +1,28 @@
 ---
 title: "01_exclusion"
-output: html_document
-date: '2022-04-01'
+output: 
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    code_folding: 'show'
 editor_options: 
   chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
 ```
 
 ## Library
-```{r Library}
+```{r}
 library(formr)
 library(dplyr)
 library(tidyr)
 ```
 
 ## Load data
-```{r Load data}
+```{r}
 data_wrangled = read.csv(file = "data/data_wrangled.csv")[,-1]
 ```
 
@@ -38,9 +42,8 @@ data_wrangled$id = 1:94738
 
 ## Exclusion criteria
 ### For main analyses
-Following the order the criteria were listed in the preregistration
 #### 1. Excluding participants not identifying as women
-```{r Exlcusion criterion 1}
+```{r}
 data_wrangled_main = data_wrangled %>%
   filter(sex == "Woman")
 
@@ -48,13 +51,13 @@ nrow(data_wrangled_main) # 64879 women
 nrow(data_wrangled) - nrow(data_wrangled_main) # number of excluded participants
 
 table(data_wrangled_main$sex) # check gender
-table(data_wrangled_main$sexual_orientation)# check sexual orientations
+table(data_wrangled_main$sexual_orientation) # check sexual orientations
 ```
-N = 29,859 participants were excluded, leaving N = 64,879 participants. Of those women, n = 447 identify as asexual and n = 51,328 identify as heterosexual.
+N = 29,859 participants were excluded, leaving N = 64,879 participants.
 
 
 #### 2. Excluding participants not identifying as asexual or heterosexual
-```{r Excluison criterion 2}
+```{r}
 data_wrangled_main = data_wrangled_main %>% 
   filter(sexual_orientation == "Straight/Heterosexual" | sexual_orientation == "Asexual")
 
@@ -66,7 +69,7 @@ N = 11,489 participants were excluded, leaving N = 53,390 participants. Of those
 
 
 #### 3. Excluding participants choosing not to answer the honesty question or indicating not having filled out the survey truthfully
-```{r Exclusion criterion 3}
+```{r}
 data_wrangled_main = data_wrangled_main %>% 
  mutate(answer_accuracy = replace_na(answer_accuracy, "No value"))
 data_wrangled_main = data_wrangled_main %>%
@@ -85,7 +88,7 @@ N = 1615 participants were excluded, leaving N = 51,775 participants. Of those, 
 
 ### For robustness check
 #### 1. Excluding participants not identifying as women, man or genderqueer/nonbinary
-```{r Criterion 1 robustness}
+```{r}
 data_wrangled_robustness = data_wrangled %>%
   filter(sex == "Woman" | sex == "Man" | sex == "Genderqueer/Nonbinary")
 
@@ -99,7 +102,7 @@ N = 26,964 participants were excluded, leaving N = 67,774 participants. Of those
 
 
 #### 2. Excluding participants not identifying as asexual or heterosexual
-```{r Criterion 2 robustness}
+```{r}
 data_wrangled_robustness = data_wrangled_robustness %>% 
   filter(sexual_orientation == "Straight/Heterosexual" | sexual_orientation == "Asexual")
 
@@ -114,7 +117,7 @@ N = 539 identify as asexual and n = 54,537 as heterosexual.
 
 
 #### 3. Excluding participants choosing not to answer the honesty question or indicating not having filled out the survey truthfully
-```{r Criterion 3 robustness}
+```{r}
 data_wrangled_robustness = data_wrangled_robustness %>% 
  mutate(answer_accuracy = replace_na(answer_accuracy, "No value"))
 data_wrangled_robustness = data_wrangled_robustness %>%
@@ -140,6 +143,7 @@ nrow(data_wrangled) - nrow(data_wrangled_robustness)
 ```
 For the main analyses, a total of 42,963 participants were excluded, leaving 51,775 participants.
 For the robustness analyses, a total of 41,326 participants were excluded, leaving 53,412 participants. 
+
 ## Included participants
 ```{r}
 # for main analyses
@@ -160,13 +164,13 @@ xtabs(~sex+sexual_orientation, data_wrangled_robustness)
 
 ## Save data
 ### For main analyses
-```{r Save data main analyses}
+```{r}
 # write.csv(data_wrangled_main,
 #           file = "data/data_main.csv")
 ```
 
 ### For robustness check
-```{r Save data robustness check}
+```{r}
 # write.csv(data_wrangled_robustness,
 #           file = "data/data_robustness.csv")
 ```

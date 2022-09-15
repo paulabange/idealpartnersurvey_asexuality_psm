@@ -1,13 +1,17 @@
 ---
-title: "03_descriptives"
-output: html_document
-date: '2022-04-01'
+title: "03_descriptives_before_matching"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    code_folding: 'show'
 editor_options: 
   chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
 ```
 
 ## Library
@@ -70,13 +74,6 @@ round(table(data_main$sex)/sum(table(data_main$sex)),4)*100 # in percent
 table(is.na(data_main$sex))
 ```
 
-#### Transgender
-```{r}
-table(data_main$transgender) # in absolute numbers
-round(table(data_main$transgender)/sum(table(data_main$transgender)),4)*100 # in percent
-table(is.na(data_main$transgender))
-```
-
 #### Relationship status
 ```{r}
 table(data_main$relationship_status) # in absolute numbers
@@ -96,22 +93,6 @@ hist(data_main$relationship_length)
 round(mean(data_main$relationship_length, na.rm = T),2)
 round(sd(data_main$relationship_length, na.rm = T),2)
 ```
-
-
-#### Marital Status
-```{r}
-table(data_main$marital_status) # in absolute numbers
-round(table(data_main$marital_status)/sum(table(data_main$marital_status)),4)*100 # in percent
-table(is.na(data_main$marital_status)) # NAs
-```
-
-#### Political Spectrum
-```{r}
-table(data_main$political_spectrum) # in absolute numbers
-round(table(data_main$political_spectrum)/sum(table(data_main$political_spectrum)),4)*100 # in percent
-table(is.na(data_main$political_spectrum)) # NAs
-```
-
 
 ### Outcomes
 #### Relationship options
@@ -173,7 +154,7 @@ table(is.na(data_main$pref_imp_ei))
 table(is.na(data_main$pref_imp_sexually_experienced))
 ```
 
-#### Self ratings
+#### Self-ratings
 ```{r}
 # mean
 data_main %>% select(self_ks,
@@ -208,7 +189,7 @@ table(is.na(data_main$self_sexually_experienced))
 ### Demographics
 ```{r}
 # quick overview 
-describe.by(data_main, data_main$sexual_orientation)
+describeBy(data_main, data_main$sexual_orientation)
 
 # split data set by sexual orientation
 asexuals = data_main %>% filter(sexual_orientation == "Asexual")
@@ -270,22 +251,6 @@ data_main %>%
   summarise(sum(is.na(age)))
 ```
 
-#### Transgender
-```{r Transgender}
-# for asexuals
-sort(table(asexuals$transgender), decreasing = T) # absolute numbers
-sort(round(table(asexuals$transgender)/sum(table(asexuals$transgender)),4)*100, decreasing = T) # in percent
-
-# for heterosexuals
-sort(table(heteros$transgender), decreasing = T) # absolute numbers
-sort(round(table(heteros$transgender)/sum(table(heteros$transgender)),4)*100, decreasing = T) # in percent
-
-
-# check for NAs
-table(is.na(asexuals$transgender))
-table(is.na(heteros$transgender))
-```
-
 #### Relationship status
 ```{r}
 # for asexuals
@@ -323,62 +288,6 @@ data_main %>%
   group_by(sexual_orientation) %>% 
   summarise(sum(is.na(relationship_length)))
 ```
-
-
-#### Marital Status
-```{r}
-# for asexuals
-sort(table(asexuals$marital_status), decreasing = T) # absolute numbers
-sort(round(table(asexuals$marital_status)/sum(table(asexuals$marital_status)),4)*100, decreasing = T) # in percent
-
-# for heterosexuals
-sort(table(heteros$relationship_status), decreasing = T) # absolute numbers
-sort(round(table(heteros$marital_status)/sum(table(heteros$marital_status)),4)*100, decreasing = T) # in percent
-
-
-# check for NAs
-table(is.na(asexuals$marital_status))
-table(is.na(heteros$marital_status))
-```
-
-#### Political Spectrum
-```{r}
-## categorical
-# for asexuals
-sort(table(asexuals$political_spectrum), decreasing = T) # absolute numbers
-sort(round(table(asexuals$political_spectrum)/sum(table(asexuals$political_spectrum)),4)*100, decreasing = T) # in percent
-
-# for heterosexuals
-sort(table(heteros$political_spectrum), decreasing = T) # absolute numbers
-sort(round(table(heteros$political_spectrum)/sum(table(heteros$political_spectrum)),4)*100, decreasing = T) # in percent
-
-
-## continuous
-# mean, sd, min, max
-data_main %>%
-  group_by(sexual_orientation) %>%
-  summarise(mean(political_spectrum, na.rm = T), 
-            min(political_spectrum, na.rm = T), 
-            max(political_spectrum, na.rm = T),
-            sd(political_spectrum, na.rm = T))
-
-
-# Histogram by group 
-ggplot(data_main, aes(x = political_spectrum, fill = sexual_orientation)) + 
-  geom_histogram(position = "dodge")
-
-
-# check NAs
-data_main %>% 
-  group_by(sexual_orientation) %>% 
-  summarise(sum(is.na(political_spectrum)))
-
-# check for NAs
-table(is.na(asexuals$political_spectrum))
-table(is.na(heteros$political_spectrum))
-
-```
-
 
 ### Outcomes by sexual orientation
 #### Relationship options
@@ -627,7 +536,7 @@ correlations_all_outcomes = data_main %>%
          self_sexually_experienced)
 
 
-correlations_table_all_outcomes = apa.cor.table(correlations_all_outcomes, filename = "Table_all_outcomes.doc", table.number = 1)
+correlations_table_all_outcomes = apa.cor.table(correlations_all_outcomes, filename = "Table_Intercorrelations.doc", table.number = 1)
 
 correlations_table_all_outcomes
 ```

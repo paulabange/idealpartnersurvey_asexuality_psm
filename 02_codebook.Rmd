@@ -1,5 +1,5 @@
 ---
-title: "Codebook"
+title: "02_codebook"
 output:
   html_document:
     toc: true
@@ -35,11 +35,11 @@ library(dplyr)
 ```
 
 ## Prepare data for codebook
-```{r prepare_codebook}
+```{r}
 codebook_data = read.csv(file = "data/data_main.csv")[,-1]
 ```
 
-## check variable types and convert if necessary
+## Check variable types and convert if necessary
 ```{r}
 # sexual orientation should be a factor
 typeof(codebook_data$sexual_orientation)
