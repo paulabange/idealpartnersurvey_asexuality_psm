@@ -271,7 +271,7 @@ fulldata_selected_wrangled %>%
 ```
 @PROBLEM: We have missings here, that did answer the rest of the survey. I did not mention in the preregistration what to do with these cases. NAs seem to caused by a technical bug, therefore all NAs will be included for the analyses.
 
-## Transformations and creating dcales
+## Transformations and creating scales
 ### Categories for relationship status
 ```{r}
 fulldata_selected_wrangled$relationship_status = ifelse(grepl("Long-term", fulldata_selected_wrangled$relationship), "Long-term",
